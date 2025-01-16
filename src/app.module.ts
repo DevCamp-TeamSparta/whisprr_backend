@@ -13,6 +13,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import Joi from 'joi';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { RestoreModule } from './restore/restore.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -35,7 +36,7 @@ const typeOrmModuleOptions = {
 
 
 @Module({
-  imports: [JournalModule, InterviewModule, ProfileModule, PurchaseModule, QuestionModule, InstructionModule, TimeLimitModule, InitialModule],
+  imports: [JournalModule, InterviewModule, ProfileModule, PurchaseModule, QuestionModule, InstructionModule, TimeLimitModule, InitialModule, RestoreModule],
   controllers: [AppController],
   providers: [AppService],
 })
