@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PurchaseStatus = void 0;
+var PurchaseStatus;
+(function (PurchaseStatus) {
+    PurchaseStatus["SUBSCRIPTION_RECOVERED"] = "SUBSCRIPTION_RECOVERED";
+    PurchaseStatus["SUBSCRIPTION_RENEWED"] = "SUBSCRIPTION_RENEWED";
+    PurchaseStatus["SUBSCRIPTION_CANCELED"] = "SUBSCRIPTION_CANCELED";
+    PurchaseStatus["SUBSCRIPTION_PURCHASED"] = "SUBSCRIPTION_PURCHASED";
+    PurchaseStatus["SUBSCRIPTION_ON_HOLD"] = "SUBSCRIPTION_ON_HOLD";
+    PurchaseStatus["SUBSCRIPTION_IN_GRACE_PERIOD"] = "SUBSCRIPTION_IN_GRACE_PERIOD";
+    PurchaseStatus["SUBSCRIPTION_RESTARTED"] = "SUBSCRIPTION_RESTARTED";
+    PurchaseStatus["SUBSCRIPTION_PRICE_CHANGE_CONFIRMED"] = "SUBSCRIPTION_PRICE_CHANGE_CONFIRMED";
+    PurchaseStatus["SUBSCRIPTION_DEFERRED"] = "SUBSCRIPTION_DEFERRED";
+    PurchaseStatus["SUBSCRIPTION_PAUSED"] = "SUBSCRIPTION_PAUSED";
+    PurchaseStatus["SUBSCRIPTION_PAUSE_SCHEDULE_CHANGED"] = "SUBSCRIPTION_PAUSE_SCHEDULE_CHANGED";
+    PurchaseStatus["SUBSCRIPTION_REVOKED"] = "SUBSCRIPTION_REVOKED";
+    PurchaseStatus["SUBSCRIPTION_EXPIRED"] = "SUBSCRIPTION_EXPIRED";
+    PurchaseStatus["SUBSCRIPTION_PENDING_PURCHASE_CANCELED"] = "SUBSCRIPTION_PENDING_PURCHASE_CANCELED";
+})(PurchaseStatus || (exports.PurchaseStatus = PurchaseStatus = {}));
+//# sourceMappingURL=purchase.status.js.map
