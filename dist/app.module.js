@@ -27,8 +27,21 @@ const question_module_1 = require("./question/question.module");
 const instruction_module_1 = require("./instruction/instruction.module");
 const time_limit_module_1 = require("./time_limit/time_limit.module");
 const initial_module_1 = require("./initial/initial.module");
+const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
+const Joi = require("joi");
 const typeorm_naming_strategies_1 = require("typeorm-naming-strategies");
+const restore_module_1 = require("./restore/restore.module");
+const user_module_1 = require("./user/user.module");
+const plan_module_1 = require("./plan/plan.module");
+const user_entity_1 = require("./user/entities/user.entity");
+const interview_entity_1 = require("./interview/entities/interview.entity");
+const journal_entity_1 = require("./journal/entities/journal.entity");
+const question_entity_1 = require("./question/entities/question.entity");
+const purchase_entity_1 = require("./purchase/entities/purchase.entity");
+const plan_entity_1 = require("./plan/entities/plan.entity");
+const time_limit_entity_1 = require("./time_limit/entities/time_limit.entity");
+const instruction_entity_1 = require("./instruction/entities/instruction.entity");
 const typeOrmModuleOptions = {
     useFactory: (configService) => __awaiter(void 0, void 0, void 0, function* () {
         return ({
@@ -39,7 +52,16 @@ const typeOrmModuleOptions = {
             host: configService.get('DB_HOST'),
             port: configService.get('DB_PORT'),
             database: configService.get('DB_NAME'),
-            entities: [],
+            entities: [
+                user_entity_1.UserEntitiy,
+                interview_entity_1.InterviewEntity,
+                journal_entity_1.JournalEntity,
+                question_entity_1.QuestionEntity,
+                purchase_entity_1.PurchaseEntity,
+                plan_entity_1.PlanEntity,
+                time_limit_entity_1.TimeLimitEntity,
+                instruction_entity_1.instructionEntity,
+            ],
             synchronize: configService.get('DB_SYNC'),
             logging: true,
         });
@@ -51,7 +73,32 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [journal_module_1.JournalModule, interview_module_1.InterviewModule, profile_module_1.ProfileModule, purchase_module_1.PurchaseModule, question_module_1.QuestionModule, instruction_module_1.InstructionModule, time_limit_module_1.TimeLimitModule, initial_module_1.InitialModule],
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                validationSchema: Joi.object({
+                    JWT_SECRET_KEY: Joi.string().required(),
+                    DB_USERNAME: Joi.string().required(),
+                    DB_PASSWORD: Joi.string().required(),
+                    DB_HOST: Joi.string().required(),
+                    DB_PORT: Joi.number().required(),
+                    DB_NAME: Joi.string().required(),
+                    DB_SYNC: Joi.boolean().required(),
+                }),
+            }),
+            typeorm_1.TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+            journal_module_1.JournalModule,
+            interview_module_1.InterviewModule,
+            profile_module_1.ProfileModule,
+            purchase_module_1.PurchaseModule,
+            question_module_1.QuestionModule,
+            instruction_module_1.InstructionModule,
+            time_limit_module_1.TimeLimitModule,
+            initial_module_1.InitialModule,
+            restore_module_1.RestoreModule,
+            user_module_1.UserModule,
+            plan_module_1.PlanModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
