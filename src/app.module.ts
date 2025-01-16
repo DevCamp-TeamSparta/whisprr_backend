@@ -23,7 +23,9 @@ import { QuestionEntity } from './question/entities/question.entity';
 import { PurchaseEntity } from './purchase/entities/purchase.entity';
 import { PlanEntity } from './plan/entities/plan.entity';
 import { TimeLimitEntity } from './time_limit/entities/time_limit.entity';
-import { instructionEntity } from './instruction/entities/instruction.entity';
+import { InstructionEntity } from './instruction/entities/instruction.entity';
+import { OpenAiService } from './open-ai/open-ai.service';
+import { OpenAiModule } from './open-ai/open-ai.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -42,7 +44,7 @@ const typeOrmModuleOptions = {
       PurchaseEntity,
       PlanEntity,
       TimeLimitEntity,
-      instructionEntity,
+      InstructionEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
@@ -53,6 +55,7 @@ const typeOrmModuleOptions = {
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '.env',
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET_KEY: Joi.string().required(),
@@ -76,8 +79,9 @@ const typeOrmModuleOptions = {
     RestoreModule,
     UserModule,
     PlanModule,
+    OpenAiModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, OpenAiService],
 })
 export class AppModule {}

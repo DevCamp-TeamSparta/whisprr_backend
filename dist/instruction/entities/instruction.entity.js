@@ -9,15 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.instructionEntity = void 0;
+exports.InstructionEntity = void 0;
 const typeorm_1 = require("typeorm");
-let instructionEntity = class instructionEntity {
+let InstructionEntity = class InstructionEntity {
 };
-exports.instructionEntity = instructionEntity;
+exports.InstructionEntity = InstructionEntity;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], instructionEntity.prototype, "id", void 0);
+], InstructionEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
@@ -25,15 +25,15 @@ __decorate([
         nullable: false,
     }),
     __metadata("design:type", String)
-], instructionEntity.prototype, "target", void 0);
+], InstructionEntity.prototype, "target", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'varchar',
         nullable: false,
     }),
     __metadata("design:type", String)
-], instructionEntity.prototype, "content", void 0);
-exports.instructionEntity = instructionEntity = __decorate([
+], InstructionEntity.prototype, "content", void 0);
+exports.InstructionEntity = InstructionEntity = __decorate([
     (0, typeorm_1.Entity)('instructions')
-], instructionEntity);
+], InstructionEntity);
 //# sourceMappingURL=instruction.entity.js.map

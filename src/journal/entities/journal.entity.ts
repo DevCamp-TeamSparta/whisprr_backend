@@ -1,5 +1,5 @@
 import { UserEntitiy } from '../../user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
 
 @Entity('journals')
 export class JournalEntity {
@@ -18,8 +18,8 @@ export class JournalEntity {
   })
   keyword: string[];
 
-  @Column({ type: 'json', nullable: false })
-  content: object;
+  @Column({ type: 'longtext', nullable: false })
+  content: string;
 
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
@@ -31,7 +31,7 @@ export class JournalEntity {
   deleted_at: Date;
 
   // m:1 user
-  @OneToMany(() => UserEntitiy, (user) => user.journals)
+  @ManyToOne(() => UserEntitiy, (user) => user.journals)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: UserEntitiy;
 }

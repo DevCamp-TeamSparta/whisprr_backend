@@ -34,8 +34,8 @@ __decorate([
     __metadata("design:type", Array)
 ], JournalEntity.prototype, "keyword", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'json', nullable: false }),
-    __metadata("design:type", Object)
+    (0, typeorm_1.Column)({ type: 'longtext', nullable: false }),
+    __metadata("design:type", String)
 ], JournalEntity.prototype, "content", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: false }),
@@ -50,7 +50,7 @@ __decorate([
     __metadata("design:type", Date)
 ], JournalEntity.prototype, "deleted_at", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => user_entity_1.UserEntitiy, (user) => user.journals),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.UserEntitiy, (user) => user.journals),
     (0, typeorm_1.JoinColumn)({ name: 'user_id', referencedColumnName: 'user_id' }),
     __metadata("design:type", user_entity_1.UserEntitiy)
 ], JournalEntity.prototype, "user", void 0);

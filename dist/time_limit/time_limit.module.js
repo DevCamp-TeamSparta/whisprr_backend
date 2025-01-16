@@ -9,12 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TimeLimitModule = void 0;
 const common_1 = require("@nestjs/common");
 const time_limit_service_1 = require("./time_limit.service");
+const time_limit_entity_1 = require("./entities/time_limit.entity");
+const typeorm_1 = require("@nestjs/typeorm");
 let TimeLimitModule = class TimeLimitModule {
 };
 exports.TimeLimitModule = TimeLimitModule;
 exports.TimeLimitModule = TimeLimitModule = __decorate([
     (0, common_1.Module)({
-        providers: [time_limit_service_1.TimeLimitService]
+        imports: [typeorm_1.TypeOrmModule.forFeature([time_limit_entity_1.TimeLimitEntity])],
+        providers: [time_limit_service_1.TimeLimitService],
+        exports: [time_limit_service_1.TimeLimitService],
     })
 ], TimeLimitModule);
 //# sourceMappingURL=time_limit.module.js.map

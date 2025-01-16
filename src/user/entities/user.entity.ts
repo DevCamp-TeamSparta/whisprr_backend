@@ -5,12 +5,13 @@ import { Entity, Column, JoinColumn, OneToMany, Binary, PrimaryColumn } from 'ty
 
 @Entity('users')
 export class UserEntitiy {
-  @PrimaryColumn({ type: 'binary', length: 16 })
-  user_id: Buffer;
+  @PrimaryColumn({ type: 'varchar' })
+  user_id: string;
 
   @Column({
     type: 'varchar',
     nullable: false,
+    default: '무명',
   })
   nickname: string;
 
@@ -28,7 +29,7 @@ export class UserEntitiy {
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
 
-  @Column({ type: 'timestamp', nullable: false })
+  @Column({ type: 'timestamp', nullable: true })
   deleted_at: Date;
 
   // 1 : M journals

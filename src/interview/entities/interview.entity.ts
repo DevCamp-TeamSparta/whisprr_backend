@@ -10,7 +10,7 @@ export class InterviewEntity {
     type: 'json',
     nullable: false,
   })
-  content: string[];
+  content: object[];
 
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
