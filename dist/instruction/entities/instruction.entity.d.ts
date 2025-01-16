@@ -1,4 +1,4 @@
-export declare class instructionEntity {
+export declare class InstructionEntity {
     id: number;
     target: string;
     content: string;

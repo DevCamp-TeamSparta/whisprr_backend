@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class InterviewDto {
+export class QuestionAnswerDto {
   @IsString()
   @IsNotEmpty({ message: '질문을 입력해주세요.' })
   question: string;

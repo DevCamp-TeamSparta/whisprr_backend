@@ -9,12 +9,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModule = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const user_entity_1 = require("./entities/user.entity");
+const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        providers: [user_service_1.UserService]
+        imports: [
+            jwt_1.JwtModule.registerAsync({
+                useFactory: (config) => ({
+                    secret: config.get('JWT_SECRET_KEY'),
+                }),
+                inject: [config_1.ConfigService],
+            }),
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntitiy]),
+        ],
+        providers: [user_service_1.UserService],
+        exports: [user_service_1.UserService],
     })
 ], UserModule);
 //# sourceMappingURL=user.module.js.map

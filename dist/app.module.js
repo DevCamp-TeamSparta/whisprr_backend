@@ -42,6 +42,8 @@ const purchase_entity_1 = require("./purchase/entities/purchase.entity");
 const plan_entity_1 = require("./plan/entities/plan.entity");
 const time_limit_entity_1 = require("./time_limit/entities/time_limit.entity");
 const instruction_entity_1 = require("./instruction/entities/instruction.entity");
+const open_ai_service_1 = require("./open-ai/open-ai.service");
+const open_ai_module_1 = require("./open-ai/open-ai.module");
 const typeOrmModuleOptions = {
     useFactory: (configService) => __awaiter(void 0, void 0, void 0, function* () {
         return ({
@@ -60,7 +62,7 @@ const typeOrmModuleOptions = {
                 purchase_entity_1.PurchaseEntity,
                 plan_entity_1.PlanEntity,
                 time_limit_entity_1.TimeLimitEntity,
-                instruction_entity_1.instructionEntity,
+                instruction_entity_1.InstructionEntity,
             ],
             synchronize: configService.get('DB_SYNC'),
             logging: true,
@@ -75,6 +77,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({
+                envFilePath: '.env',
                 isGlobal: true,
                 validationSchema: Joi.object({
                     JWT_SECRET_KEY: Joi.string().required(),
@@ -98,9 +101,10 @@ exports.AppModule = AppModule = __decorate([
             restore_module_1.RestoreModule,
             user_module_1.UserModule,
             plan_module_1.PlanModule,
+            open_ai_module_1.OpenAiModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, open_ai_service_1.OpenAiService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

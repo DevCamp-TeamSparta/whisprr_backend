@@ -17,10 +17,10 @@ export class PurchaseEntity {
   @Column({
     type: 'enum',
     enum: PurchaseStatus,
-    default: PurchaseStatus.SUBSCRIPTION_PENDING_PURCHASE_CANCELED,
+    default: PurchaseStatus.inactive,
     nullable: false,
   })
-  state: PurchaseStatus;
+  status: PurchaseStatus;
 
   @Column({ type: 'timestamp', nullable: false })
   purchase_date: Date;

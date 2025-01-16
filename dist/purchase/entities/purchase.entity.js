@@ -32,11 +32,11 @@ __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: purchase_status_1.PurchaseStatus,
-        default: purchase_status_1.PurchaseStatus.SUBSCRIPTION_PENDING_PURCHASE_CANCELED,
+        default: purchase_status_1.PurchaseStatus.inactive,
         nullable: false,
     }),
     __metadata("design:type", String)
-], PurchaseEntity.prototype, "state", void 0);
+], PurchaseEntity.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: false }),
     __metadata("design:type", Date)

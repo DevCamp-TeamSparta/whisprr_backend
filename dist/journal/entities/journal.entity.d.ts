@@ -3,7 +3,7 @@ export declare class JournalEntity {
     id: number;
     title: string;
     keyword: string[];
-    content: object;
+    content: string;
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;

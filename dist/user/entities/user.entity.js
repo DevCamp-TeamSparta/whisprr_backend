@@ -18,13 +18,14 @@ let UserEntitiy = class UserEntitiy {
 };
 exports.UserEntitiy = UserEntitiy;
 __decorate([
-    (0, typeorm_1.PrimaryColumn)({ type: 'binary', length: 16 }),
-    __metadata("design:type", Buffer)
+    (0, typeorm_1.PrimaryColumn)({ type: 'varchar' }),
+    __metadata("design:type", String)
 ], UserEntitiy.prototype, "user_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'varchar',
         nullable: false,
+        default: '무명',
     }),
     __metadata("design:type", String)
 ], UserEntitiy.prototype, "nickname", void 0);
@@ -46,7 +47,7 @@ __decorate([
     __metadata("design:type", Date)
 ], UserEntitiy.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: false }),
+    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
     __metadata("design:type", Date)
 ], UserEntitiy.prototype, "deleted_at", void 0);
 __decorate([
