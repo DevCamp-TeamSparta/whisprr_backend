@@ -21,6 +21,9 @@ export class JournalEntity {
   @Column({ type: 'longtext', nullable: false })
   content: string;
 
+  @Column({ type: 'date', nullable: false, unique: true })
+  date: Date;
+
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
 

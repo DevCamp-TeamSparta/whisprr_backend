@@ -9,24 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModifyJournalDto = void 0;
+exports.JournalDto = void 0;
 const class_validator_1 = require("class-validator");
-class ModifyJournalDto {
+class JournalDto {
 }
-exports.ModifyJournalDto = ModifyJournalDto;
+exports.JournalDto = JournalDto;
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)({ message: '인터뷰 아이디를 입력해주세요' }),
+    __metadata("design:type", Number)
+], JournalDto.prototype, "interviewId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)({ message: '일기 제목을 입력해주세요' }),
-    __metadata("design:type", String)
-], ModifyJournalDto.prototype, "title", void 0);
-__decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)({ message: '키워드를 입력해주세요' }),
-    __metadata("design:type", Array)
-], ModifyJournalDto.prototype, "keyword", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)({ message: '일기 본문을 입력해주세요.' }),
-    __metadata("design:type", String)
-], ModifyJournalDto.prototype, "content", void 0);
-//# sourceMappingURL=modify_journal.dto.js.map
+    (0, class_validator_1.IsNotEmpty)({ message: '일기를 작성할 날짜를 입력해주세요' }),
+    __metadata("design:type", Date)
+], JournalDto.prototype, "date", void 0);
+//# sourceMappingURL=create_jornal.dto.js.map

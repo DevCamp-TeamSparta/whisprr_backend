@@ -30,7 +30,7 @@ let JournalService = class JournalService {
     constructor(journalRepository) {
         this.journalRepository = journalRepository;
     }
-    createJournal(user, journal) {
+    createJournal(user, journal, date) {
         return __awaiter(this, void 0, void 0, function* () {
             const newJournal = this.journalRepository.create({
                 user: user,
@@ -38,17 +38,22 @@ let JournalService = class JournalService {
                 keyword: journal.keyword,
                 content: journal.content,
                 created_at: new Date(),
+                date: date,
             });
             yield this.journalRepository.save(newJournal);
             return newJournal;
         });
     }
-    getJournalList(user) {
+    getJournalList(user, lastDate, limit) {
         return __awaiter(this, void 0, void 0, function* () {
+            const parsedDate = new Date(lastDate);
             const journals = yield this.journalRepository.find({
                 where: {
                     user: user,
+                    date: (0, typeorm_2.LessThan)(parsedDate),
                 },
+                order: { date: 'DESC' },
+                take: limit,
             });
             return journals;
         });
@@ -62,6 +67,33 @@ let JournalService = class JournalService {
                 },
             });
             return journal;
+        });
+    }
+    getJournalByDate(user, date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const journal = yield this.journalRepository.findOne({
+                where: {
+                    user,
+                    date,
+                },
+            });
+            return journal;
+        });
+    }
+    deleteJournal(user, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.journalRepository.delete({ user, id });
+        });
+    }
+    updateJournal(user, id, modifyJournalDto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updateJournal = {
+                title: modifyJournalDto.title,
+                keyword: modifyJournalDto.keyword,
+                content: modifyJournalDto.content,
+                updated_at: new Date(),
+            };
+            yield this.journalRepository.update({ id, user: user }, Object.assign({}, updateJournal));
         });
     }
 };
