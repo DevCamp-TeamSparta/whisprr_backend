@@ -4,6 +4,7 @@ export declare class JournalEntity {
     title: string;
     keyword: string[];
     content: string;
+    date: Date;
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;

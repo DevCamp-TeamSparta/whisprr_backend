@@ -38,6 +38,10 @@ __decorate([
     __metadata("design:type", String)
 ], JournalEntity.prototype, "content", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: false, unique: true }),
+    __metadata("design:type", Date)
+], JournalEntity.prototype, "date", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: false }),
     __metadata("design:type", Date)
 ], JournalEntity.prototype, "created_at", void 0);
