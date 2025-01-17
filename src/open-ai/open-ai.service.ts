@@ -24,6 +24,8 @@ export class OpenAiService {
       content: z.string(),
     });
 
+    console.log(interview);
+
     const completion = await openai.beta.chat.completions.parse({
       model: 'gpt-4o-mini',
       messages: [
@@ -33,7 +35,7 @@ export class OpenAiService {
         },
         {
           role: 'user',
-          content: `${interview}`,
+          content: JSON.stringify(interview),
         },
       ],
       response_format: zodResponseFormat(CalendarEvent, 'event'),
