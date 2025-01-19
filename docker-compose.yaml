@@ -1,4 +1,4 @@
-giservices:
+services:
   app:
     image: app-image
     build:
