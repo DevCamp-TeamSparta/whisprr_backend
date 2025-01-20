@@ -25,6 +25,8 @@ export class PurchaseService {
       scopes: ['https://www.googleapis.com/auth/androidpublisher'],
     });
 
+    console.log(1, keyFile);
+
     const getAndroidPublisherClient = async () => {
       const authClient = (await auth.getClient()) as OAuth2Client;
       return androidpublisher({
@@ -44,6 +46,7 @@ export class PurchaseService {
   }
 
   async updatePurchaseRecord(response, user: UserEntitiy, purchaseToken: string, plan: PlanEntity) {
+    console.log(response);
     let result = PurchaseStatus.inactive;
     if (response.cancelReason || this.checkExpiration(response)) {
       result = PurchaseStatus.inactive;
