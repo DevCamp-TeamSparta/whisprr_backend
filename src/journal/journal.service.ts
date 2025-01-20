@@ -5,12 +5,14 @@ import { LessThan, Repository } from 'typeorm';
 import { UserEntitiy } from 'src/user/entities/user.entity';
 import { Journal } from 'src/open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class JournalService {
   constructor(
     @InjectRepository(JournalEntity)
     private journalRepository: Repository<JournalEntity>,
+    private userService: UserService,
   ) {}
 
   async createJournal(user: UserEntitiy, journal: Journal, date: Date) {
@@ -24,7 +26,7 @@ export class JournalService {
     });
 
     await this.journalRepository.save(newJournal);
-
+    await this.userService.updateWritingCount(user);
     return newJournal;
   }
 

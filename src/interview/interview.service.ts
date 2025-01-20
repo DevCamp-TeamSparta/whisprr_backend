@@ -10,11 +10,12 @@ export class InterviewService {
     @InjectRepository(InterviewEntity)
     private interviewRepository: Repository<InterviewEntity>,
   ) {}
-  async startInterview(user: UserEntitiy) {
+  async startInterview(user: UserEntitiy, date: Date) {
     const newInterview = this.interviewRepository.create({
       user: user,
       content: [],
       created_at: new Date(),
+      date,
     });
 
     await this.interviewRepository.save(newInterview);
