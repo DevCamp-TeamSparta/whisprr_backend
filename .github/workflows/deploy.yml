@@ -35,10 +35,10 @@ jobs:
             export DB_SYNC=${{ secrets.DB_SYNC }}
             export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
-            echo "${{ secrets.GCP_CREDENTIALS }}" > ~/gcp-credentials.json
-            export GOOGLE_KEY_FILE=~/gcp-credentials.json
+            echo "${{ secrets.GCP_CREDENTIALS }}" > ./gcp-credentials.json
+            export GOOGLE_KEY_FILE=./gcp-credentials.json
 
-            chmod 600 ~/gcp-credentials.json
+            chmod 600 ./gcp-credentials.json
 
             
             cd ~/whisprr_backend
