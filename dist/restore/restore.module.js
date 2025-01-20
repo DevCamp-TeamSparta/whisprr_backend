@@ -10,13 +10,17 @@ exports.RestoreModule = void 0;
 const common_1 = require("@nestjs/common");
 const restore_controller_1 = require("./restore.controller");
 const restore_service_1 = require("./restore.service");
+const purchase_service_1 = require("../purchase/purchase.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const purchase_entity_1 = require("../purchase/entities/purchase.entity");
 let RestoreModule = class RestoreModule {
 };
 exports.RestoreModule = RestoreModule;
 exports.RestoreModule = RestoreModule = __decorate([
     (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([purchase_entity_1.PurchaseEntity])],
         controllers: [restore_controller_1.RestoreController],
-        providers: [restore_service_1.RestoreService]
+        providers: [restore_service_1.RestoreService, purchase_service_1.PurchaseService],
     })
 ], RestoreModule);
 //# sourceMappingURL=restore.module.js.map

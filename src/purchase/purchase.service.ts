@@ -9,6 +9,7 @@ import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { PurchaseStatus } from './utils/purchase.status';
 import { UserEntitiy } from 'src/user/entities/user.entity';
 import { PlanEntity } from 'src/plan/entities/plan.entity';
+import { response } from 'express';
 
 @Injectable()
 export class PurchaseService {
@@ -86,8 +87,17 @@ export class PurchaseService {
   }
 
   async updatePurchaseTable(message) {
-    const status = await this.checkStatus(message.SubscriptionNotification.notificationType);
-    const purchaseToken = message.subscriptionNotification.purchaseToken;
+    const decodedData = JSON.parse(Buffer.from(message.data, 'base64').toString('utf-8'));
+
+    console.log('Decoded Data:', decodedData);
+    const notificationType = decodedData.subscriptionNotification?.notificationType;
+
+    if (!notificationType) {
+      console.log('notificationType이 없습니다. 테스트용 알림이거나 잘못된 데이터입니다.');
+      return;
+    }
+    const status = await this.checkStatus(decodedData.subscriptionNotification.notificationType);
+    const purchaseToken = decodedData.subscriptionNotification.purchaseToken;
 
     const result = await this.purchaseRepository.update(
       {
@@ -131,6 +141,6 @@ export class PurchaseService {
       relations: ['user'],
     });
 
-    return purchase.user;
+    return purchase;
   }
 }
