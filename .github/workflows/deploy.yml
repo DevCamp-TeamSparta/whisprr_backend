@@ -46,5 +46,4 @@ jobs:
             docker-compose down
             docker-compose up -d --build
 
-            rm ~/gcp-credentials.json
           EOF
