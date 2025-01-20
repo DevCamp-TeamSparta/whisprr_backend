@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-WORKDIR /
+WORKDIR /home/ubuntu/whisprr_backend
 
 COPY . .
 COPY yarn.lock ./
