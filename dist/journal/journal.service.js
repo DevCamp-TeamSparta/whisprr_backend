@@ -46,11 +46,11 @@ let JournalService = class JournalService {
     }
     getJournalList(user, lastDate, limit) {
         return __awaiter(this, void 0, void 0, function* () {
-            const parsedDate = new Date(lastDate);
             const journals = yield this.journalRepository.find({
                 where: {
                     user: user,
-                    date: (0, typeorm_2.LessThan)(parsedDate),
+                    date: (0, typeorm_2.LessThan)(lastDate),
+                    deleted_at: null,
                 },
                 order: { date: 'DESC' },
                 take: limit,
@@ -64,6 +64,7 @@ let JournalService = class JournalService {
                 where: {
                     id,
                     user,
+                    deleted_at: null,
                 },
             });
             return journal;

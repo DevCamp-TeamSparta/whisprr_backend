@@ -28,12 +28,12 @@ export class JournalService {
     return newJournal;
   }
 
-  async getJournalList(user: UserEntitiy, lastDate: string, limit: number) {
-    const parsedDate = new Date(lastDate);
+  async getJournalList(user: UserEntitiy, lastDate: Date, limit: number) {
     const journals = await this.journalRepository.find({
       where: {
         user: user,
-        date: LessThan(parsedDate),
+        date: LessThan(lastDate),
+        deleted_at: null,
       },
       order: { date: 'DESC' },
       take: limit,
@@ -47,6 +47,7 @@ export class JournalService {
       where: {
         id,
         user,
+        deleted_at: null,
       },
     });
 

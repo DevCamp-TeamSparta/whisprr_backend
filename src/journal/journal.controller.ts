@@ -43,11 +43,13 @@ export class JournalController {
   @Get()
   async getJournalList(
     @UserInfo() userInfo: JwtPayload,
-    @Query('lastDate') lastDate: string,
-    @Query('limit') limit: number,
+    @Query('lastDate') lastDate?: string,
+    @Query('limit') limit: number = 5,
   ) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    return await this.journalService.getJournalList(user, lastDate, limit);
+    const effectiveLastDate = lastDate ? new Date(lastDate) : new Date();
+
+    return await this.journalService.getJournalList(user, effectiveLastDate, limit);
   }
 
   //일기 조회 가드 수정 필요

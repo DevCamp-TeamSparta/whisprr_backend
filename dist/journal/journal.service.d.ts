@@ -7,7 +7,7 @@ export declare class JournalService {
     private journalRepository;
     constructor(journalRepository: Repository<JournalEntity>);
     createJournal(user: UserEntitiy, journal: Journal, date: Date): Promise<JournalEntity>;
-    getJournalList(user: UserEntitiy, lastDate: string, limit: number): Promise<JournalEntity[]>;
+    getJournalList(user: UserEntitiy, lastDate: Date, limit: number): Promise<JournalEntity[]>;
     getJournal(user: UserEntitiy, id: number): Promise<JournalEntity>;
     getJournalByDate(user: UserEntitiy, date: Date): Promise<JournalEntity>;
     deleteJournal(user: UserEntitiy, id: number): Promise<void>;

@@ -13,7 +13,7 @@ export declare class JournalController {
     private openAiService;
     constructor(journalService: JournalService, userService: UserService, interviewService: InterviewService, openAiService: OpenAiService);
     createJournal(userInfo: JwtPayload, jornalDto: JournalDto): Promise<JournalEntity>;
-    getJournalList(userInfo: JwtPayload, lastDate: string, limit: number): Promise<JournalEntity[]>;
+    getJournalList(userInfo: JwtPayload, lastDate?: string, limit?: number): Promise<JournalEntity[]>;
     getJournal(userInfo: JwtPayload, id: number): Promise<JournalEntity>;
     getJournalByDate(userInfo: JwtPayload, date: Date): Promise<JournalEntity>;
     deleteJournal(userInfo: JwtPayload, id: number): Promise<void>;

@@ -47,10 +47,11 @@ let JournalController = class JournalController {
             return yield this.journalService.createJournal(user, journal, jornalDto.date);
         });
     }
-    getJournalList(userInfo, lastDate, limit) {
-        return __awaiter(this, void 0, void 0, function* () {
+    getJournalList(userInfo_1, lastDate_1) {
+        return __awaiter(this, arguments, void 0, function* (userInfo, lastDate, limit = 5) {
             const user = yield this.userService.findUserInfos(userInfo.uuid);
-            return yield this.journalService.getJournalList(user, lastDate, limit);
+            const effectiveLastDate = lastDate ? new Date(lastDate) : new Date();
+            return yield this.journalService.getJournalList(user, effectiveLastDate, limit);
         });
     }
     getJournal(userInfo, id) {
