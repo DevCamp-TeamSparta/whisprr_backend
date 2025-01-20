@@ -45,9 +45,6 @@ let PurchaseController = class PurchaseController {
     getNotification(message) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.purchaseService.updatePurchaseTable(message);
-            const user = yield this.purchaseService.findUserByPurchaseToken(message.subscriptionNotification.purchaseToken);
-            const token = yield this.userService.getUserTocken(user.user_id);
-            return token;
         });
     }
 };

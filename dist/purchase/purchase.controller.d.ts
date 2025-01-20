@@ -15,5 +15,5 @@ export declare class PurchaseController {
         expiration_date: Date;
         status: import("./utils/purchase.status").PurchaseStatus;
     }>;
-    getNotification(message: any): Promise<string>;
+    getNotification(message: any): Promise<void>;
 }
