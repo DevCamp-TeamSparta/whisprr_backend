@@ -42,8 +42,9 @@ jobs:
 
             
             cd ~/whisprr_backend
-            git pull origin dev
+            git fetch origin dev
+            git reset --hard origin/dev
             docker-compose down
-            docker-compose up -d --build
+            docker-compose up -d --build --no-cache
 
           EOF
