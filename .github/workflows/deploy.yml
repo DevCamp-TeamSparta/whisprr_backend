@@ -35,9 +35,14 @@ jobs:
             export DB_SYNC=${{ secrets.DB_SYNC }}
             export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
+            echo "${{ secrets.GCP_CREDENTIALS }}" > ~/gcp-credentials.json
+            export GOOGLE_KEY_FILE=~/gcp-credentials.json
+
             
             cd ~/whisprr_backend
             git pull origin main
             docker-compose down
             docker-compose up -d --build
+
+            rm ~/gcp-credentials.json
           EOF
