@@ -59,8 +59,8 @@ __decorate([
     __metadata("design:type", Array)
 ], UserEntitiy.prototype, "interviews", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => purchase_entity_1.PurchaseEntity, (purchases) => purchases.user),
-    __metadata("design:type", Array)
+    (0, typeorm_1.OneToOne)(() => purchase_entity_1.PurchaseEntity, (purchase) => purchase.user),
+    __metadata("design:type", purchase_entity_1.PurchaseEntity)
 ], UserEntitiy.prototype, "purchases", void 0);
 exports.UserEntitiy = UserEntitiy = __decorate([
     (0, typeorm_1.Entity)('users')

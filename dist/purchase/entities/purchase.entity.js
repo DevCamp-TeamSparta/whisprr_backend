@@ -27,7 +27,7 @@ __decorate([
         nullable: false,
     }),
     __metadata("design:type", String)
-], PurchaseEntity.prototype, "purchase_tocken", void 0);
+], PurchaseEntity.prototype, "purchase_token", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
@@ -46,7 +46,7 @@ __decorate([
     __metadata("design:type", Date)
 ], PurchaseEntity.prototype, "expiration_date", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.UserEntitiy, (user) => user.purchases),
+    (0, typeorm_1.OneToOne)(() => user_entity_1.UserEntitiy, (user) => user.purchases),
     (0, typeorm_1.JoinColumn)({ name: 'user_id', referencedColumnName: 'user_id' }),
     __metadata("design:type", user_entity_1.UserEntitiy)
 ], PurchaseEntity.prototype, "user", void 0);

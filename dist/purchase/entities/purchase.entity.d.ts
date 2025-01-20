@@ -3,7 +3,7 @@ import { PurchaseStatus } from '../utils/purchase.status';
 import { PlanEntity } from '../../plan/entities/plan.entity';
 export declare class PurchaseEntity {
     id: number;
-    purchase_tocken: string;
+    purchase_token: string;
     status: PurchaseStatus;
     purchase_date: Date;
     expiration_date: Date;

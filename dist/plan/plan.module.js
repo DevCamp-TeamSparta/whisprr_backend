@@ -9,12 +9,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlanModule = void 0;
 const common_1 = require("@nestjs/common");
 const plan_service_1 = require("./plan.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const plan_entity_1 = require("./entities/plan.entity");
 let PlanModule = class PlanModule {
 };
 exports.PlanModule = PlanModule;
 exports.PlanModule = PlanModule = __decorate([
     (0, common_1.Module)({
-        providers: [plan_service_1.PlanService]
+        imports: [typeorm_1.TypeOrmModule.forFeature([plan_entity_1.PlanEntity])],
+        providers: [plan_service_1.PlanService],
     })
 ], PlanModule);
 //# sourceMappingURL=plan.module.js.map

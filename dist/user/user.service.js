@@ -33,11 +33,11 @@ let UserService = class UserService {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
     }
-    findUserInfos(uuid) {
+    findUserInfos(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepository.findOne({
                 where: {
-                    user_id: uuid,
+                    user_id,
                 },
             });
             if (!user) {
@@ -93,8 +93,8 @@ let UserService = class UserService {
             if (!user) {
                 throw new common_1.NotFoundException('User not found');
             }
-            const hasActivePlan = user.purchases.some((purchase) => purchase.status === 'active');
-            return hasActivePlan ? 'active' : 'inactive';
+            const hasActivePlan = user.purchases.status;
+            return hasActivePlan;
         });
     }
 };
