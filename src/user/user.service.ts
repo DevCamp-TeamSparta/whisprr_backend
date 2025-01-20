@@ -75,11 +75,16 @@ export class UserService {
       where: { user_id: uuid },
       relations: ['purchases'],
     });
+    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const hasActivePlan = user.purchases.status;
+    let hasActivePlan = 'inactive';
+    if (user.purchases) {
+      hasActivePlan = user.purchases.status;
+    }
+
     return hasActivePlan;
   }
 }

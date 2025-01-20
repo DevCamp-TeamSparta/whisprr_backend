@@ -42,6 +42,7 @@ let PurchaseService = class PurchaseService {
                 keyFilename: keyFile,
                 scopes: ['https://www.googleapis.com/auth/androidpublisher'],
             });
+            console.log(1, keyFile);
             const getAndroidPublisherClient = () => __awaiter(this, void 0, void 0, function* () {
                 const authClient = (yield auth.getClient());
                 return (0, androidpublisher_1.androidpublisher)({
@@ -60,6 +61,7 @@ let PurchaseService = class PurchaseService {
     }
     updatePurchaseRecord(response, user, purchaseToken, plan) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(response);
             let result = purchase_status_1.PurchaseStatus.inactive;
             if (response.cancelReason || this.checkExpiration(response)) {
                 result = purchase_status_1.PurchaseStatus.inactive;
@@ -100,13 +102,6 @@ let PurchaseService = class PurchaseService {
             const result = yield this.purchaseRepository.update({
                 purchase_token: purchaseToken,
             }, { status });
-            if (result.affected === 0) {
-                const newPurchase = this.purchaseRepository.create({
-                    purchase_token: purchaseToken,
-                    status,
-                });
-                yield this.purchaseRepository.save(newPurchase);
-            }
         });
     }
     checkStatus(notificationType) {
