@@ -45,6 +45,6 @@ jobs:
             git fetch origin dev
             git reset --hard origin/dev
             docker-compose down
-            docker-compose up -d --build --no-cache
+            COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose up -d --build
 
           EOF
