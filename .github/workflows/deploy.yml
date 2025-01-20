@@ -37,10 +37,14 @@ jobs:
 
             echo "${{ secrets.GCP_CREDENTIALS }}" > ~/gcp-credentials.json
             export GOOGLE_KEY_FILE=~/gcp-credentials.json
+
             chmod 600 ~/gcp-credentials.json
+
             
             cd ~/whisprr_backend
             git pull origin main
             docker-compose down
             docker-compose up -d --build
+
+            rm ~/gcp-credentials.json
           EOF
