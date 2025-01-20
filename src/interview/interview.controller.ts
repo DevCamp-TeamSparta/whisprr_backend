@@ -29,4 +29,6 @@ export class InterviewController {
     const QandAs = QandADto.interviews;
     return this.interviewService.updateInterview(id, QandAs);
   }
+
+  //3. 회고 재 시작
 }
