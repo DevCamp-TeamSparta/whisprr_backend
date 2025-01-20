@@ -97,8 +97,16 @@ let PurchaseService = class PurchaseService {
     }
     updatePurchaseTable(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const status = yield this.checkStatus(message.SubscriptionNotification.notificationType);
-            const purchaseToken = message.subscriptionNotification.purchaseToken;
+            var _a;
+            const decodedData = JSON.parse(Buffer.from(message.data, 'base64').toString('utf-8'));
+            console.log('Decoded Data:', decodedData);
+            const notificationType = (_a = decodedData.subscriptionNotification) === null || _a === void 0 ? void 0 : _a.notificationType;
+            if (!notificationType) {
+                console.log('notificationType이 없습니다. 테스트용 알림이거나 잘못된 데이터입니다.');
+                return;
+            }
+            const status = yield this.checkStatus(decodedData.subscriptionNotification.notificationType);
+            const purchaseToken = decodedData.subscriptionNotification.purchaseToken;
             const result = yield this.purchaseRepository.update({
                 purchase_token: purchaseToken,
             }, { status });
@@ -138,7 +146,7 @@ let PurchaseService = class PurchaseService {
                 where: { purchase_token: purchaseToken },
                 relations: ['user'],
             });
-            return purchase.user;
+            return purchase;
         });
     }
 };

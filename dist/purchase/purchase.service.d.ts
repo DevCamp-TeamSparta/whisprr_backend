@@ -26,5 +26,5 @@ export declare class PurchaseService {
     private checkExpiration;
     updatePurchaseTable(message: any): Promise<void>;
     private checkStatus;
-    findUserByPurchaseToken(purchaseToken: string): Promise<UserEntitiy>;
+    findUserByPurchaseToken(purchaseToken: string): Promise<PurchaseEntity>;
 }
