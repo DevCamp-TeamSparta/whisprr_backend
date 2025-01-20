@@ -3,6 +3,7 @@ import { UserGuard } from 'src/common/guards/user.guard';
 import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
 import { UserService } from 'src/user/user.service';
 import { ProfileService } from './profile.service';
+import { NicknameDto } from './dto/create_nickname.dto';
 
 @Controller('profile')
 export class ProfileController {
@@ -13,9 +14,9 @@ export class ProfileController {
 
   @UseGuards(UserGuard)
   @Patch('/nickname')
-  async getJournal(@UserInfo() userInfo: JwtPayload, @Body('nickname') nickname: string) {
+  async getJournal(@UserInfo() userInfo: JwtPayload, @Body() nicknameDto: NicknameDto) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    return await this.profileService.changeNickname(user, nickname);
+    return await this.profileService.changeNickname(user, nicknameDto.nickname);
   }
 
   @UseGuards(UserGuard)

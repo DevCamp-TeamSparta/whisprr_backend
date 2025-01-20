@@ -27,15 +27,16 @@ const user_guard_1 = require("../common/guards/user.guard");
 const user_info_decorator_1 = require("../common/utils/user_info.decorator");
 const user_service_1 = require("../user/user.service");
 const profile_service_1 = require("./profile.service");
+const create_nickname_dto_1 = require("./dto/create_nickname.dto");
 let ProfileController = class ProfileController {
     constructor(userService, profileService) {
         this.userService = userService;
         this.profileService = profileService;
     }
-    getJournal(userInfo, nickname) {
+    getJournal(userInfo, nicknameDto) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userService.findUserInfos(userInfo.uuid);
-            return yield this.profileService.changeNickname(user, nickname);
+            return yield this.profileService.changeNickname(user, nicknameDto.nickname);
         });
     }
     getUserPlan(userInfo) {
@@ -56,9 +57,9 @@ __decorate([
     (0, common_1.UseGuards)(user_guard_1.UserGuard),
     (0, common_1.Patch)('/nickname'),
     __param(0, (0, user_info_decorator_1.UserInfo)()),
-    __param(1, (0, common_1.Body)('nickname')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, create_nickname_dto_1.NicknameDto]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "getJournal", null);
 __decorate([
