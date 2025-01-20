@@ -17,6 +17,7 @@ exports.NicknameDto = NicknameDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)({ message: '닉네임을 입력해주세요' }),
+    (0, class_validator_1.Length)(1, 15, { message: '닉네임은 1자에서 15자 사이여야 합니다' }),
     __metadata("design:type", String)
 ], NicknameDto.prototype, "nickname", void 0);
 //# sourceMappingURL=create_nickname.dto.js.map
