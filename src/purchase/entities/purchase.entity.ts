@@ -1,5 +1,5 @@
 import { UserEntitiy } from '../../user/entities/user.entity';
-import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne, OneToOne } from 'typeorm';
 import { PurchaseStatus } from '../utils/purchase.status';
 import { PlanEntity } from '../../plan/entities/plan.entity';
 
@@ -12,7 +12,7 @@ export class PurchaseEntity {
     type: 'varchar',
     nullable: false,
   })
-  purchase_tocken: string;
+  purchase_token: string;
 
   @Column({
     type: 'enum',
@@ -28,8 +28,8 @@ export class PurchaseEntity {
   @Column({ type: 'timestamp', nullable: false })
   expiration_date: Date;
 
-  //m: 1 user
-  @ManyToOne(() => UserEntitiy, (user) => user.purchases)
+  //1: 1 user
+  @OneToOne(() => UserEntitiy, (user) => user.purchases)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: UserEntitiy;
 

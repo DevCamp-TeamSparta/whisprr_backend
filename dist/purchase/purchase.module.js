@@ -14,6 +14,10 @@ const typeorm_1 = require("@nestjs/typeorm");
 const purchase_entity_1 = require("./entities/purchase.entity");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
+const user_entity_1 = require("../user/entities/user.entity");
+const user_service_1 = require("../user/user.service");
+const plan_entity_1 = require("../plan/entities/plan.entity");
+const plan_service_1 = require("../plan/plan.service");
 let PurchaseModule = class PurchaseModule {
 };
 exports.PurchaseModule = PurchaseModule;
@@ -26,10 +30,10 @@ exports.PurchaseModule = PurchaseModule = __decorate([
                 }),
                 inject: [config_1.ConfigService],
             }),
-            typeorm_1.TypeOrmModule.forFeature([purchase_entity_1.PurchaseEntity]),
+            typeorm_1.TypeOrmModule.forFeature([purchase_entity_1.PurchaseEntity, user_entity_1.UserEntitiy, plan_entity_1.PlanEntity]),
         ],
         controllers: [purchase_controller_1.PurchaseController],
-        providers: [purchase_service_1.PurchaseService],
+        providers: [purchase_service_1.PurchaseService, user_service_1.UserService, plan_service_1.PlanService],
     })
 ], PurchaseModule);
 //# sourceMappingURL=purchase.module.js.map

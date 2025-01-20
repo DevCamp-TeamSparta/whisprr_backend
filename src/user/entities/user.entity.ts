@@ -1,7 +1,7 @@
 import { InterviewEntity } from '../../interview/entities/interview.entity';
 import { JournalEntity } from '../../journal/entities/journal.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
-import { Entity, Column, JoinColumn, OneToMany, Binary, PrimaryColumn } from 'typeorm';
+import { Entity, Column, JoinColumn, OneToMany, Binary, PrimaryColumn, OneToOne } from 'typeorm';
 
 @Entity('users')
 export class UserEntitiy {
@@ -40,7 +40,7 @@ export class UserEntitiy {
   @OneToMany(() => InterviewEntity, (interviews) => interviews.user)
   interviews: InterviewEntity[];
 
-  //1 : m purchase_infos
-  @OneToMany(() => PurchaseEntity, (purchases) => purchases.user)
-  purchases: PurchaseEntity[];
+  //1 : 1 purchase_infos
+  @OneToOne(() => PurchaseEntity, (purchase) => purchase.user)
+  purchases: PurchaseEntity;
 }

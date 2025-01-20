@@ -29,12 +29,13 @@ const typeorm_2 = require("typeorm");
 const config_1 = require("@nestjs/config");
 const androidpublisher_1 = require("@googleapis/androidpublisher");
 const google_auth_library_1 = require("google-auth-library");
+const purchase_status_1 = require("./utils/purchase.status");
 let PurchaseService = class PurchaseService {
     constructor(purchaseRepository, configService) {
         this.purchaseRepository = purchaseRepository;
         this.configService = configService;
     }
-    verifyPurchaseToken(productId, purchaseToken) {
+    verifyPurchaseToken(plan, user, purchaseToken) {
         return __awaiter(this, void 0, void 0, function* () {
             const keyFile = this.configService.get('GOOGLE_KEY_FILE');
             const auth = new google_auth_library_1.GoogleAuth({
@@ -51,10 +52,98 @@ let PurchaseService = class PurchaseService {
             const client = yield getAndroidPublisherClient();
             const response = yield client.purchases.subscriptions.get({
                 packageName: this.configService.get('PACKAGE_NAME'),
-                subscriptionId: productId,
+                subscriptionId: plan.id,
                 token: purchaseToken,
             });
-            return response.data;
+            return yield this.updatePurchaseRecord(response.data, user, purchaseToken, plan);
+        });
+    }
+    updatePurchaseRecord(response, user, purchaseToken, plan) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = purchase_status_1.PurchaseStatus.inactive;
+            if (response.cancelReason || this.checkExpiration(response)) {
+                result = purchase_status_1.PurchaseStatus.inactive;
+            }
+            else {
+                result = purchase_status_1.PurchaseStatus.active;
+            }
+            const newRecord = {
+                plan,
+                purchase_token: purchaseToken,
+                purchase_date: new Date(Number(response.startTimeMillis)),
+                expiration_date: new Date(Number(response.expiryTimeMillis)),
+                status: result,
+            };
+            if (yield this.findUserPurchaseRecord(user)) {
+                yield this.purchaseRepository.update({ user }, Object.assign({}, newRecord));
+            }
+            else {
+                const newPurchase = this.purchaseRepository.create(Object.assign({ user }, newRecord));
+                yield this.purchaseRepository.save(newPurchase);
+            }
+            return newRecord;
+        });
+    }
+    findUserPurchaseRecord(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const record = yield this.purchaseRepository.findOne({ where: { user } });
+            return record;
+        });
+    }
+    checkExpiration(response) {
+        return new Date(Number(response.expiryTimeMillis)) < new Date();
+    }
+    updatePurchaseTable(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const status = yield this.checkStatus(message.SubscriptionNotification.notificationType);
+            const purchaseToken = message.subscriptionNotification.purchaseToken;
+            const result = yield this.purchaseRepository.update({
+                purchase_token: purchaseToken,
+            }, { status });
+            if (result.affected === 0) {
+                const newPurchase = this.purchaseRepository.create({
+                    purchase_token: purchaseToken,
+                    status,
+                });
+                yield this.purchaseRepository.save(newPurchase);
+            }
+        });
+    }
+    checkStatus(notificationType) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const activeNotifications = [
+                1,
+                2,
+                4,
+                6,
+                7,
+                8,
+                9,
+            ];
+            const inactiveNotifications = [
+                3,
+                5,
+                10,
+                11,
+                12,
+                13,
+                20,
+            ];
+            if (activeNotifications.includes(notificationType)) {
+                return purchase_status_1.PurchaseStatus.active;
+            }
+            else if (inactiveNotifications.includes(notificationType)) {
+                return purchase_status_1.PurchaseStatus.inactive;
+            }
+        });
+    }
+    findUserByPurchaseToken(purchaseToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const purchase = yield this.purchaseRepository.findOne({
+                where: { purchase_token: purchaseToken },
+                relations: ['user'],
+            });
+            return purchase.user;
         });
     }
 };

@@ -10,5 +10,5 @@ export declare class UserEntitiy {
     deleted_at: Date;
     journals: JournalEntity[];
     interviews: InterviewEntity[];
-    purchases: PurchaseEntity[];
+    purchases: PurchaseEntity;
 }

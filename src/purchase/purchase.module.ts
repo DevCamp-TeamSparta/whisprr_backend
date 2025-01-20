@@ -5,6 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserEntitiy } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
+import { PlanEntity } from 'src/plan/entities/plan.entity';
+import { PlanService } from 'src/plan/plan.service';
 
 @Module({
   imports: [
@@ -14,9 +18,9 @@ import { ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([PurchaseEntity]),
+    TypeOrmModule.forFeature([PurchaseEntity, UserEntitiy, PlanEntity]),
   ],
   controllers: [PurchaseController],
-  providers: [PurchaseService],
+  providers: [PurchaseService, UserService, PlanService],
 })
 export class PurchaseModule {}

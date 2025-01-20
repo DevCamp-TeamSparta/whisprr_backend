@@ -5,7 +5,7 @@ export declare class UserService {
     private userRepository;
     private readonly jwtService;
     constructor(userRepository: Repository<UserEntitiy>, jwtService: JwtService);
-    findUserInfos(uuid: string): Promise<UserEntitiy>;
+    findUserInfos(user_id: string): Promise<UserEntitiy>;
     createUser(): Promise<string>;
     changeNickname(uuid: string, newNickname: string): Promise<UserEntitiy>;
     getUserTocken(uuid: string): Promise<string>;

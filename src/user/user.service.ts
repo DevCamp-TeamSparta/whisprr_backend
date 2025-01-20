@@ -14,10 +14,10 @@ export class UserService {
   ) {}
 
   //1. 유저 정보 조회 메소드
-  async findUserInfos(uuid: string) {
+  async findUserInfos(user_id: string) {
     const user = await this.userRepository.findOne({
       where: {
-        user_id: uuid,
+        user_id,
       },
     });
 
@@ -79,7 +79,7 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    const hasActivePlan = user.purchases.some((purchase) => purchase.status === 'active');
-    return hasActivePlan ? 'active' : 'inactive';
+    const hasActivePlan = user.purchases.status;
+    return hasActivePlan;
   }
 }

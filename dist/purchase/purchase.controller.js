@@ -24,27 +24,55 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PurchaseController = void 0;
 const common_1 = require("@nestjs/common");
 const purchase_service_1 = require("./purchase.service");
+const user_guard_1 = require("../common/guards/user.guard");
+const user_info_decorator_1 = require("../common/utils/user_info.decorator");
+const user_service_1 = require("../user/user.service");
+const plan_service_1 = require("../plan/plan.service");
 let PurchaseController = class PurchaseController {
-    constructor(purchaseService) {
+    constructor(purchaseService, userService, planService) {
         this.purchaseService = purchaseService;
+        this.userService = userService;
+        this.planService = planService;
     }
-    verifyPurchaseToken(purchaseToken, productId) {
+    verifyPurchaseToken(userInfo, purchaseToken, productId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.purchaseService.verifyPurchaseToken(productId, purchaseToken);
+            const plan = yield this.planService.findPlan(productId);
+            const user = yield this.userService.findUserInfos(userInfo.uuid);
+            const token = yield this.userService.getUserTocken(user.user_id);
+            return Object.assign(Object.assign({}, (yield this.purchaseService.verifyPurchaseToken(plan, user, purchaseToken))), { new_token: token });
+        });
+    }
+    getNotification(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.purchaseService.updatePurchaseTable(message);
+            const user = yield this.purchaseService.findUserByPurchaseToken(message.subscriptionNotification.purchaseToken);
+            const token = yield this.userService.getUserTocken(user.user_id);
+            return token;
         });
     }
 };
 exports.PurchaseController = PurchaseController;
 __decorate([
+    (0, common_1.UseGuards)(user_guard_1.UserGuard),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('purchaseToken')),
-    __param(1, (0, common_1.Query)('productId')),
+    __param(0, (0, user_info_decorator_1.UserInfo)()),
+    __param(1, (0, common_1.Query)('purchaseToken')),
+    __param(2, (0, common_1.Query)('productId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], PurchaseController.prototype, "verifyPurchaseToken", null);
+__decorate([
+    (0, common_1.Post)('/pubsub'),
+    __param(0, (0, common_1.Body)('message')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PurchaseController.prototype, "getNotification", null);
 exports.PurchaseController = PurchaseController = __decorate([
     (0, common_1.Controller)('purchase'),
-    __metadata("design:paramtypes", [purchase_service_1.PurchaseService])
+    __metadata("design:paramtypes", [purchase_service_1.PurchaseService,
+        user_service_1.UserService,
+        plan_service_1.PlanService])
 ], PurchaseController);
 //# sourceMappingURL=purchase.controller.js.map
