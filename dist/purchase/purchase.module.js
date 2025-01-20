@@ -12,12 +12,22 @@ const purchase_controller_1 = require("./purchase.controller");
 const purchase_service_1 = require("./purchase.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const purchase_entity_1 = require("./entities/purchase.entity");
+const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let PurchaseModule = class PurchaseModule {
 };
 exports.PurchaseModule = PurchaseModule;
 exports.PurchaseModule = PurchaseModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([purchase_entity_1.PurchaseEntity])],
+        imports: [
+            jwt_1.JwtModule.registerAsync({
+                useFactory: (config) => ({
+                    secret: config.get('JWT_SECRET_KEY'),
+                }),
+                inject: [config_1.ConfigService],
+            }),
+            typeorm_1.TypeOrmModule.forFeature([purchase_entity_1.PurchaseEntity]),
+        ],
         controllers: [purchase_controller_1.PurchaseController],
         providers: [purchase_service_1.PurchaseService],
     })
