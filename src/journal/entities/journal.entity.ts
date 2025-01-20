@@ -1,7 +1,16 @@
 import { UserEntitiy } from '../../user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  OneToMany,
+  ManyToOne,
+  Unique,
+} from 'typeorm';
 
 @Entity('journals')
+@Unique(['user', 'date'])
 export class JournalEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,7 +30,7 @@ export class JournalEntity {
   @Column({ type: 'longtext', nullable: false })
   content: string;
 
-  @Column({ type: 'date', nullable: false, unique: true })
+  @Column({ type: 'date', nullable: false })
   date: Date;
 
   @Column({ type: 'timestamp', nullable: false })

@@ -87,4 +87,18 @@ export class UserService {
 
     return hasActivePlan;
   }
+
+  async updateWritingCount(user: UserEntitiy) {
+    await this.userRepository.increment({ user_id: user.user_id }, 'writing_count', 1);
+
+    this.updateUserTrialStatus(user);
+  }
+
+  private async updateUserTrialStatus(user: UserEntitiy) {
+    const updatedUser = await this.findUserInfos(user.user_id);
+
+    if (updatedUser.writing_count >= 3) {
+      await this.userRepository.update({ user_id: user.user_id }, { trial_status: 'expired' });
+    }
+  }
 }

@@ -4,6 +4,7 @@ import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
 import { UserService } from 'src/user/user.service';
 import { TrialAndPlanGuard } from 'src/common/guards/trialAndPlan.guard';
 import { QuestionAnswerArrayDto } from './dto/QandAArray.dto';
+import { InterviewDto } from './dto/start.interview.dto';
 
 @Controller('interview')
 export class InterviewController {
@@ -15,9 +16,9 @@ export class InterviewController {
   //1. 회고 시작 시 인터뷰 칼럼 생성
   @UseGuards(TrialAndPlanGuard)
   @Post()
-  async startInterview(@UserInfo() userInfo: JwtPayload) {
+  async startInterview(@UserInfo() userInfo: JwtPayload, @Body() InterviewDto: InterviewDto) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    return this.interviewService.startInterview(user);
+    return this.interviewService.startInterview(user, InterviewDto.date);
   }
 
   //2. 1단위 질문마다 인터뷰 업데이트

@@ -1,7 +1,8 @@
 import { UserEntitiy } from '../../user/entities/user.entity';
-import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne, Unique } from 'typeorm';
 
 @Entity('interviews')
+@Unique(['user', 'date'])
 export class InterviewEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,6 +12,9 @@ export class InterviewEntity {
     nullable: false,
   })
   content: object[];
+
+  @Column({ type: 'date', nullable: false })
+  date: Date;
 
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
