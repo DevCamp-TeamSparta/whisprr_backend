@@ -11,7 +11,7 @@ export class InterviewEntity {
     type: 'json',
     nullable: false,
   })
-  content: object[];
+  content: string[];
 
   @Column({ type: 'date', nullable: false })
   date: Date;

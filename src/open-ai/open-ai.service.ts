@@ -14,7 +14,7 @@ export interface Journal {
 export class OpenAiService {
   constructor(private readonly configService: ConfigService) {}
 
-  async getJournalByAI(interview: object[], instruction: string) {
+  async getJournalByAI(interview: string[], instruction: string) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
       throw new InternalServerErrorException('OpenAI API key is not configured.');

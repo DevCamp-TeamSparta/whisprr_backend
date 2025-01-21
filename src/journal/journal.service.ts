@@ -17,6 +17,16 @@ export class JournalService {
 
   //1. 저널 생성
   async createJournal(user: UserEntitiy, journal: Journal, date: Date) {
+    const isExistJornal = await this.journalRepository.findOne({
+      where: {
+        user,
+        date,
+      },
+    });
+
+    if (isExistJornal) {
+      throw new ConflictException('이미 해당 날짜에 저널이 존재 합니다.');
+    }
     const newJournal = this.journalRepository.create({
       user: user,
       title: journal.title,

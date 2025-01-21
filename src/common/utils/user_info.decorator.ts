@@ -26,7 +26,7 @@ export const UserInfo = createParamDecorator(
 export interface JwtPayload {
   uuid: string;
   freeTrialStatus: 'available' | 'non-available';
-  planStatus: 'active' | 'inactive';
+  planStatus: 'available' | 'non-available';
   iat?: number;
   exp?: number;
 }

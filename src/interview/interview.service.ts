@@ -1,8 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InterviewEntity } from './entities/interview.entity';
 import { UserEntitiy } from '../user/entities/user.entity';
+import { QuestionAnswerDto } from './dto/questionAndAnswer.dto';
 
 @Injectable()
 export class InterviewService {
@@ -13,7 +14,12 @@ export class InterviewService {
 
   //1. 회고 시작 시 인터뷰 기록 생성
   async startInterview(user: UserEntitiy, date: Date) {
-    await this.findInterviewAlready(user, date);
+    const existingInterview = await this.findInterviewAlready(user, date);
+
+    if (existingInterview) {
+      return existingInterview;
+    }
+
     const newInterview = this.interviewRepository.create({
       user: user,
       content: [],
@@ -31,9 +37,9 @@ export class InterviewService {
     const interview = await this.interviewRepository.findOne({ where: { user, date } });
 
     if (interview) {
-      await this.restartInterview(user, date);
+      return await this.restartInterview(user, date);
     } else {
-      return;
+      return null;
     }
   }
 
@@ -45,10 +51,11 @@ export class InterviewService {
   }
 
   //2. 회고 질문 1단위 질문 시 마다 인터뷰 내용 업데이트
-  async updateInterview(user: UserEntitiy, date: Date, QandAs: object[]) {
+  async updateInterview(user: UserEntitiy, date: Date, QandAs: QuestionAnswerDto[]) {
     const interview = await this.findInterview(user, date);
 
-    const newContent = [...interview.content, ...QandAs];
+    const newContent = [...interview.content, ...QandAs].map((item) => JSON.stringify(item));
+
     await this.interviewRepository.update({ date }, { content: newContent });
 
     const updatedInterview = await this.findInterview(user, date);

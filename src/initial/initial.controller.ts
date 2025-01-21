@@ -1,4 +1,4 @@
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { InitialService } from './initial.service';
 import {
   BadRequestException,
@@ -14,9 +14,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { QuestionService } from 'src/question/question.service';
-import { TimeLimitService } from 'src/time_limit/time_limit.service';
-import { InstructionService } from 'src/instruction/instruction.service';
+import { QuestionService } from '../question/question.service';
+import { TimeLimitService } from '../time_limit/time_limit.service';
+import { InstructionService } from '../instruction/instruction.service';
 
 @Controller('initial')
 export class InitialController {
