@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToOne,
   Unique,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity('journals')
@@ -39,7 +40,7 @@ export class JournalEntity {
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date;
 
   // m:1 user

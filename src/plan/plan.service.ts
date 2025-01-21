@@ -18,7 +18,7 @@ export class PlanService {
     });
 
     if (!plan) {
-      throw new NotFoundException();
+      throw new NotFoundException('plan not exist');
     }
 
     return plan;

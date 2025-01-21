@@ -9,10 +9,21 @@ import { OpenAiService } from 'src/open-ai/open-ai.service';
 import { UserService } from 'src/user/user.service';
 import { InterviewService } from 'src/interview/interview.service';
 import { InterviewEntity } from 'src/interview/entities/interview.entity';
+import { InstructionService } from 'src/instruction/instruction.service';
+import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([JournalEntity, UserEntitiy, InterviewEntity])],
+  imports: [
+    TypeOrmModule.forFeature([JournalEntity, UserEntitiy, InterviewEntity, InstructionEntity]),
+  ],
   controllers: [JournalController],
-  providers: [JournalService, JwtService, OpenAiService, UserService, InterviewService],
+  providers: [
+    JournalService,
+    JwtService,
+    OpenAiService,
+    UserService,
+    InterviewService,
+    InstructionService,
+  ],
 })
 export class JournalModule {}

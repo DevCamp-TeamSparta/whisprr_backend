@@ -9,6 +9,7 @@ export class RestoreController {
     private purchaseService: PurchaseService,
   ) {}
 
+  //1. purchasetocken 으로 유저 정보 요청
   @Get()
   async restoreAccount(@Headers('purchaseToken') purchaseToken: string) {
     const account = await this.purchaseService.findUserByPurchaseToken(purchaseToken);

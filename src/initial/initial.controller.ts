@@ -37,12 +37,12 @@ export class InitialController {
   @Get()
   async sendInitialSetting(@Headers('uuid') uuid: string) {
     if (!uuid) {
-      throw new Error('UUID is missing in the headers');
+      throw new BadRequestException('UUID is missing in the headers');
     }
     const tocken = await this.userService.getUserTocken(uuid);
     const questions = await this.questionService.getQuestion();
     const limits = await this.timeLimitService.getTimeLimit();
-    const instruction = await this.instructionService.getInterviewInstruction();
+    const instruction = await this.instructionService.getInstruction('interview');
 
     const response = {
       bearer_token: tocken,
