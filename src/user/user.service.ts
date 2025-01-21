@@ -59,6 +59,7 @@ export class UserService {
     return token;
   }
 
+  //4.1 유저 토큰 발급 전 무료 체험판 여부 확인
   private async checkFreetrial(uuid: string) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },
@@ -70,6 +71,7 @@ export class UserService {
     return user.trial_status === 'active' ? 'available' : 'non-available';
   }
 
+  //4.2 유저 토큰 발급 전 플랜 만료 확인
   private async checkPlanActive(uuid: string) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },
@@ -80,20 +82,28 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    let hasActivePlan = 'inactive';
-    if (user.purchases) {
-      hasActivePlan = user.purchases.status;
+    const purchase = user.purchases;
+
+    if (purchase) {
+      const isNotExpired = purchase.expiration_date > new Date(); // 만료 여부 확인
+
+      if (isNotExpired) {
+        return 'available';
+      }
     }
 
-    return hasActivePlan;
+    // 구매 내역이 없거나 비활성화된 경우
+    return 'non-available';
   }
 
+  //5. 저널 생성 시 작성 횟수 업데이트
   async updateWritingCount(user: UserEntitiy) {
     await this.userRepository.increment({ user_id: user.user_id }, 'writing_count', 1);
 
     this.updateUserTrialStatus(user);
   }
 
+  //5.1 저널 생성 시 작성 횟 수 3회 이상 시 무료 체험판 종료
   private async updateUserTrialStatus(user: UserEntitiy) {
     const updatedUser = await this.findUserInfos(user.user_id);
 

@@ -22,8 +22,8 @@ export class TrialAndPlanGuard implements CanActivate {
 
     const { freeTrialStatus, planStatus } = payload.sub;
     console.log(1, payload);
-    if (freeTrialStatus === 'non-available' && planStatus === 'inactive') {
-      throw new ForbiddenException('Access denied: trial and plan are inactive');
+    if (freeTrialStatus === 'non-available' && planStatus === 'non-available') {
+      throw new ForbiddenException('Access denied: trial and plan are non-available');
     }
 
     request.user = payload;

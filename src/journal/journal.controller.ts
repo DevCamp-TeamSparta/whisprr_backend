@@ -19,6 +19,7 @@ import { JournalEntity } from './entities/journal.entity';
 import { JournalDto } from './dto/create_jornal.dto';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
 import { UserGuard } from 'src/common/guards/user.guard';
+import { InstructionService } from 'src/instruction/instruction.service';
 
 @Controller('journal')
 export class JournalController {
@@ -27,18 +28,21 @@ export class JournalController {
     private userService: UserService,
     private interviewService: InterviewService,
     private openAiService: OpenAiService,
+    private instructionService: InstructionService,
   ) {}
 
+  //1. 저널 생성(무료 체험판, 플랜 가입 여부 확인)
   @UseGuards(TrialAndPlanGuard)
   @Post()
   async createJournal(@UserInfo() userInfo: JwtPayload, @Body() jornalDto: JournalDto) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    const interview = await this.interviewService.findInterview(jornalDto.interviewId);
-    const journal = await this.openAiService.getJournalByAI(interview.content);
+    const interview = await this.interviewService.findInterview(user, jornalDto.date);
+    const instruction = await this.instructionService.getInstruction('journal');
+    const journal = await this.openAiService.getJournalByAI(interview.content, instruction.content);
     return await this.journalService.createJournal(user, journal, jornalDto.date);
   }
 
-  //일기 리스트 조회 가드 수정 필요
+  //2. 저널 목록 조회(무료 사용자  이용 가능 서비스)
   @UseGuards(UserGuard)
   @Get()
   async getJournalList(
@@ -52,7 +56,7 @@ export class JournalController {
     return await this.journalService.getJournalList(user, effectiveLastDate, limit);
   }
 
-  //일기 조회 가드 수정 필요
+  //3. 아이디별 저널 상세 조회(무료 사용자  이용 가능 서비스)
   @UseGuards(UserGuard)
   @Get('details/:id')
   async getJournal(@UserInfo() userInfo: JwtPayload, @Param('id') id: number) {
@@ -60,7 +64,7 @@ export class JournalController {
     return await this.journalService.getJournal(user, id);
   }
 
-  //날짜별 일기 조회 가드 수정 필요
+  //4. 날짜별 저널 상세 조회(무료 사용자  이용 가능 서비스)
   @UseGuards(UserGuard)
   @Get(':date')
   async getJournalByDate(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
@@ -68,21 +72,24 @@ export class JournalController {
     return await this.journalService.getJournalByDate(user, date);
   }
 
-  @UseGuards(TrialAndPlanGuard)
-  @Delete(':id')
-  async deleteJournal(@UserInfo() userInfo: JwtPayload, @Param('id') id: number) {
+  //5. 날짜별 저널 삭제(무료 사용자  이용 가능 서비스)
+  @UseGuards(UserGuard)
+  @Delete(':date')
+  async deleteJournal(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    return await this.journalService.deleteJournal(user, id);
+    return await this.journalService.deleteJournal(user, date);
   }
 
+  //6. 날짜별 저널 수정(무료 체험판, 플랜 가입 여부 확인)
   @UseGuards(TrialAndPlanGuard)
-  @Patch(':id')
+  @Patch(':date')
   async updateJournal(
     @UserInfo() userInfo: JwtPayload,
-    @Param('id') id: number,
+    @Param('date') date: Date,
+
     @Body() modifyJournalDto: ModifyJournalDto,
   ) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    return await this.journalService.updateJournal(user, id, modifyJournalDto);
+    return await this.journalService.updateJournal(user, date, modifyJournalDto);
   }
 }

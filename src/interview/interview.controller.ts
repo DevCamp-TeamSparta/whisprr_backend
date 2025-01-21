@@ -13,7 +13,7 @@ export class InterviewController {
     private readonly userService: UserService,
   ) {}
 
-  //1. 회고 시작 시 인터뷰 칼럼 생성
+  //1. 회고 시작 시 인터뷰 칼럼 생성(회고 재시작 시 인터뷰 기록 비우고 재시작)
   @UseGuards(TrialAndPlanGuard)
   @Post()
   async startInterview(@UserInfo() userInfo: JwtPayload, @Body() InterviewDto: InterviewDto) {
@@ -24,11 +24,14 @@ export class InterviewController {
   //2. 1단위 질문마다 인터뷰 업데이트
 
   @UseGuards(TrialAndPlanGuard)
-  @Patch(':id')
-  async updateInterview(@Param('id') id: number, @Body() QandADto: QuestionAnswerArrayDto) {
+  @Patch(':date')
+  async updateInterview(
+    @UserInfo() userInfo: JwtPayload,
+    @Param('date') date: Date,
+    @Body() QandADto: QuestionAnswerArrayDto,
+  ) {
     const QandAs = QandADto.interviews;
-    return this.interviewService.updateInterview(id, QandAs);
+    const user = await this.userService.findUserInfos(userInfo.uuid);
+    return this.interviewService.updateInterview(user, date, QandAs);
   }
-
-  //3. 회고 재 시작
 }

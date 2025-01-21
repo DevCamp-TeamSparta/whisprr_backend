@@ -9,9 +9,9 @@ export class InstructionService {
     @InjectRepository(InstructionEntity)
     private instructionRepository: Repository<InstructionEntity>,
   ) {}
-  async getInterviewInstruction() {
+  async getInstruction(target: string) {
     return await this.instructionRepository.findOne({
-      where: { target: 'interview' },
+      where: { target },
     });
   }
 }

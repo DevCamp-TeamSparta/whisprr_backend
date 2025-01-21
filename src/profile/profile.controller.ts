@@ -12,6 +12,7 @@ export class ProfileController {
     private readonly profileService: ProfileService,
   ) {}
 
+  //1.유저 닉네임 변경
   @UseGuards(UserGuard)
   @Patch('/nickname')
   async getJournal(@UserInfo() userInfo: JwtPayload, @Body() nicknameDto: NicknameDto) {
@@ -19,6 +20,7 @@ export class ProfileController {
     return await this.profileService.changeNickname(user, nicknameDto.nickname);
   }
 
+  //2.유저 가입 플랜 확인
   @UseGuards(UserGuard)
   @Get('/plan')
   async getUserPlan(@UserInfo() userInfo: JwtPayload) {
@@ -26,6 +28,7 @@ export class ProfileController {
     return await this.profileService.getUserPlan(user);
   }
 
+  //3. 유저 프로필 확인
   @UseGuards(UserGuard)
   @Get()
   async getProfile(@UserInfo() userInfo: JwtPayload) {

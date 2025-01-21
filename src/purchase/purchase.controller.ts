@@ -13,7 +13,7 @@ export class PurchaseController {
     private readonly planService: PlanService,
   ) {}
 
-  //구매 즉시 검증 요청 및 jwt 토큰 재발급
+  //1.구매 검증 요청 및 jwt 토큰 재발급
   @UseGuards(UserGuard)
   @Get()
   async verifyPurchaseToken(
@@ -31,7 +31,7 @@ export class PurchaseController {
     };
   }
 
-  //구매 변동 시 서버에서 알림 수신
+  //2.구매 변동 시 서버에서 알림 수신 및 구매 상태 업데이트
   @Post('/pubsub')
   async getNotification(@Body('message') message) {
     await this.purchaseService.updatePurchaseTable(message);
