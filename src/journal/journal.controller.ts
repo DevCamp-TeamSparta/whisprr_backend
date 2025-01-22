@@ -10,16 +10,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JournalService } from './journal.service';
-import { TrialAndPlanGuard } from 'src/common/guards/trialAndPlan.guard';
-import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
-import { UserService } from 'src/user/user.service';
-import { InterviewService } from 'src/interview/interview.service';
-import { OpenAiService } from 'src/open-ai/open-ai.service';
+import { TrialAndPlanGuard } from '../common/guards/trialAndPlan.guard';
+import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
+import { UserService } from '../user/user.service';
+import { InterviewService } from '../interview/interview.service';
+import { OpenAiService } from '../open-ai/open-ai.service';
 import { JournalEntity } from './entities/journal.entity';
 import { JournalDto } from './dto/create_jornal.dto';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
-import { UserGuard } from 'src/common/guards/user.guard';
-import { InstructionService } from 'src/instruction/instruction.service';
+import { UserGuard } from '../common/guards/user.guard';
+import { InstructionService } from '../instruction/instruction.service';
 
 @Controller('journal')
 export class JournalController {

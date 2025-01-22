@@ -1,4 +1,4 @@
-import { UserEntitiy } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import {
   Entity,
   Column,
@@ -44,7 +44,7 @@ export class JournalEntity {
   deleted_at: Date;
 
   // m:1 user
-  @ManyToOne(() => UserEntitiy, (user) => user.journals)
+  @ManyToOne(() => UserEntity, (user) => user.journals)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
-  user: UserEntitiy;
+  user: UserEntity;
 }

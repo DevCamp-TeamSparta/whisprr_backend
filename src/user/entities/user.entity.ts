@@ -4,7 +4,7 @@ import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { Entity, Column, JoinColumn, OneToMany, Binary, PrimaryColumn, OneToOne } from 'typeorm';
 
 @Entity('users')
-export class UserEntitiy {
+export class UserEntity {
   @PrimaryColumn({ type: 'varchar' })
   user_id: string;
 

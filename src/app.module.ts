@@ -16,7 +16,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { RestoreModule } from './restore/restore.module';
 import { UserModule } from './user/user.module';
 import { PlanModule } from './plan/plan.module';
-import { UserEntitiy } from './user/entities/user.entity';
+import { UserEntity } from './user/entities/user.entity';
 import { InterviewEntity } from './interview/entities/interview.entity';
 import { JournalEntity } from './journal/entities/journal.entity';
 import { QuestionEntity } from './question/entities/question.entity';
@@ -37,7 +37,7 @@ const typeOrmModuleOptions = {
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
     entities: [
-      UserEntitiy,
+      UserEntity,
       InterviewEntity,
       JournalEntity,
       QuestionEntity,

@@ -1,4 +1,4 @@
-import { UserEntitiy } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne, Unique } from 'typeorm';
 
 @Entity('interviews')
@@ -23,7 +23,7 @@ export class InterviewEntity {
   deleted_at: Date;
 
   //m: 1 user
-  @ManyToOne(() => UserEntitiy, (user) => user.interviews)
+  @ManyToOne(() => UserEntity, (user) => user.interviews)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
-  user: UserEntitiy;
+  user: UserEntity;
 }

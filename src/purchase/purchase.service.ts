@@ -7,9 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { androidpublisher } from '@googleapis/androidpublisher';
 import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { PurchaseStatus } from './utils/purchase.status';
-import { UserEntitiy } from 'src/user/entities/user.entity';
-import { PlanEntity } from 'src/plan/entities/plan.entity';
-import { response } from 'express';
+import { UserEntity } from '../user/entities/user.entity';
+import { PlanEntity } from '../plan/entities/plan.entity';
 
 @Injectable()
 export class PurchaseService {
@@ -20,22 +19,8 @@ export class PurchaseService {
   ) {}
 
   //1.구매 토큰 검증
-  async verifyPurchaseToken(plan: PlanEntity, user: UserEntitiy, purchaseToken: string) {
-    const keyFile = this.configService.get<string>('GOOGLE_KEY_FILE');
-    const auth = new GoogleAuth({
-      keyFilename: keyFile,
-      scopes: ['https://www.googleapis.com/auth/androidpublisher'],
-    });
-
-    const getAndroidPublisherClient = async () => {
-      const authClient = (await auth.getClient()) as OAuth2Client;
-      return androidpublisher({
-        version: 'v3',
-        auth: authClient,
-      });
-    };
-
-    const client = await getAndroidPublisherClient();
+  async verifyPurchaseToken(plan: PlanEntity, user: UserEntity, purchaseToken: string) {
+    const client = await this.getAndroidPublisherClient();
     const response = await client.purchases.subscriptions.get({
       packageName: this.configService.get<string>('PACKAGE_NAME'),
       subscriptionId: plan.id,
@@ -45,8 +30,23 @@ export class PurchaseService {
     return await this.updatePurchaseRecord(response.data, user, purchaseToken, plan);
   }
 
-  //1.1 구매 상태 업데이트
-  async updatePurchaseRecord(response, user: UserEntitiy, purchaseToken: string, plan: PlanEntity) {
+  //1.1 구글 크레덴셜 로그인 클라이언트 생성
+  async getAndroidPublisherClient() {
+    const keyFile = this.configService.get<string>('GOOGLE_KEY_FILE');
+    const auth = new GoogleAuth({
+      keyFilename: keyFile,
+      scopes: ['https://www.googleapis.com/auth/androidpublisher'],
+    });
+    const authClient = (await auth.getClient()) as OAuth2Client;
+
+    return androidpublisher({
+      version: 'v3',
+      auth: authClient,
+    });
+  }
+
+  //1.2 구매 상태 업데이트
+  async updatePurchaseRecord(response, user: UserEntity, purchaseToken: string, plan: PlanEntity) {
     let result = PurchaseStatus.inactive;
     if (response.cancelReason) {
       result = PurchaseStatus.inactive; // 구매 상태 inactive
@@ -76,8 +76,8 @@ export class PurchaseService {
     return newRecord;
   }
 
-  //1.1.1 이전 구매 기록 있는 지 확인
-  private async findUserPurchaseRecord(user: UserEntitiy) {
+  //1.2.1 이전 구매 기록 있는 지 확인
+  private async findUserPurchaseRecord(user: UserEntity) {
     const record = await this.purchaseRepository.findOne({ where: { user } });
     return record;
   }

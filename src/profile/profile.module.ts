@@ -3,12 +3,12 @@ import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
-import { UserEntitiy } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { PurchaseEntity } from 'src/purchase/entities/purchase.entity';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntitiy, PurchaseEntity])],
+  imports: [TypeOrmModule.forFeature([UserEntity, PurchaseEntity])],
   controllers: [ProfileController],
   providers: [ProfileService, UserService, JwtService],
 })

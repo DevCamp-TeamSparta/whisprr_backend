@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntitiy } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntitiy]),
+    TypeOrmModule.forFeature([UserEntity]),
   ],
   providers: [UserService],
   exports: [UserService],

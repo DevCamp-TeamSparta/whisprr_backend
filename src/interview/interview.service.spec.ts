@@ -39,6 +39,17 @@ describe('InterviewService', () => {
   });
   const mockDate = new Date('2025-01-20');
   describe('startInterview', () => {
+    it('해당 날짜에 이미 생성된 인터뷰 기록이 있으면 해당 인터뷰 기록을 반환한다', async () => {
+      mockInterviewRepository.findOne.mockResolvedValue(mockInterview);
+
+      const result = await interviewService.startInterview(mockUser, mockDate);
+
+      expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
+        where: { user: mockUser, date: mockDate },
+      });
+      expect(result).toEqual(mockInterview);
+    });
+
     it('해당 날짜에 중복된 인터뷰가 없으면 인터뷰 기록을 생성하고 반환한다.', async () => {
       mockInterviewRepository.findOne.mockResolvedValue(null);
       mockInterviewRepository.create.mockReturnValue(mockInterview);
@@ -58,20 +69,22 @@ describe('InterviewService', () => {
       expect(mockInterviewRepository.save).toHaveBeenCalledWith(mockInterview);
       expect(result).toEqual(mockInterview);
     });
+  });
 
-    it('해당 날짜에 이미 생성된 인터뷰 기록이 있으면 해당 인터뷰 기록을 반환한다', async () => {
-      mockInterviewRepository.findOne.mockResolvedValue(mockInterview);
+  describe('updateInterview', () => {
+    it('해당 날짜에 인터뷰 기록이 없다면 NotfoundException을 전달한다.', async () => {
+      mockInterviewRepository.findOne.mockResolvedValue(null);
 
-      const result = await interviewService.startInterview(mockUser, mockDate);
+      await expect(
+        interviewService.updateInterview(mockUser, mockDate, mockUpdateInterviewDto.interviews),
+      ).rejects.toThrow(NotFoundException);
 
       expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
         where: { user: mockUser, date: mockDate },
       });
-      expect(result).toEqual(mockInterview);
+      expect(mockInterviewRepository.update).not.toHaveBeenCalled();
     });
-  });
 
-  describe('updateInterview', () => {
     it('인터뷰 기록을 업데이트 하고 업데이트된 인터뷰 내용을 반환한다.', async () => {
       const updatedMockContent = [
         ...mockInterview.content,
@@ -103,19 +116,6 @@ describe('InterviewService', () => {
         ...mockInterview,
         content: updatedMockContent,
       });
-    });
-
-    it('해당 날짜에 인터뷰 기록이 없다면 NotfoundException을 전달한다.', async () => {
-      mockInterviewRepository.findOne.mockResolvedValue(null);
-
-      await expect(
-        interviewService.updateInterview(mockUser, mockDate, mockUpdateInterviewDto.interviews),
-      ).rejects.toThrow(NotFoundException);
-
-      expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
-        where: { user: mockUser, date: mockDate },
-      });
-      expect(mockInterviewRepository.update).not.toHaveBeenCalled();
     });
   });
 

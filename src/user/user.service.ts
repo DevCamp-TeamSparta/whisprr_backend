@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntitiy } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
@@ -8,8 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntitiy)
-    private userRepository: Repository<UserEntitiy>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -97,14 +97,14 @@ export class UserService {
   }
 
   //5. 저널 생성 시 작성 횟수 업데이트
-  async updateWritingCount(user: UserEntitiy) {
+  async updateWritingCount(user: UserEntity) {
     await this.userRepository.increment({ user_id: user.user_id }, 'writing_count', 1);
 
-    this.updateUserTrialStatus(user);
+    await this.updateUserTrialStatus(user);
   }
 
   //5.1 저널 생성 시 작성 횟 수 3회 이상 시 무료 체험판 종료
-  private async updateUserTrialStatus(user: UserEntitiy) {
+  private async updateUserTrialStatus(user: UserEntity) {
     const updatedUser = await this.findUserInfos(user.user_id);
 
     if (updatedUser.writing_count >= 3) {

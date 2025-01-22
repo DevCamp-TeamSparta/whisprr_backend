@@ -4,7 +4,7 @@ import { InitialService } from './initial.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntitiy } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { QuestionEntity } from '../question/entities/question.entity';
 import { TimeLimitEntity } from '../time_limit/entities/time_limit.entity';
 import { InstructionEntity } from '../instruction/entities/instruction.entity';
@@ -21,7 +21,7 @@ import { InstructionService } from 'src/instruction/instruction.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntitiy, QuestionEntity, TimeLimitEntity, InstructionEntity]),
+    TypeOrmModule.forFeature([UserEntity, QuestionEntity, TimeLimitEntity, InstructionEntity]),
   ],
   controllers: [InitialController],
   providers: [

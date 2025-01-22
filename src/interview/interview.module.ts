@@ -4,11 +4,11 @@ import { InterviewService } from './interview.service';
 import { UserService } from 'src/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InterviewEntity } from './entities/interview.entity';
-import { UserEntitiy } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InterviewEntity, UserEntitiy])],
+  imports: [TypeOrmModule.forFeature([InterviewEntity, UserEntity])],
   controllers: [InterviewController],
   providers: [InterviewService, UserService, JwtService],
 })
