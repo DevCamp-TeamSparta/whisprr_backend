@@ -62,6 +62,8 @@ export class JournalService {
       take: limit,
     });
 
+    console.log(journals);
+
     return journals;
   }
 

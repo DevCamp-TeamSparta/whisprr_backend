@@ -1,9 +1,9 @@
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity('plans')
 export class PlanEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ type: 'char', nullable: false })
   id: string;
 
   @Column({
