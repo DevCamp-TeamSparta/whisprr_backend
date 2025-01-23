@@ -70,11 +70,11 @@ export const mockJournalUpdateDto: ModifyJournalDto = {
 export const mockUpdatedJournal: JournalEntity = {
   id: 1,
   user: mockUser,
-  title: 'text1',
-  keyword: ['text1'],
-  content: 'text1',
+  title: 'test',
+  keyword: ['test'],
+  content: 'test',
   date: new Date('2025-01-20'),
   created_at: new Date('2025-01-20T00:00:00.000Z'),
-  updated_at: new Date(),
+  updated_at: new Date('2025-01-23T02:42:37.574Z'),
   deleted_at: null,
 };

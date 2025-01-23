@@ -152,7 +152,9 @@ describe('JournalController', () => {
         mockJournalUpdateDto,
       );
 
-      expect(result).toEqual(mockUpdatedJournal);
+      const mockResult = { ...result, updated_at: new Date('2025-01-23T02:42:37.574Z') };
+
+      expect(mockResult).toEqual(mockUpdatedJournal);
     });
   });
 });

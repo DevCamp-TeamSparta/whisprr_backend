@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JournalEntity } from './entities/journal.entity';
-import { LessThan, Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { Journal } from '../open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
@@ -37,8 +37,17 @@ export class JournalService {
     });
 
     await this.journalRepository.save(newJournal);
-    await this.userService.updateWritingCount(user); //UserService 5번
-    return newJournal;
+    const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
+
+    const returndJournal = {
+      title: newJournal.title,
+      keyword: newJournal.keyword,
+      content: newJournal.content,
+      date: newJournal.date,
+      created_at: newJournal.created_at,
+      jwtToken,
+    };
+    return returndJournal;
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
@@ -46,7 +55,7 @@ export class JournalService {
     const journals = await this.journalRepository.find({
       where: {
         user: user,
-        date: LessThan(lastDate),
+        date: LessThanOrEqual(lastDate),
         deleted_at: null,
       },
       order: { date: 'DESC' },

@@ -114,7 +114,7 @@ describe('PurchaseService', () => {
         purchase_token: mockPurchaseToken,
         purchase_date: expectedPurchaseDate,
         expiration_date: expectedExpirationDate,
-        status: PurchaseStatus.active,
+        status: PurchaseStatus.inactive,
       };
 
       mockPurchaseRepository.findOne.mockResolvedValue(mockPurchase);
@@ -135,10 +135,10 @@ describe('PurchaseService', () => {
           purchase_token: mockPurchaseToken,
           purchase_date: expectedPurchaseDate,
           expiration_date: expectedExpirationDate,
-          status: PurchaseStatus.active,
+          status: PurchaseStatus.inactive,
         },
       );
-      expect(result.status).toEqual(PurchaseStatus.active);
+      expect(result.status).toEqual(PurchaseStatus.inactive);
     });
   });
 

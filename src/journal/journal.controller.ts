@@ -89,6 +89,7 @@ export class JournalController {
     @Body() modifyJournalDto: ModifyJournalDto,
   ) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
-    return await this.journalService.updateJournal(user, date, modifyJournalDto);
+    await this.journalService.updateJournal(user, date, modifyJournalDto);
+    return await this.journalService.getJournalByDate(user, date);
   }
 }
