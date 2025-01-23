@@ -47,11 +47,10 @@ export class PurchaseService {
 
   //1.2 구매 상태 업데이트
   async updatePurchaseRecord(response, user: UserEntity, purchaseToken: string, plan: PlanEntity) {
+    console.log(response.cancelReason);
     let result = PurchaseStatus.inactive;
-    if (response.cancelReason) {
-      result = PurchaseStatus.inactive; // 구매 상태 inactive
-    } else {
-      result = PurchaseStatus.active; // 그 외, 상태 active
+    if (!response.cancelReason == null) {
+      result = PurchaseStatus.active;
     }
 
     const newRecord = {

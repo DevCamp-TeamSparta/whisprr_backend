@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JournalService } from './journal.service';
-import { LessThan } from 'typeorm';
+import { LessThanOrEqual } from 'typeorm';
 import { JournalEntity } from './entities/journal.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -79,7 +79,16 @@ describe('JournalService', () => {
       expect(mockJournalRepository.create).toHaveBeenCalledWith(mockCreatedJournal);
       expect(mockJournalRepository.save).toHaveBeenCalledWith(mockJournal);
 
-      expect(result).toEqual(mockJournal);
+      const returndMockJournal = {
+        title: mockJournal.title,
+        keyword: mockJournal.keyword,
+        content: mockJournal.content,
+        date: mockJournal.date,
+        created_at: mockJournal.created_at,
+        jwtToken: null,
+      };
+
+      expect(result).toEqual(returndMockJournal);
     });
   });
 
@@ -91,7 +100,7 @@ describe('JournalService', () => {
       expect(mockJournalRepository.find).toHaveBeenCalledWith({
         where: {
           user: mockUser,
-          date: LessThan(mockLastDate),
+          date: LessThanOrEqual(mockLastDate),
           deleted_at: null,
         },
         order: { date: 'DESC' },

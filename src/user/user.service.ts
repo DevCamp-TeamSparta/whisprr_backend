@@ -55,7 +55,7 @@ export class UserService {
     const planStatus = await this.checkPlanActive(uuid);
 
     const payload = { uuid, sub: { uuid, freeTrialStatus, planStatus } };
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY });
     return token;
   }
 
@@ -100,15 +100,18 @@ export class UserService {
   async updateWritingCount(user: UserEntity) {
     await this.userRepository.increment({ user_id: user.user_id }, 'writing_count', 1);
 
-    await this.updateUserTrialStatus(user);
+    return await this.updateUserTrialStatus(user);
   }
 
   //5.1 저널 생성 시 작성 횟 수 3회 이상 시 무료 체험판 종료
   private async updateUserTrialStatus(user: UserEntity) {
     const updatedUser = await this.findUserInfos(user.user_id);
 
-    if (updatedUser.writing_count >= 3) {
+    if (updatedUser.writing_count >= 3 && updatedUser.trial_status !== 'expired') {
       await this.userRepository.update({ user_id: user.user_id }, { trial_status: 'expired' });
+      return await this.getUserTocken(user.user_id);
     }
+
+    return undefined;
   }
 }
