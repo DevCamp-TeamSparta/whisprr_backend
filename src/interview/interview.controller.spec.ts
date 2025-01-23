@@ -9,6 +9,8 @@ import {
   mockUpdateInterviewDto,
 } from './mocks/interview.service.mock';
 import { JwtService } from '@nestjs/jwt';
+import { JournalService } from '../journal/journal.service';
+import { mockJournalService } from '../journal/mocks/journal.service.mock';
 
 describe('InterviewController', () => {
   let interviewController: InterviewController;
@@ -20,6 +22,7 @@ describe('InterviewController', () => {
         JwtService,
         { provide: UserService, useValue: mockUserService },
         { provide: InterviewService, useValue: mockInterviewService },
+        { provide: JournalService, useValue: mockJournalService },
       ],
     }).compile();
 

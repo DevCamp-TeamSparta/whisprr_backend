@@ -11,10 +11,17 @@ import { InterviewService } from 'src/interview/interview.service';
 import { InterviewEntity } from 'src/interview/entities/interview.entity';
 import { InstructionService } from 'src/instruction/instruction.service';
 import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
+import { JournalCreationEntity } from './entities/journal.creation.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([JournalEntity, UserEntity, InterviewEntity, InstructionEntity]),
+    TypeOrmModule.forFeature([
+      JournalEntity,
+      UserEntity,
+      InterviewEntity,
+      InstructionEntity,
+      JournalCreationEntity,
+    ]),
   ],
   controllers: [JournalController],
   providers: [

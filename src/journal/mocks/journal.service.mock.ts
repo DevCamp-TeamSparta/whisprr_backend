@@ -2,6 +2,7 @@ import { mockUser } from '../../user/mocks/mock.user.service';
 import { JournalEntity } from '../entities/journal.entity';
 import { JournalDto } from '../dto/create_jornal.dto';
 import { ModifyJournalDto } from '../dto/modify_journal.dto';
+import { JournalCreationEntity } from '../entities/journal.creation.entity';
 
 export const mockJournalService = {
   createJournal: jest.fn(),
@@ -10,6 +11,7 @@ export const mockJournalService = {
   getJournalByDate: jest.fn(),
   deleteJournal: jest.fn(),
   updateJournal: jest.fn(),
+  checkJournalCreationAvailbility: jest.fn(),
 };
 
 export const mockJournalRepository = {
@@ -77,4 +79,17 @@ export const mockUpdatedJournal: JournalEntity = {
   created_at: new Date('2025-01-20T00:00:00.000Z'),
   updated_at: new Date('2025-01-23T02:42:37.574Z'),
   deleted_at: null,
+};
+
+export const mockJournalCreation: JournalCreationEntity = {
+  id: 1,
+  user: mockUser,
+  journal_date: new Date('2025-01-20'),
+  created_at: new Date(),
+};
+
+export const mockJournalCreationRepository = {
+  count: jest.fn(),
+  create: jest.fn(),
+  save: jest.fn(),
 };

@@ -6,6 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   mockCreatedJournal,
   mockJournal,
+  mockJournalCreationRepository,
   mockJournalList,
   mockJournalRepository,
   mockJournalUpdateDto,
@@ -16,6 +17,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { UserEntity } from '../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { JournalCreationEntity } from './entities/journal.creation.entity';
 
 describe('JournalService', () => {
   let journalService: JournalService;
@@ -32,6 +34,10 @@ describe('JournalService', () => {
         {
           provide: getRepositoryToken(UserEntity),
           useValue: mockUserRepository,
+        },
+        {
+          provide: getRepositoryToken(JournalCreationEntity),
+          useValue: mockJournalCreationRepository,
         },
         {
           provide: UserService,
@@ -169,7 +175,7 @@ describe('JournalService', () => {
       const result = await journalService.deleteJournal(mockUser, mockDate);
 
       expect(journalService.getJournalByDate).toHaveBeenCalledWith(mockUser, mockDate);
-      expect(mockJournalRepository.softDelete).toHaveBeenCalledWith({
+      expect(mockJournalRepository.delete).toHaveBeenCalledWith({
         user: mockUser,
         date: mockDate,
       });
