@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
-import { UserGuard } from 'src/common/guards/user.guard';
-import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
-import { UserService } from 'src/user/user.service';
+import { UserGuard } from '../common/guards/user.guard';
+import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
+import { UserService } from '../user/user.service';
 import { ProfileService } from './profile.service';
 import { NicknameDto } from './dto/create_nickname.dto';
 
@@ -15,7 +15,7 @@ export class ProfileController {
   //1.유저 닉네임 변경
   @UseGuards(UserGuard)
   @Patch('/nickname')
-  async getJournal(@UserInfo() userInfo: JwtPayload, @Body() nicknameDto: NicknameDto) {
+  async changeNickname(@UserInfo() userInfo: JwtPayload, @Body() nicknameDto: NicknameDto) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
     return await this.profileService.changeNickname(user, nicknameDto.nickname);
   }

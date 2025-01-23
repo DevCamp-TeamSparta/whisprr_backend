@@ -4,7 +4,7 @@ import { JournalService } from './journal.service';
 import { JwtService } from '@nestjs/jwt';
 import { JournalEntity } from './entities/journal.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntitiy } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { OpenAiService } from 'src/open-ai/open-ai.service';
 import { UserService } from 'src/user/user.service';
 import { InterviewService } from 'src/interview/interview.service';
@@ -14,7 +14,7 @@ import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([JournalEntity, UserEntitiy, InterviewEntity, InstructionEntity]),
+    TypeOrmModule.forFeature([JournalEntity, UserEntity, InterviewEntity, InstructionEntity]),
   ],
   controllers: [JournalController],
   providers: [

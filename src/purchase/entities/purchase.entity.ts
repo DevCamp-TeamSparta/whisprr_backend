@@ -1,4 +1,4 @@
-import { UserEntitiy } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne, OneToOne } from 'typeorm';
 import { PurchaseStatus } from '../utils/purchase.status';
 import { PlanEntity } from '../../plan/entities/plan.entity';
@@ -29,9 +29,9 @@ export class PurchaseEntity {
   expiration_date: Date;
 
   //1: 1 user
-  @OneToOne(() => UserEntitiy, (user) => user.purchases)
+  @OneToOne(() => UserEntity, (user) => user.purchases)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
-  user: UserEntitiy;
+  user: UserEntity;
 
   //m: 1 plan
   @ManyToOne(() => PlanEntity, (plan: { purchases: any }) => plan.purchases)

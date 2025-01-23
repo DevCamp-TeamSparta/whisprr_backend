@@ -1,8 +1,8 @@
 import { Body, Controller, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { InterviewService } from './interview.service';
-import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
-import { UserService } from 'src/user/user.service';
-import { TrialAndPlanGuard } from 'src/common/guards/trialAndPlan.guard';
+import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
+import { UserService } from '../user/user.service';
+import { TrialAndPlanGuard } from '../common/guards/trialAndPlan.guard';
 import { QuestionAnswerArrayDto } from './dto/QandAArray.dto';
 import { InterviewDto } from './dto/start.interview.dto';
 

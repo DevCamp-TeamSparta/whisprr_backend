@@ -1,10 +1,10 @@
 import { InterviewEntity } from '../../interview/entities/interview.entity';
 import { JournalEntity } from '../../journal/entities/journal.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
-import { Entity, Column, JoinColumn, OneToMany, Binary, PrimaryColumn, OneToOne } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn, OneToOne } from 'typeorm';
 
 @Entity('users')
-export class UserEntitiy {
+export class UserEntity {
   @PrimaryColumn({ type: 'varchar' })
   user_id: string;
 

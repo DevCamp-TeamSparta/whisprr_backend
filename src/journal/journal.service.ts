@@ -2,10 +2,10 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { JournalEntity } from './entities/journal.entity';
 import { LessThan, Repository } from 'typeorm';
-import { UserEntitiy } from 'src/user/entities/user.entity';
-import { Journal } from 'src/open-ai/open-ai.service';
+import { UserEntity } from '../user/entities/user.entity';
+import { Journal } from '../open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class JournalService {
@@ -16,7 +16,17 @@ export class JournalService {
   ) {}
 
   //1. 저널 생성
-  async createJournal(user: UserEntitiy, journal: Journal, date: Date) {
+  async createJournal(user: UserEntity, journal: Journal, date: Date) {
+    const isExistJornal = await this.journalRepository.findOne({
+      where: {
+        user,
+        date,
+      },
+    });
+
+    if (isExistJornal) {
+      throw new ConflictException('이미 해당 날짜에 저널이 존재 합니다.');
+    }
     const newJournal = this.journalRepository.create({
       user: user,
       title: journal.title,
@@ -32,7 +42,7 @@ export class JournalService {
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
-  async getJournalList(user: UserEntitiy, lastDate: Date, limit: number) {
+  async getJournalList(user: UserEntity, lastDate: Date, limit: number) {
     const journals = await this.journalRepository.find({
       where: {
         user: user,
@@ -47,7 +57,7 @@ export class JournalService {
   }
 
   //3. 아이디 별 저널 상세 조회
-  async getJournal(user: UserEntitiy, id: number) {
+  async getJournal(user: UserEntity, id: number) {
     const journal = await this.journalRepository.findOne({
       where: {
         id,
@@ -64,11 +74,12 @@ export class JournalService {
   }
 
   //4. 날짜별 저널 상세 조회
-  async getJournalByDate(user: UserEntitiy, date: Date) {
+  async getJournalByDate(user: UserEntity, date: Date) {
     const journal = await this.journalRepository.findOne({
       where: {
         user,
         date,
+        deleted_at: null,
       },
     });
 
@@ -80,14 +91,14 @@ export class JournalService {
   }
 
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
-  async deleteJournal(user: UserEntitiy, date: Date) {
+  async deleteJournal(user: UserEntity, date: Date) {
     const journal = await this.getJournalByDate(user, date); //4번
     await this.journalRepository.softDelete({ user, date });
     return { message: `journal id :${journal.id}, date:${journal.date} removed` };
   }
 
   //6. 저널 수정 (일단 날짜로 식별 후 수정)
-  async updateJournal(user: UserEntitiy, date: Date, modifyJournalDto: ModifyJournalDto) {
+  async updateJournal(user: UserEntity, date: Date, modifyJournalDto: ModifyJournalDto) {
     await this.getJournalByDate(user, date); //4번
     const updateJournal = {
       title: modifyJournalDto.title,

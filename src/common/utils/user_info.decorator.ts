@@ -13,20 +13,16 @@ export const UserInfo = createParamDecorator(
 
     const token = authHeader.split(' ')[1];
 
-    try {
-      const payload = jwtService.decode(token) as JwtPayload;
+    const payload = jwtService.decode(token) as JwtPayload;
 
-      return data ? payload[data] : payload;
-    } catch (error) {
-      return null;
-    }
+    return data ? payload[data] : payload;
   },
 );
 
 export interface JwtPayload {
   uuid: string;
   freeTrialStatus: 'available' | 'non-available';
-  planStatus: 'active' | 'inactive';
+  planStatus: 'available' | 'non-available';
   iat?: number;
   exp?: number;
 }

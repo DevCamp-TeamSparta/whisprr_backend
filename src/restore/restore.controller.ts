@@ -1,6 +1,6 @@
 import { Controller, Get, Headers } from '@nestjs/common';
 import { RestoreService } from './restore.service';
-import { PurchaseService } from 'src/purchase/purchase.service';
+import { PurchaseService } from '../purchase/purchase.service';
 
 @Controller('restore')
 export class RestoreController {

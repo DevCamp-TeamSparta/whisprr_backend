@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
-import { UserGuard } from 'src/common/guards/user.guard';
-import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
-import { UserService } from 'src/user/user.service';
-import { PlanService } from 'src/plan/plan.service';
+import { UserGuard } from '../common/guards/user.guard';
+import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
+import { UserService } from '../user/user.service';
+import { PlanService } from '../plan/plan.service';
 
 @Controller('purchase')
 export class PurchaseController {
