@@ -20,7 +20,6 @@ import {
   mockJournalInstruction,
 } from '../instruction/mocks/instruction.service.mock';
 import {
-  mockInterview,
   mockInterviewService,
   mockUpdatedInterview,
 } from '../interview/mocks/interview.service.mock';

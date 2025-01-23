@@ -5,9 +5,7 @@ import { InterviewEntity } from './entities/interview.entity';
 import { NotFoundException } from '@nestjs/common';
 import {
   mockInterview,
-  mockInterviewDto,
   mockInterviewRepository,
-  mockUpdatedInterview,
   mockUpdateInterviewDto,
 } from './mocks/interview.service.mock';
 import { Repository } from 'typeorm';

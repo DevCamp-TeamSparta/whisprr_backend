@@ -98,7 +98,7 @@ export class PurchaseService {
     );
     const purchaseToken = decodedData.subscriptionNotification.purchaseToken;
 
-    const result = await this.purchaseRepository.update(
+    await this.purchaseRepository.update(
       {
         purchase_token: purchaseToken,
       },

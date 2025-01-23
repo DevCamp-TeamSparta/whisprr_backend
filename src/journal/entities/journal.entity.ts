@@ -4,7 +4,6 @@ import {
   Column,
   PrimaryGeneratedColumn,
   JoinColumn,
-  OneToMany,
   ManyToOne,
   Unique,
   DeleteDateColumn,

@@ -1,19 +1,5 @@
 import { UserService } from '../user/user.service';
-import { InitialService } from './initial.service';
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Headers,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Get, Headers, Post } from '@nestjs/common';
 import { QuestionService } from '../question/question.service';
 import { TimeLimitService } from '../time_limit/time_limit.service';
 import { InstructionService } from '../instruction/instruction.service';

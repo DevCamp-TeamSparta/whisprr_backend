@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseEntity } from '../purchase/entities/purchase.entity';
-import { PurchaseStatus } from '../purchase/utils/purchase.status';
 import { UserEntity } from '../user/entities/user.entity';
 import { MoreThan, Repository } from 'typeorm';
 

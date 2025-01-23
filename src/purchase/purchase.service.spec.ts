@@ -4,8 +4,6 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { ConfigService } from '@nestjs/config';
-import { UserEntity } from '../user/entities/user.entity';
-import { PlanEntity } from '../plan/entities/plan.entity';
 import { PurchaseStatus } from './utils/purchase.status';
 import { mockUser } from '../user/mocks/mock.user.service';
 import { mockPlan } from '../plan/mocks/plan.service.mock';

@@ -9,7 +9,6 @@ import { mockQuestionService } from '../question/mocks/question.service.mock';
 import { mockTimeLimitService } from '../time_limit/mocks/timeLimit.service.mock';
 import { mockInstructionService } from '../instruction/mocks/instruction.service.mock';
 import { BadRequestException } from '@nestjs/common';
-import { androidpublisher_v1_1 } from '@googleapis/androidpublisher';
 
 describe('InitialController', () => {
   let initialController: InitialController;

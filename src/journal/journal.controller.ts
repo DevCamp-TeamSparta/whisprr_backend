@@ -15,7 +15,6 @@ import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
 import { UserService } from '../user/user.service';
 import { InterviewService } from '../interview/interview.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
-import { JournalEntity } from './entities/journal.entity';
 import { JournalDto } from './dto/create_jornal.dto';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
 import { UserGuard } from '../common/guards/user.guard';

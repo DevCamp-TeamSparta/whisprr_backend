@@ -3,8 +3,6 @@ import { PurchaseController } from './purchase.controller';
 import { PurchaseService } from './purchase.service';
 import { UserService } from '../user/user.service';
 import { PlanService } from '../plan/plan.service';
-import { UserGuard } from '../common/guards/user.guard';
-import { JwtPayload } from '../common/utils/user_info.decorator';
 import { mockPurchaseService } from './mocks/purchase.service.mock';
 import { mockUser, mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
 import { mockPlan, mockPlanService } from '../plan/mocks/plan.service.mock';

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JournalService } from './journal.service';
-import { LessThan, Repository } from 'typeorm';
+import { LessThan } from 'typeorm';
 import { JournalEntity } from './entities/journal.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -9,7 +9,6 @@ import {
   mockJournalList,
   mockJournalRepository,
   mockJournalUpdateDto,
-  mockUpdatedJournal,
 } from './mocks/journal.service.mock';
 import { mockUser, mockUserRepository, mockUserService } from '../user/mocks/mock.user.service';
 import { mockJournalByAI } from '../open-ai/mocks/openAI.service.mock';
@@ -17,11 +16,9 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { UserEntity } from '../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { mock } from 'node:test';
 
 describe('JournalService', () => {
   let journalService: JournalService;
-  let journalRepository: Repository<JournalEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -44,7 +41,6 @@ describe('JournalService', () => {
     }).compile();
 
     journalService = module.get<JournalService>(JournalService);
-    journalRepository = module.get<Repository<JournalEntity>>(getRepositoryToken(JournalEntity));
 
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2025-01-20T00:00:00.000Z'));

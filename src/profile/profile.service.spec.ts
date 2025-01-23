@@ -3,12 +3,7 @@ import { ProfileService } from './profile.service';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entities/user.entity';
-import {
-  mockUpdatedUser,
-  mockUser,
-  mockUserRepository,
-  mockUserService,
-} from '../user/mocks/mock.user.service';
+import { mockUpdatedUser, mockUser, mockUserRepository } from '../user/mocks/mock.user.service';
 import { PurchaseEntity } from '../purchase/entities/purchase.entity';
 import { mockPurchase, mockPurchaseRepository } from '../purchase/mocks/purchase.service.mock';
 import { mockNicknameDto } from './mocks/profile.service.mock';

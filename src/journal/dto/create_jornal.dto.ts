@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class JournalDto {
   @IsString()

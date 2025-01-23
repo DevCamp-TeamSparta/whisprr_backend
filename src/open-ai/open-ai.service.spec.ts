@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OpenAiService } from './open-ai.service';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
 import { InternalServerErrorException } from '@nestjs/common';
 
 jest.mock('openai', () => {
@@ -21,20 +20,9 @@ jest.mock('openai', () => {
 
 describe('OpenAiService', () => {
   let openAiService: OpenAiService;
-  let configService: ConfigService;
 
   const mockConfigService = {
     get: jest.fn(),
-  };
-
-  const mockOpenAI = {
-    beta: {
-      chat: {
-        completions: {
-          parse: jest.fn(),
-        },
-      },
-    },
   };
 
   beforeEach(async () => {
@@ -43,7 +31,6 @@ describe('OpenAiService', () => {
     }).compile();
 
     openAiService = module.get<OpenAiService>(OpenAiService);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   afterEach(() => {
