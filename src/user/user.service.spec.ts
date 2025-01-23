@@ -54,7 +54,7 @@ describe('UserService', () => {
 
       expect(mockUserRepository.create).toHaveBeenCalled();
       expect(mockUserRepository.save).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual(mockUser.user_id);
+      expect(result).toEqual({ uuid: mockUser.user_id });
     });
   });
 

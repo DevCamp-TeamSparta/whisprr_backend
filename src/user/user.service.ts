@@ -37,7 +37,7 @@ export class UserService {
 
     await this.userRepository.save(newUser);
 
-    return newUser.user_id;
+    return { uuid: newUser.user_id };
   }
 
   //3.유저 닉네임 변경 메소드
