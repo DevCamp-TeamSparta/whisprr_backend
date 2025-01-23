@@ -1,17 +1,21 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JournalEntity } from './entities/journal.entity';
-import { LessThan, Repository } from 'typeorm';
+import { Between, LessThan, Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { Journal } from '../open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
 import { UserService } from '../user/user.service';
+import { JournalCreationEntity } from './entities/journal.creation.entity';
+import { startOfDay, endOfDay } from 'date-fns';
 
 @Injectable()
 export class JournalService {
   constructor(
     @InjectRepository(JournalEntity)
     private journalRepository: Repository<JournalEntity>,
+    @InjectRepository(JournalCreationEntity)
+    private journalCreationRepository: Repository<JournalCreationEntity>,
     private userService: UserService,
   ) {}
 
@@ -38,6 +42,7 @@ export class JournalService {
 
     await this.journalRepository.save(newJournal);
     const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
+    await this.updatejournalCreation(user, date);
 
     const returndJournal = {
       title: newJournal.title,
@@ -48,6 +53,17 @@ export class JournalService {
       jwtToken,
     };
     return returndJournal;
+  }
+
+  //1.1 저널 생성 기록 생성
+  private async updatejournalCreation(user: UserEntity, date: Date) {
+    const newRecord = this.journalCreationRepository.create({
+      user,
+      journal_date: date,
+      created_at: new Date(),
+    });
+
+    await this.journalCreationRepository.save(newRecord);
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
@@ -104,7 +120,7 @@ export class JournalService {
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
   async deleteJournal(user: UserEntity, date: Date) {
     const journal = await this.getJournalByDate(user, date); //4번
-    await this.journalRepository.softDelete({ user, date });
+    await this.journalRepository.delete({ user, date });
     return { message: `journal id :${journal.id}, date:${journal.date} removed` };
   }
 
@@ -119,5 +135,25 @@ export class JournalService {
     };
 
     await this.journalRepository.update({ user, date }, { ...updateJournal });
+  }
+
+  //7. 당일 저널 생성 횟수 초과 확인
+  async checkJournalCreationAvailbility(user: UserEntity, journalDate: Date) {
+    const startDate = startOfDay(new Date());
+    const endDate = endOfDay(new Date());
+    const journalCount = await this.journalCreationRepository.count({
+      where: {
+        user,
+        journal_date: journalDate,
+        created_at: Between(startDate, endDate),
+      },
+    });
+
+    if (journalCount >= 3) {
+      throw new ConflictException(
+        'The number of journal creations for the specified date has exceeded the limit of 3. Please try again tomorrow',
+      );
+    }
+    return;
   }
 }

@@ -1,3 +1,4 @@
+import { JournalCreationEntity } from '../../journal/entities/journal.creation.entity';
 import { InterviewEntity } from '../../interview/entities/interview.entity';
 import { JournalEntity } from '../../journal/entities/journal.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
@@ -43,4 +44,8 @@ export class UserEntity {
   //1 : 1 purchase_infos
   @OneToOne(() => PurchaseEntity, (purchase) => purchase.user)
   purchases: PurchaseEntity;
+
+  //1: m journal_creations
+  @OneToMany(() => JournalCreationEntity, (jouranl_creations) => jouranl_creations.user)
+  journal_creations: JournalCreationEntity[];
 }

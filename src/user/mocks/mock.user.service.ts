@@ -1,4 +1,4 @@
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { JwtPayload } from '../../common/utils/user_info.decorator';
 import { UserEntity } from '../entities/user.entity';
 
 export const mockUserService = {
@@ -22,6 +22,7 @@ export const mockUser: UserEntity = {
   journals: null,
   interviews: null,
   purchases: null,
+  journal_creations: null,
 };
 
 export const mockUpdatedUser: UserEntity = {
@@ -34,6 +35,7 @@ export const mockUpdatedUser: UserEntity = {
   journals: null,
   interviews: null,
   purchases: null,
+  journal_creations: null,
 };
 
 export const mockUserInfo: JwtPayload = {

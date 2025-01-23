@@ -26,6 +26,7 @@ import { TimeLimitEntity } from './time_limit/entities/time_limit.entity';
 import { InstructionEntity } from './instruction/entities/instruction.entity';
 import { OpenAiService } from './open-ai/open-ai.service';
 import { OpenAiModule } from './open-ai/open-ai.module';
+import { JournalCreationEntity } from './journal/entities/journal.creation.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -45,6 +46,7 @@ const typeOrmModuleOptions = {
       PlanEntity,
       TimeLimitEntity,
       InstructionEntity,
+      JournalCreationEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,

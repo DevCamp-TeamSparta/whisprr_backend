@@ -35,6 +35,7 @@ export class JournalController {
   @Post()
   async createJournal(@UserInfo() userInfo: JwtPayload, @Body() jornalDto: JournalDto) {
     const user = await this.userService.findUserInfos(userInfo.uuid);
+    await this.journalService.checkJournalCreationAvailbility(user, jornalDto.date);
     const interview = await this.interviewService.findInterview(user, jornalDto.date);
     const instruction = await this.instructionService.getInstruction('journal');
     const journal = await this.openAiService.getJournalByAI(interview.content, instruction.content);
