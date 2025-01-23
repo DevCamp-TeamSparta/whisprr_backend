@@ -54,9 +54,15 @@ export class InterviewService {
   async updateInterview(user: UserEntity, date: Date, QandAs: QuestionAnswerDto[]) {
     const interview = await this.findInterview(user, date);
 
-    const newContent = [...interview.content, ...QandAs].map((item) => JSON.stringify(item));
+    const existingContent = interview.content.map((item) =>
+      typeof item === 'string' ? JSON.parse(item) : item,
+    );
 
-    await this.interviewRepository.update({ date }, { content: newContent });
+    const newContent = [...existingContent, ...QandAs];
+
+    const serializedContent = newContent.map((item) => JSON.stringify(item));
+
+    await this.interviewRepository.update({ date }, { content: serializedContent });
 
     const updatedInterview = await this.findInterview(user, date);
 
