@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JournalEntity } from './entities/journal.entity';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { Journal } from '../open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
@@ -55,7 +55,7 @@ export class JournalService {
     const journals = await this.journalRepository.find({
       where: {
         user: user,
-        date: LessThanOrEqual(lastDate),
+        date: LessThan(lastDate),
         deleted_at: null,
       },
       order: { date: 'DESC' },

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JournalService } from './journal.service';
-import { LessThanOrEqual } from 'typeorm';
+import { LessThan } from 'typeorm';
 import { JournalEntity } from './entities/journal.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -100,7 +100,7 @@ describe('JournalService', () => {
       expect(mockJournalRepository.find).toHaveBeenCalledWith({
         where: {
           user: mockUser,
-          date: LessThanOrEqual(mockLastDate),
+          date: LessThan(mockLastDate),
           deleted_at: null,
         },
         order: { date: 'DESC' },
