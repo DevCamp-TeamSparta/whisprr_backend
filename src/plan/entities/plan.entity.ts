@@ -3,7 +3,7 @@ import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity('plans')
 export class PlanEntity {
-  @PrimaryColumn({ type: 'char', nullable: false })
+  @PrimaryColumn({ type: 'varchar', nullable: false })
   id: string;
 
   @Column({
