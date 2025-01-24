@@ -27,7 +27,6 @@ export class OpenAiService {
       keyword: z.array(z.string()),
       content: z.string(),
     });
-
     try {
       const completion = await openai.beta.chat.completions.parse({
         model: 'gpt-4o-mini',
@@ -43,7 +42,6 @@ export class OpenAiService {
         ],
         response_format: zodResponseFormat(CalendarEvent, 'event'),
       });
-
       if (!completion.choices || !completion.choices[0] || !completion.choices[0].message.parsed) {
         throw new Error('Unexpected OpenAI response format.');
       }

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JournalService } from './journal.service';
-import { LessThan } from 'typeorm';
+import { Between, LessThan } from 'typeorm';
 import { JournalEntity } from './entities/journal.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -18,6 +18,7 @@ import { UserService } from '../user/user.service';
 import { UserEntity } from '../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JournalCreationEntity } from './entities/journal.creation.entity';
+import { startOfDay, endOfDay } from 'date-fns';
 
 describe('JournalService', () => {
   let journalService: JournalService;
@@ -54,6 +55,7 @@ describe('JournalService', () => {
 
   afterEach(() => {
     jest.useRealTimers();
+    jest.clearAllMocks();
   });
 
   const mockDate = new Date('2025-01-20');
@@ -201,6 +203,48 @@ describe('JournalService', () => {
         { user: mockUser, date: mockDate },
         { ...mockUpdateJournal },
       );
+    });
+  });
+
+  describe('checkJournalCreationAvailbility', () => {
+    const mockDate = {
+      date: new Date('2025-01-20'),
+    };
+
+    it('당일 저널 생성 횟수를 초과 하면 ConflictException을 반환한다.', async () => {
+      await journalService.checkJournalCreationAvailbility(mockUser, mockDate.date);
+      const startDate = startOfDay(new Date());
+      const endDate = endOfDay(new Date());
+      mockJournalCreationRepository.count.mockResolvedValue(3);
+      await expect(
+        journalService.checkJournalCreationAvailbility(mockUser, mockDate.date),
+      ).rejects.toThrow(ConflictException);
+
+      expect(mockJournalCreationRepository.count).toHaveBeenCalledWith({
+        where: {
+          user: mockUser,
+          journal_date: mockDate.date,
+          created_at: Between(startDate, endDate),
+        },
+      });
+    });
+
+    it('당일 저널 생성 횟수가 초과 되지 않았다면 메서드를 종료한다.', async () => {
+      const startDate = startOfDay(new Date());
+      const endDate = endOfDay(new Date());
+
+      mockJournalCreationRepository.count.mockResolvedValue(1);
+      await expect(
+        journalService.checkJournalCreationAvailbility(mockUser, mockDate.date),
+      ).resolves.not.toThrow();
+
+      expect(mockJournalCreationRepository.count).toHaveBeenCalledWith({
+        where: {
+          user: mockUser,
+          journal_date: mockDate.date,
+          created_at: Between(startDate, endDate),
+        },
+      });
     });
   });
 });
