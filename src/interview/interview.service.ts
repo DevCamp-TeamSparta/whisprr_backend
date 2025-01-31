@@ -37,21 +37,26 @@ export class InterviewService {
     const interview = await this.interviewRepository.findOne({ where: { user, date } });
 
     if (interview) {
-      return await this.restartInterview(user, date);
+      return interview;
     } else {
       return null;
     }
   }
 
   //1.2 만약 해당 날짜에 인터뷰 기록이 있다면 비우고 다시 시작
-  private async restartInterview(user: UserEntity, date: Date) {
-    await this.interviewRepository.update({ user, date }, { content: [] });
-    const interview = await this.findInterview(user, date);
-    return interview;
-  }
+  // private async restartInterview(user: UserEntity, date: Date) {
+  //   await this.interviewRepository.update({ user, date }, { content: [] });
+  //   const interview = await this.findInterview(user, date);
+  //   return interview;
+  // }
 
   //2. 회고 질문 1단위 질문 시 마다 인터뷰 내용 업데이트
-  async updateInterview(user: UserEntity, date: Date, QandAs: QuestionAnswerDto[]) {
+  async updateInterview(
+    user: UserEntity,
+    date: Date,
+    QandAs: QuestionAnswerDto[],
+    questionId: number,
+  ) {
     const interview = await this.findInterview(user, date);
 
     const existingContent = interview.content.map((item) =>
@@ -59,10 +64,16 @@ export class InterviewService {
     );
 
     const newContent = [...existingContent, ...QandAs];
+    const questionIds = Array.isArray(interview.question_id)
+      ? [...interview.question_id, questionId]
+      : [interview.question_id, questionId].filter((id) => id !== null);
 
     const serializedContent = newContent.map((item) => JSON.stringify(item));
 
-    await this.interviewRepository.update({ date }, { content: serializedContent });
+    await this.interviewRepository.update(
+      { date },
+      { content: serializedContent, question_id: questionIds },
+    );
 
     const updatedInterview = await this.findInterview(user, date);
 

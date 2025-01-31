@@ -16,6 +16,9 @@ export class InterviewEntity {
   @Column({ type: 'date', nullable: false })
   date: Date;
 
+  @Column({ type: 'json', nullable: true })
+  question_id: number[];
+
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
 

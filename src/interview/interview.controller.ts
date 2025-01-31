@@ -37,10 +37,11 @@ export class InterviewController {
     @Body() QandADto: QuestionAnswerArrayDto,
   ) {
     const QandAs = QandADto.interviews;
+    const qurestionId = QandADto.questionId;
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
-    return this.interviewService.updateInterview(user, date, QandAs);
+    return this.interviewService.updateInterview(user, date, QandAs, qurestionId);
   }
 }
