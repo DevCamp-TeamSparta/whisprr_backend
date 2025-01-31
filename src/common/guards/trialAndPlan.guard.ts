@@ -20,8 +20,8 @@ export class TrialAndPlanGuard implements CanActivate {
 
     const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_KEY });
 
-    const { freeTrialStatus, planStatus } = payload.sub;
-    console.log(1, payload);
+    const { freeTrialStatus, planStatus } = payload;
+
     if (freeTrialStatus === 'non-available' && planStatus === 'non-available') {
       throw new ForbiddenException('Access denied: trial and plan are non-available');
     }

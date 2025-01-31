@@ -19,6 +19,11 @@ import { JournalDto } from './dto/create_jornal.dto';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
 import { UserGuard } from '../common/guards/user.guard';
 import { InstructionService } from '../instruction/instruction.service';
+import { JournalEntity } from './entities/journal.entity';
+
+interface ReturnedJournal extends JournalEntity {
+  jwtToken: string;
+}
 
 @Controller('journal')
 export class JournalController {
@@ -33,8 +38,14 @@ export class JournalController {
   //1. 저널 생성(무료 체험판, 플랜 가입 여부 확인)
   @UseGuards(TrialAndPlanGuard)
   @Post()
-  async createJournal(@UserInfo() userInfo: JwtPayload, @Body() jornalDto: JournalDto) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+  async createJournal(
+    @UserInfo() userInfo: JwtPayload,
+    @Body() jornalDto: JournalDto,
+  ): Promise<Partial<ReturnedJournal> | { message: string; newToken: string }> {
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     await this.journalService.checkJournalCreationAvailbility(user, jornalDto.date);
     const interview = await this.interviewService.findInterview(user, jornalDto.date);
     const instruction = await this.instructionService.getInstruction('journal');
@@ -50,7 +61,10 @@ export class JournalController {
     @Query('lastDate') lastDate?: string,
     @Query('limit') limit: number = 5,
   ) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     const effectiveLastDate = lastDate ? new Date(lastDate) : new Date();
 
     return await this.journalService.getJournalList(user, effectiveLastDate, limit);
@@ -60,7 +74,10 @@ export class JournalController {
   @UseGuards(UserGuard)
   @Get('details/:id')
   async getJournal(@UserInfo() userInfo: JwtPayload, @Param('id') id: number) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     return await this.journalService.getJournal(user, id);
   }
 
@@ -68,7 +85,10 @@ export class JournalController {
   @UseGuards(UserGuard)
   @Get(':date')
   async getJournalByDate(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     return await this.journalService.getJournalByDate(user, date);
   }
 
@@ -76,7 +96,10 @@ export class JournalController {
   @UseGuards(UserGuard)
   @Delete(':date')
   async deleteJournal(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     return await this.journalService.deleteJournal(user, date);
   }
 
@@ -89,8 +112,12 @@ export class JournalController {
 
     @Body() modifyJournalDto: ModifyJournalDto,
   ) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     await this.journalService.updateJournal(user, date, modifyJournalDto);
+
     return await this.journalService.getJournalByDate(user, date);
   }
 }

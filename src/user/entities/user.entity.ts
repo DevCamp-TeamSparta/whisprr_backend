@@ -27,6 +27,9 @@ export class UserEntity {
   @Column({ type: 'int', default: 0, nullable: false })
   writing_count: number;
 
+  @Column({ type: 'int', nullable: false, default: 0 })
+  token_version: number;
+
   @Column({ type: 'timestamp', nullable: false })
   created_at: Date;
 
