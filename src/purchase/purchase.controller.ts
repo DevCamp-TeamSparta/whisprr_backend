@@ -15,7 +15,7 @@ export class PurchaseController {
 
   //1.구매 검증 요청 및 jwt 토큰 재발급
   @UseGuards(UserGuard)
-  @Get()
+  @Get('/verify')
   async verifyPurchaseToken(
     @UserInfo() userInfo: JwtPayload,
     @Query('purchaseToken')
