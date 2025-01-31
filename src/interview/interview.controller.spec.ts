@@ -45,7 +45,7 @@ describe('InterviewController', () => {
       id: 1,
     };
 
-    it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
       mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
       const result = await interviewController.startInterview(
         mockUserInfoExpired,

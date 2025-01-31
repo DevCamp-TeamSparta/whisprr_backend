@@ -52,7 +52,7 @@ describe('JournalController', () => {
 
   const mockDate = new Date('2025-01-20');
   describe('createJournal', () => {
-    it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
       mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
       const result = await journalController.createJournal(mockUserInfoExpired, mockJournalDto);
       expect(result).toEqual(mockUserWithMessag);
@@ -88,7 +88,7 @@ describe('JournalController', () => {
     const mockLastDate = new Date(mockLastDateString);
     const mockLimit = 5;
     describe('createJournal', () => {
-      it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
         mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
         const result = await journalController.getJournalList(
           mockUserInfoExpired,
@@ -119,7 +119,7 @@ describe('JournalController', () => {
     });
 
     describe('getJournal', () => {
-      it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
         mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
         const result = await journalController.getJournal(mockUserInfoExpired, 1);
         expect(result).toEqual(mockUserWithMessag);
@@ -137,7 +137,7 @@ describe('JournalController', () => {
     });
 
     describe('getJournalByDate', () => {
-      it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
         mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
         const result = await journalController.getJournalByDate(mockUserInfoExpired, mockDate);
         expect(result).toEqual(mockUserWithMessag);
@@ -174,7 +174,7 @@ describe('JournalController', () => {
     });
 
     describe('updateJournal', () => {
-      it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
         mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
         const result = await journalController.updateJournal(
           mockUserInfoExpired,
