@@ -20,6 +20,7 @@ export const mockInterviewRepository = {
 export const mockInterview = {
   user: mockUser,
   content: [],
+  question_id: null,
   created_at: new Date(),
   date: new Date('2025-01-20'),
   updated_at: null,
@@ -34,6 +35,7 @@ export const mockUpdatedInterview = {
       answer: 'test',
     },
   ],
+  question_id: [1],
   created_at: new Date(),
   date: new Date('0000-00-00'),
   updated_at: new Date(),
@@ -51,4 +53,5 @@ export const mockUpdateInterviewDto = {
       answer: 'test',
     },
   ],
+  questionId: 1,
 };

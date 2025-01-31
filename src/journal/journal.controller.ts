@@ -100,6 +100,7 @@ export class JournalController {
     if ('message' in user) {
       return user;
     }
+    await this.interviewService.resetInterview(user, date);
     return await this.journalService.deleteJournal(user, date);
   }
 

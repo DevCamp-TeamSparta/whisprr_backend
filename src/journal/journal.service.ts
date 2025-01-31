@@ -29,16 +29,7 @@ export class JournalService {
     journal: Journal,
     date: Date,
   ): Promise<Partial<ReturnedJournal>> {
-    const isExistJornal = await this.journalRepository.findOne({
-      where: {
-        user,
-        date,
-      },
-    });
-
-    if (isExistJornal) {
-      throw new ConflictException('이미 해당 날짜에 저널이 존재 합니다.');
-    }
+    await this.cheskJournalExist(user, date);
     const newJournal = this.journalRepository.create({
       user: user,
       title: journal.title,
@@ -165,5 +156,18 @@ export class JournalService {
       );
     }
     return;
+  }
+  //8. 회고 시작 시 저널 존재 여부 확인
+  async cheskJournalExist(user: UserEntity, date: Date) {
+    const isExistJornal = await this.journalRepository.findOne({
+      where: {
+        user,
+        date,
+      },
+    });
+
+    if (isExistJornal) {
+      throw new ConflictException('the journal already exist');
+    }
   }
 }

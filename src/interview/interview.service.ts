@@ -29,7 +29,15 @@ export class InterviewService {
 
     await this.interviewRepository.save(newInterview);
 
-    return newInterview;
+    const Interview = {
+      id: newInterview.id,
+      content: newInterview.content,
+      date: newInterview.date,
+      question_id: newInterview.question_id,
+      created_at: newInterview.created_at,
+      deleted_at: newInterview.deleted_at,
+    };
+    return Interview;
   }
 
   //1.1 회고 시작 시 해당 날짜에 이미 생성된 인터뷰 기록 있는 지 확인
@@ -42,13 +50,6 @@ export class InterviewService {
       return null;
     }
   }
-
-  //1.2 만약 해당 날짜에 인터뷰 기록이 있다면 비우고 다시 시작
-  // private async restartInterview(user: UserEntity, date: Date) {
-  //   await this.interviewRepository.update({ user, date }, { content: [] });
-  //   const interview = await this.findInterview(user, date);
-  //   return interview;
-  // }
 
   //2. 회고 질문 1단위 질문 시 마다 인터뷰 내용 업데이트
   async updateInterview(
@@ -91,14 +92,8 @@ export class InterviewService {
     return interview;
   }
 
-  // // 3. 저널 생성 전 아이디로 인터뷰 조회 (필요 없을 시 삭제)
-  // async findInterviewById(id: number) {
-  //   const interview = await this.interviewRepository.findOne({
-  //     where: { id },
-  //   });
-  //   if (!interview) {
-  //     throw new NotFoundException('Interview not found');
-  //   }
-  //   return interview;
-  // }
+  //3. 만약 해당 날짜에 인터뷰 기록이 있다면 비우고 다시 시작
+  async resetInterview(user: UserEntity, date: Date) {
+    await this.interviewRepository.update({ user, date }, { content: [], question_id: null });
+  }
 }
