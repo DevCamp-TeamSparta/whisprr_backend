@@ -3,7 +3,9 @@ import { RestoreController } from './restore.controller';
 import { RestoreService } from './restore.service';
 import { PurchaseService } from '../purchase/purchase.service';
 import { mockPurchaseService } from '../purchase/mocks/purchase.service.mock';
-import { mockUser } from '../user/mocks/mock.user.service';
+import { mockUser, mockUserService } from '../user/mocks/mock.user.service';
+import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 describe('RestoreController', () => {
   let restoreController: RestoreController;
@@ -11,7 +13,12 @@ describe('RestoreController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RestoreController],
-      providers: [RestoreService, { provide: PurchaseService, useValue: mockPurchaseService }],
+      providers: [
+        RestoreService,
+        JwtService,
+        { provide: PurchaseService, useValue: mockPurchaseService },
+        { provide: UserService, useValue: mockUserService },
+      ],
     }).compile();
 
     restoreController = module.get<RestoreController>(RestoreController);

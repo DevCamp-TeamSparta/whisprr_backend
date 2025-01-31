@@ -16,7 +16,7 @@ export class ProfileController {
   @UseGuards(UserGuard)
   @Patch('/nickname')
   async changeNickname(@UserInfo() userInfo: JwtPayload, @Body() nicknameDto: NicknameDto) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -27,7 +27,7 @@ export class ProfileController {
   @UseGuards(UserGuard)
   @Get('/plan')
   async getUserPlan(@UserInfo() userInfo: JwtPayload) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -38,7 +38,7 @@ export class ProfileController {
   @UseGuards(UserGuard)
   @Get()
   async getProfile(@UserInfo() userInfo: JwtPayload) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     return user;
   }
 }

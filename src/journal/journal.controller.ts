@@ -42,7 +42,7 @@ export class JournalController {
     @UserInfo() userInfo: JwtPayload,
     @Body() jornalDto: JournalDto,
   ): Promise<Partial<ReturnedJournal> | { message: string; newToken: string }> {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -61,7 +61,7 @@ export class JournalController {
     @Query('lastDate') lastDate?: string,
     @Query('limit') limit: number = 5,
   ) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -74,7 +74,7 @@ export class JournalController {
   @UseGuards(UserGuard)
   @Get('details/:id')
   async getJournal(@UserInfo() userInfo: JwtPayload, @Param('id') id: number) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -85,7 +85,7 @@ export class JournalController {
   @UseGuards(UserGuard)
   @Get(':date')
   async getJournalByDate(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -96,7 +96,7 @@ export class JournalController {
   @UseGuards(UserGuard)
   @Delete(':date')
   async deleteJournal(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -112,7 +112,7 @@ export class JournalController {
 
     @Body() modifyJournalDto: ModifyJournalDto,
   ) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }

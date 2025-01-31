@@ -5,11 +5,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { ConfigService } from '@nestjs/config';
 import { PurchaseStatus } from './utils/purchase.status';
-import { mockUser } from '../user/mocks/mock.user.service';
+import { mockUser, mockUserService } from '../user/mocks/mock.user.service';
 import { mockPlan } from '../plan/mocks/plan.service.mock';
 import { mockPurchase, mockPurchaseRepository } from './mocks/purchase.service.mock';
 import { NotFoundException } from '@nestjs/common';
 import { androidpublisher } from '@googleapis/androidpublisher';
+import { UserService } from '../user/user.service';
 
 jest.mock('@googleapis/androidpublisher');
 jest.mock('google-auth-library');
@@ -34,6 +35,7 @@ describe('PurchaseService', () => {
         PurchaseService,
         { provide: getRepositoryToken(PurchaseEntity), useValue: mockPurchaseRepository },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: UserService, useValue: mockUserService },
       ],
     }).compile();
 

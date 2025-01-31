@@ -23,7 +23,7 @@ export class PurchaseController {
     @Query('productId') productId: string,
   ) {
     const plan = await this.planService.findPlan(productId);
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
