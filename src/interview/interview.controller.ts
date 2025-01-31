@@ -15,11 +15,11 @@ export class InterviewController {
     private readonly journalService: JournalService,
   ) {}
 
-  //1. 회고 시작 시 인터뷰 칼럼 생성(회고 재시작 시 인터뷰 기록 비우고 재시작)
+  //1. 회고 시작 시 인터뷰 칼럼 생성(회고 재시작 시 인터뷰 기록 비우고 재시작) 생성된 저널 있을 시 접근 불가로  ()
   @UseGuards(TrialAndPlanGuard)
   @Post()
   async startInterview(@UserInfo() userInfo: JwtPayload, @Body() InterviewDto: InterviewDto) {
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
@@ -37,7 +37,7 @@ export class InterviewController {
     @Body() QandADto: QuestionAnswerArrayDto,
   ) {
     const QandAs = QandADto.interviews;
-    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }

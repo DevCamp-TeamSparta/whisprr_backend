@@ -2,7 +2,8 @@ import { JwtPayload } from '../../common/utils/user_info.decorator';
 import { UserEntity } from '../entities/user.entity';
 
 export const mockUserService = {
-  findUserInfos: jest.fn(),
+  findUserByUserInfo: jest.fn(),
+  findUser: jest.fn(),
   createUser: jest.fn(),
   changeNickname: jest.fn(),
   getUserTocken: jest.fn(),
@@ -10,6 +11,7 @@ export const mockUserService = {
   checkPlanActive: jest.fn(),
   updateWritingCount: jest.fn(),
   updateUserTrialStatus: jest.fn(),
+  updateTokenVersion: jest.fn(),
 };
 
 export const mockUser: UserEntity = {
@@ -53,4 +55,16 @@ export const mockUserRepository = {
   update: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
+};
+
+export const mockUserWithMessag = {
+  message: 'A new token has been issued due to expiration. Please retry',
+  newToken: 'new Token',
+};
+
+export const mockUserInfoExpired: JwtPayload = {
+  uuid: mockUser.user_id,
+  tokenVersion: 2,
+  freeTrialStatus: 'available',
+  planStatus: 'available',
 };

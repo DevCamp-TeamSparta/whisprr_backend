@@ -4,7 +4,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { NotFoundException } from '@nestjs/common';
-import { mockUpdatedUser, mockUser, mockUserRepository } from './mocks/mock.user.service';
+import {
+  mockUpdatedUser,
+  mockUser,
+  mockUserInfo,
+  mockUserInfoExpired,
+  mockUserRepository,
+  mockUserWithMessag,
+} from './mocks/mock.user.service';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -27,20 +34,36 @@ describe('UserService', () => {
     jest.clearAllMocks();
   });
 
-  describe('findUserInfos', () => {
-    it('유저 정보가 존재하면 반환한다.', async () => {
-      mockUserRepository.findOne.mockResolvedValue(mockUser);
-
-      const result = await userService.findUserInfos('mock-uuid');
-
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { user_id: 'mock-uuid' } });
-      expect(result).toEqual(mockUser);
-    });
-
-    it('우저 정보가 없으면 NotFoundException을 전달한다.', async () => {
+  describe('findUserByUserInfo', () => {
+    const mockNewToken = 'new Token';
+    it('유저 정보가 없으면 NotFoundException을 전달한다.', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(userService.findUserInfos('invalid-uuid')).rejects.toThrow(NotFoundException);
+      await expect(userService.findUserByUserInfo(mockUserInfo)).rejects.toThrow(NotFoundException);
+    });
+
+    it('토큰 버젼이 일치 하지 않으면 메세지와 새로 생성한 토큰을 반환한다.', async () => {
+      mockUserRepository.findOne.mockResolvedValue(mockUser);
+      userService.getUserTocken = jest.fn().mockResolvedValue(mockNewToken);
+
+      const result = await userService.findUserByUserInfo(mockUserInfoExpired);
+
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+        where: { user_id: mockUserInfoExpired.uuid },
+      });
+
+      expect(result).toEqual(mockUserWithMessag);
+    });
+
+    it('유저 정보가 존재하고 토큰 버젼이 일치 하면 유저 정보를 반환한다.', async () => {
+      mockUserRepository.findOne.mockResolvedValue(mockUser);
+
+      const result = await userService.findUserByUserInfo(mockUserInfo);
+
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+        where: { user_id: mockUserInfo.uuid },
+      });
+      expect(result).toEqual(mockUser);
     });
   });
 
@@ -64,7 +87,7 @@ describe('UserService', () => {
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUpdatedUser);
 
-      const result = await userService.changeNickname(mockUser.user_id, 'kelly');
+      const result = await userService.changeNickname(mockUserInfo, 'kelly');
 
       expect(mockUserRepository.update).toHaveBeenCalledWith(
         { user_id: mockUser.user_id },
@@ -100,6 +123,7 @@ describe('UserService', () => {
         interviews: null,
         purchases: null,
         journal_creations: null,
+        token_version: 1,
       };
 
       mockUserRepository.findOne.mockResolvedValueOnce({

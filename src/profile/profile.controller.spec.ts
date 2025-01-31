@@ -5,7 +5,9 @@ import {
   mockUpdatedUser,
   mockUser,
   mockUserInfo,
+  mockUserInfoExpired,
   mockUserService,
+  mockUserWithMessag,
 } from '../user/mocks/mock.user.service';
 import { UserService } from '../user/user.service';
 import { ProfileService } from './profile.service';
@@ -29,12 +31,17 @@ describe('ProfileController', () => {
   });
 
   describe('changeNickname', () => {
+    it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
+      const result = await profileController.changeNickname(mockUserInfoExpired, mockNicknameDto);
+      expect(result).toEqual(mockUserWithMessag);
+    });
     it('유저 닉네임을 업데이트 하고 반환한다.', async () => {
-      mockUserService.findUserInfos.mockResolvedValue(mockUser);
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockProfileService.changeNickname.mockResolvedValue(mockUpdatedUser);
 
       const result = await profileController.changeNickname(mockUserInfo, mockNicknameDto);
-      expect(mockUserService.findUserInfos).toHaveBeenCalledWith(mockUserInfo.uuid);
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockProfileService.changeNickname).toHaveBeenCalledWith(
         mockUser,
         mockNicknameDto.nickname,
@@ -45,12 +52,17 @@ describe('ProfileController', () => {
   });
 
   describe('getUserPlan', () => {
+    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
+      const result = await profileController.getUserPlan(mockUserInfoExpired);
+      expect(result).toEqual(mockUserWithMessag);
+    });
     it('유저가 가입한 플랜을 조회 후 반환한다.', async () => {
-      mockUserService.findUserInfos.mockResolvedValue(mockUser);
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockProfileService.getUserPlan.mockResolvedValue(mockPlan);
 
       const result = await profileController.getUserPlan(mockUserInfo);
-      expect(mockUserService.findUserInfos).toHaveBeenCalledWith(mockUserInfo.uuid);
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockProfileService.getUserPlan).toHaveBeenCalledWith(mockUser);
 
       expect(result).toEqual(mockPlan);
@@ -58,11 +70,16 @@ describe('ProfileController', () => {
   });
 
   describe('getProfile', () => {
+    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
+      const result = await profileController.getProfile(mockUserInfoExpired);
+      expect(result).toEqual(mockUserWithMessag);
+    });
     it('유저의 프로필 정보를 반환한다.', async () => {
-      mockUserService.findUserInfos.mockResolvedValue(mockUser);
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
 
       const result = await profileController.getProfile(mockUserInfo);
-      expect(mockUserService.findUserInfos).toHaveBeenCalledWith(mockUserInfo.uuid);
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
 
       expect(result).toEqual(mockUser);
     });

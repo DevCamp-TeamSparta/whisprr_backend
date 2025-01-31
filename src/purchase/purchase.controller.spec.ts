@@ -4,7 +4,13 @@ import { PurchaseService } from './purchase.service';
 import { UserService } from '../user/user.service';
 import { PlanService } from '../plan/plan.service';
 import { mockPurchaseService } from './mocks/purchase.service.mock';
-import { mockUser, mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
+import {
+  mockUser,
+  mockUserInfo,
+  mockUserInfoExpired,
+  mockUserService,
+  mockUserWithMessag,
+} from '../user/mocks/mock.user.service';
 import { mockPlan, mockPlanService } from '../plan/mocks/plan.service.mock';
 import { JwtService } from '@nestjs/jwt';
 
@@ -25,12 +31,21 @@ describe('PurchaseController', () => {
   });
 
   describe('verifyPurchaseToken', () => {
+    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
+      const result = await purchaseController.verifyPurchaseToken(
+        mockUserInfoExpired,
+        'test-purchase-token',
+        'test-product-id',
+      );
+      expect(result).toEqual(mockUserWithMessag);
+    });
     it('구매 검증 후 jwt 토큰을 재발급 한다.', async () => {
       const mockNewToken = 'new-jwt-token';
       const mockResponse = { verified: true };
 
       mockPlanService.findPlan.mockResolvedValue(mockPlan);
-      mockUserService.findUserInfos.mockResolvedValue(mockUser);
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockUserService.getUserTocken.mockResolvedValue(mockNewToken);
       mockPurchaseService.verifyPurchaseToken.mockResolvedValue(mockResponse);
 
@@ -41,7 +56,7 @@ describe('PurchaseController', () => {
       );
 
       expect(mockPlanService.findPlan).toHaveBeenCalledWith('test-product-id');
-      expect(mockUserService.findUserInfos).toHaveBeenCalledWith(mockUserInfo.uuid);
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockUserService.getUserTocken).toHaveBeenCalledWith(mockUser.user_id);
       expect(mockPurchaseService.verifyPurchaseToken).toHaveBeenCalledWith(
         mockPlan,

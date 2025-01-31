@@ -76,7 +76,7 @@ describe('JournalService', () => {
       mockJournalRepository.findOne.mockResolvedValue(null);
       mockJournalRepository.create.mockReturnValue(mockJournal);
       mockJournalRepository.save.mockResolvedValue(mockJournal);
-      mockUserService.findUserInfos.mockResolvedValue(mockUser);
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockUserService.updateWritingCount.mockResolvedValue(null);
 
       const result = await journalService.createJournal(mockUser, mockJournalByAI, mockDate);

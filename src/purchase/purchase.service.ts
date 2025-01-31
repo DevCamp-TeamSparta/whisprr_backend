@@ -9,7 +9,7 @@ import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { PurchaseStatus } from './utils/purchase.status';
 import { UserEntity } from '../user/entities/user.entity';
 import { PlanEntity } from '../plan/entities/plan.entity';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class PurchaseService {
