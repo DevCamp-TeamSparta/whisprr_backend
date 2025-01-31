@@ -9,6 +9,10 @@ import { UserService } from '../user/user.service';
 import { JournalCreationEntity } from './entities/journal.creation.entity';
 import { startOfDay, endOfDay } from 'date-fns';
 
+interface ReturnedJournal extends JournalEntity {
+  jwtToken: string;
+}
+
 @Injectable()
 export class JournalService {
   constructor(
@@ -20,7 +24,11 @@ export class JournalService {
   ) {}
 
   //1. 저널 생성
-  async createJournal(user: UserEntity, journal: Journal, date: Date) {
+  async createJournal(
+    user: UserEntity,
+    journal: Journal,
+    date: Date,
+  ): Promise<Partial<ReturnedJournal>> {
     const isExistJornal = await this.journalRepository.findOne({
       where: {
         user,
@@ -44,7 +52,7 @@ export class JournalService {
     const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
     await this.updatejournalCreation(user, date);
 
-    const returndJournal = {
+    const returndJournal: Partial<ReturnedJournal> = {
       title: newJournal.title,
       keyword: newJournal.keyword,
       content: newJournal.content,
@@ -56,7 +64,7 @@ export class JournalService {
   }
 
   //1.1 저널 생성 기록 생성
-  private async updatejournalCreation(user: UserEntity, date: Date) {
+  private async updatejournalCreation(user: UserEntity, date: Date): Promise<void> {
     const newRecord = this.journalCreationRepository.create({
       user,
       journal_date: date,
@@ -67,7 +75,7 @@ export class JournalService {
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
-  async getJournalList(user: UserEntity, lastDate: Date, limit: number) {
+  async getJournalList(user: UserEntity, lastDate: Date, limit: number): Promise<JournalEntity[]> {
     const journals = await this.journalRepository.find({
       where: {
         user: user,
@@ -78,13 +86,11 @@ export class JournalService {
       take: limit,
     });
 
-    console.log(journals);
-
     return journals;
   }
 
   //3. 아이디 별 저널 상세 조회
-  async getJournal(user: UserEntity, id: number) {
+  async getJournal(user: UserEntity, id: number): Promise<JournalEntity> {
     const journal = await this.journalRepository.findOne({
       where: {
         id,
@@ -101,7 +107,7 @@ export class JournalService {
   }
 
   //4. 날짜별 저널 상세 조회
-  async getJournalByDate(user: UserEntity, date: Date) {
+  async getJournalByDate(user: UserEntity, date: Date): Promise<JournalEntity> {
     const journal = await this.journalRepository.findOne({
       where: {
         user,
@@ -118,14 +124,18 @@ export class JournalService {
   }
 
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
-  async deleteJournal(user: UserEntity, date: Date) {
+  async deleteJournal(user: UserEntity, date: Date): Promise<object> {
     const journal = await this.getJournalByDate(user, date); //4번
     await this.journalRepository.delete({ user, date });
     return { message: `journal id :${journal.id}, date:${journal.date} removed` };
   }
 
   //6. 저널 수정 (일단 날짜로 식별 후 수정)
-  async updateJournal(user: UserEntity, date: Date, modifyJournalDto: ModifyJournalDto) {
+  async updateJournal(
+    user: UserEntity,
+    date: Date,
+    modifyJournalDto: ModifyJournalDto,
+  ): Promise<void> {
     await this.getJournalByDate(user, date); //4번
     const updateJournal = {
       title: modifyJournalDto.title,
@@ -138,7 +148,7 @@ export class JournalService {
   }
 
   //7. 당일 저널 생성 횟수 초과 확인
-  async checkJournalCreationAvailbility(user: UserEntity, journalDate: Date) {
+  async checkJournalCreationAvailbility(user: UserEntity, journalDate: Date): Promise<void> {
     const startDate = startOfDay(new Date());
     const endDate = endOfDay(new Date());
     const journalCount = await this.journalCreationRepository.count({

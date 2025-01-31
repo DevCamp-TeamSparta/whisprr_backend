@@ -19,7 +19,10 @@ export class InterviewController {
   @UseGuards(TrialAndPlanGuard)
   @Post()
   async startInterview(@UserInfo() userInfo: JwtPayload, @Body() InterviewDto: InterviewDto) {
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     await this.journalService.checkJournalCreationAvailbility(user, InterviewDto.date);
     return this.interviewService.startInterview(user, InterviewDto.date);
   }
@@ -34,7 +37,10 @@ export class InterviewController {
     @Body() QandADto: QuestionAnswerArrayDto,
   ) {
     const QandAs = QandADto.interviews;
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     return this.interviewService.updateInterview(user, date, QandAs);
   }
 }

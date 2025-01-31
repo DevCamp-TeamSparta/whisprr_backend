@@ -4,6 +4,7 @@ import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'src/common/utils/user_info.decorator';
 
 @Injectable()
 export class UserService {
@@ -13,17 +14,42 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  //1. 유저 정보 조회 메소드
-  async findUserInfos(user_id: string) {
+  //1.1 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
+  async findUserInfosByUserInfo(
+    userInfo: JwtPayload,
+  ): Promise<UserEntity | { message: string; newToken: string }> {
     const user = await this.userRepository.findOne({
       where: {
-        user_id,
+        user_id: userInfo.uuid,
       },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
+    if (user.token_version !== userInfo.tokenVersion) {
+      const newToken = await this.getUserTocken(user.user_id);
+      return {
+        message: 'A new token has been issued due to expiration. Please retry',
+        newToken,
+      };
+    }
+    return user;
+  }
+
+  //1.2 uuid 만으로 유저 정보 조회 메소드
+  async findUserInfos(uuid: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        user_id: uuid,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     return user;
   }
 
@@ -41,25 +67,32 @@ export class UserService {
   }
 
   //3.유저 닉네임 변경 메소드
-  async changeNickname(uuid: string, newNickname: string) {
-    await this.findUserInfos(uuid);
+  async changeNickname(userInfo: JwtPayload, newNickname: string) {
+    await this.findUserInfosByUserInfo(userInfo);
 
-    await this.userRepository.update({ user_id: uuid }, { nickname: newNickname });
+    await this.userRepository.update({ user_id: userInfo.uuid }, { nickname: newNickname });
 
-    return await this.findUserInfos(uuid);
+    return await this.findUserInfos(userInfo.uuid);
   }
 
   //4. 유저토큰 발급 메소드
   async getUserTocken(uuid: string) {
-    const freeTrialStatus = await this.checkFreetrial(uuid);
+    await this.updateTokenVersion(uuid);
+
+    const { freeTrialStatus, tokenVersion } = await this.checkFreetrial(uuid);
     const planStatus = await this.checkPlanActive(uuid);
 
-    const payload = { uuid, sub: { uuid, freeTrialStatus, planStatus } };
+    const payload = { uuid, freeTrialStatus, tokenVersion, planStatus };
     const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY });
     return token;
   }
 
-  //4.1 유저 토큰 발급 전 무료 체험판 여부 확인
+  //4.1 유저 토큰 발급 전 토큰 버젼 업데이트
+  async updateTokenVersion(uuid: string) {
+    await this.userRepository.increment({ user_id: uuid }, 'token_version', 1);
+  }
+
+  //4.2 유저 토큰 발급 전 무료 체험판 만료 여부 확인 및 토큰 버젼 저장
   private async checkFreetrial(uuid: string) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },
@@ -68,10 +101,15 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    return user.trial_status === 'active' ? 'available' : 'non-available';
+    let trialStatus = 'non-available';
+    if (user.trial_status === 'active') {
+      trialStatus = 'available';
+    }
+
+    return { freeTrialStatus: trialStatus, tokenVersion: user.token_version };
   }
 
-  //4.2 유저 토큰 발급 전 플랜 만료 확인
+  //4.3 유저 토큰 발급 전 플랜 만료 확인
   private async checkPlanActive(uuid: string) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },

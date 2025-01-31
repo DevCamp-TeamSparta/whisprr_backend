@@ -23,6 +23,7 @@ export const mockUser: UserEntity = {
   interviews: null,
   purchases: null,
   journal_creations: null,
+  token_version: 1,
 };
 
 export const mockUpdatedUser: UserEntity = {
@@ -36,12 +37,14 @@ export const mockUpdatedUser: UserEntity = {
   interviews: null,
   purchases: null,
   journal_creations: null,
+  token_version: 1,
 };
 
 export const mockUserInfo: JwtPayload = {
   uuid: 'mock_uuid',
   freeTrialStatus: 'available',
   planStatus: 'non-available',
+  tokenVersion: 1,
 };
 
 export const mockUserRepository = {

@@ -9,6 +9,7 @@ import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { PurchaseStatus } from './utils/purchase.status';
 import { UserEntity } from '../user/entities/user.entity';
 import { PlanEntity } from '../plan/entities/plan.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class PurchaseService {
@@ -16,6 +17,7 @@ export class PurchaseService {
     @InjectRepository(PurchaseEntity)
     private purchaseRepository: Repository<PurchaseEntity>,
     private configService: ConfigService,
+    private userService: UserService,
   ) {}
 
   //1.구매 토큰 검증
@@ -103,6 +105,10 @@ export class PurchaseService {
       },
       { ...purchaeStatus },
     );
+
+    const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
+
+    await this.userService.updateTokenVersion(purchaseWithUser.user.user_id);
   }
 
   //2.1 알림 타입 별 구매 상태 분류

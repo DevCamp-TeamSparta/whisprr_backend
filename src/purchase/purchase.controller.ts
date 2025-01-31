@@ -23,7 +23,10 @@ export class PurchaseController {
     @Query('productId') productId: string,
   ) {
     const plan = await this.planService.findPlan(productId);
-    const user = await this.userService.findUserInfos(userInfo.uuid);
+    const user = await this.userService.findUserInfosByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     const token = await this.userService.getUserTocken(user.user_id);
     return {
       ...(await this.purchaseService.verifyPurchaseToken(plan, user, purchaseToken)),

@@ -23,6 +23,7 @@ export interface JwtPayload {
   uuid: string;
   freeTrialStatus: 'available' | 'non-available';
   planStatus: 'available' | 'non-available';
+  tokenVersion: number;
   iat?: number;
   exp?: number;
 }
