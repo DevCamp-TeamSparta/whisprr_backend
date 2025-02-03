@@ -33,7 +33,7 @@ describe('PurchaseController', () => {
   describe('verifyPurchaseToken', () => {
     it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
       mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
-      const result = await purchaseController.verifyPurchaseToken(
+      const result = await purchaseController.verifyPurchase(
         mockUserInfoExpired,
         'test-purchase-token',
         'test-product-id',
@@ -46,10 +46,10 @@ describe('PurchaseController', () => {
 
       mockPlanService.findPlan.mockResolvedValue(mockPlan);
       mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
-      mockUserService.getUserTocken.mockResolvedValue(mockNewToken);
+      mockUserService.getUserToken.mockResolvedValue(mockNewToken);
       mockPurchaseService.verifyPurchaseToken.mockResolvedValue(mockResponse);
 
-      const result = await purchaseController.verifyPurchaseToken(
+      const result = await purchaseController.verifyPurchase(
         mockUserInfo,
         'test-purchase-token',
         'test-product-id',
@@ -57,7 +57,7 @@ describe('PurchaseController', () => {
 
       expect(mockPlanService.findPlan).toHaveBeenCalledWith('test-product-id');
       expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
-      expect(mockUserService.getUserTocken).toHaveBeenCalledWith(mockUser.user_id);
+      expect(mockUserService.getUserToken).toHaveBeenCalledWith(mockUser.user_id);
       expect(mockPurchaseService.verifyPurchaseToken).toHaveBeenCalledWith(
         mockPlan,
         mockUser,

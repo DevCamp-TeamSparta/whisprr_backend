@@ -20,6 +20,7 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       DB_SYNC: ${DB_SYNC}
       PORT: ${PORT}
+      TIMELIMIT: ${TIMELIMIT}
 
     depends_on:
       - db

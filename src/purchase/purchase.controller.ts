@@ -16,22 +16,13 @@ export class PurchaseController {
   //1.구매 검증 요청 및 jwt 토큰 재발급
   @UseGuards(UserGuard)
   @Get('/verify')
-  async verifyPurchaseToken(
+  async verifyPurchase(
     @UserInfo() userInfo: JwtPayload,
     @Query('purchaseToken')
     purchaseToken: string,
     @Query('productId') productId: string,
   ) {
-    const plan = await this.planService.findPlan(productId);
-    const user = await this.userService.findUserByUserInfo(userInfo);
-    if ('message' in user) {
-      return user;
-    }
-    const token = await this.userService.getUserTocken(user.user_id);
-    return {
-      ...(await this.purchaseService.verifyPurchaseToken(plan, user, purchaseToken)),
-      new_token: token,
-    };
+    return await this.purchaseService.verifyPurchase(userInfo, purchaseToken, productId);
   }
 
   //2.구매 변동 시 서버에서 알림 수신 및 구매 상태 업데이트

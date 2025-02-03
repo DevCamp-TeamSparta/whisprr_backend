@@ -7,7 +7,6 @@ import { ProfileModule } from './profile/profile.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { QuestionModule } from './question/question.module';
 import { InstructionModule } from './instruction/instruction.module';
-import { TimeLimitModule } from './time_limit/time_limit.module';
 import { InitialModule } from './initial/initial.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -22,7 +21,6 @@ import { JournalEntity } from './journal/entities/journal.entity';
 import { QuestionEntity } from './question/entities/question.entity';
 import { PurchaseEntity } from './purchase/entities/purchase.entity';
 import { PlanEntity } from './plan/entities/plan.entity';
-import { TimeLimitEntity } from './time_limit/entities/time_limit.entity';
 import { InstructionEntity } from './instruction/entities/instruction.entity';
 import { OpenAiService } from './open-ai/open-ai.service';
 import { OpenAiModule } from './open-ai/open-ai.module';
@@ -44,7 +42,6 @@ const typeOrmModuleOptions = {
       QuestionEntity,
       PurchaseEntity,
       PlanEntity,
-      TimeLimitEntity,
       InstructionEntity,
       JournalCreationEntity,
     ],
@@ -76,7 +73,6 @@ const typeOrmModuleOptions = {
     PurchaseModule,
     QuestionModule,
     InstructionModule,
-    TimeLimitModule,
     InitialModule,
     RestoreModule,
     UserModule,

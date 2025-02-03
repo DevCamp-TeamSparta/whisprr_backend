@@ -54,6 +54,7 @@ jobs:
             export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
             export PORT=${{ secrets.PORT }}
+            export TIMELIMIT=${{ secrets.TIMELIMIT }}
 
             echo "${{ secrets.GCP_CREDENTIALS }}" > ~/whisprr_backend/gcp-credentials.json
             

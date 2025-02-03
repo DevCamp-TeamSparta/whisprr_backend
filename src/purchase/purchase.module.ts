@@ -9,6 +9,14 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { PlanEntity } from 'src/plan/entities/plan.entity';
 import { PlanService } from 'src/plan/plan.service';
+import { InterviewService } from 'src/interview/interview.service';
+import { InstructionService } from 'src/instruction/instruction.service';
+import { OpenAiService } from 'src/open-ai/open-ai.service';
+import { InterviewEntity } from 'src/interview/entities/interview.entity';
+import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
+import { JournalService } from 'src/journal/journal.service';
+import { JournalEntity } from 'src/journal/entities/journal.entity';
+import { JournalCreationEntity } from 'src/journal/entities/journal.creation.entity';
 
 @Module({
   imports: [
@@ -18,9 +26,25 @@ import { PlanService } from 'src/plan/plan.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([PurchaseEntity, UserEntity, PlanEntity]),
+    TypeOrmModule.forFeature([
+      PurchaseEntity,
+      UserEntity,
+      PlanEntity,
+      InterviewEntity,
+      InstructionEntity,
+      JournalEntity,
+      JournalCreationEntity,
+    ]),
   ],
   controllers: [PurchaseController],
-  providers: [PurchaseService, UserService, PlanService],
+  providers: [
+    PurchaseService,
+    UserService,
+    PlanService,
+    InterviewService,
+    InstructionService,
+    OpenAiService,
+    JournalService,
+  ],
 })
 export class PurchaseModule {}

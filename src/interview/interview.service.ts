@@ -1,19 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InterviewEntity } from './entities/interview.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { QuestionAnswerDto } from './dto/questionAndAnswer.dto';
+import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { UserService } from 'src/user/user.service';
+import { JournalService } from 'src/journal/journal.service';
 
 @Injectable()
 export class InterviewService {
   constructor(
     @InjectRepository(InterviewEntity)
     private interviewRepository: Repository<InterviewEntity>,
+    private userService: UserService,
+    @Inject(forwardRef(() => JournalService))
+    private journalService: JournalService,
   ) {}
 
   //1. 회고 시작 시 인터뷰 기록 생성
-  async startInterview(user: UserEntity, date: Date) {
+  async startInterview(userInfo: JwtPayload, date: Date) {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+
+    await this.journalService.cheskJournalExist(user, date);
+    await this.journalService.checkJournalCreationAvailbility(user, date);
     const existingInterview = await this.findInterviewAlready(user, date);
 
     if (existingInterview) {
@@ -53,11 +66,15 @@ export class InterviewService {
 
   //2. 회고 질문 1단위 질문 시 마다 인터뷰 내용 업데이트
   async updateInterview(
-    user: UserEntity,
+    userInfo: JwtPayload,
     date: Date,
     QandAs: QuestionAnswerDto[],
     questionId: number,
   ) {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     const interview = await this.findInterview(user, date);
 
     const existingContent = interview.content.map((item) =>

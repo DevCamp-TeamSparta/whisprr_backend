@@ -6,7 +6,7 @@ export const mockUserService = {
   findUser: jest.fn(),
   createUser: jest.fn(),
   changeNickname: jest.fn(),
-  getUserTocken: jest.fn(),
+  getUserToken: jest.fn(),
   checkFreetrial: jest.fn(),
   checkPlanActive: jest.fn(),
   updateWritingCount: jest.fn(),

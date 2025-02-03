@@ -29,7 +29,7 @@ export class UserService {
     }
 
     if (user.token_version !== userInfo.tokenVersion) {
-      const newToken = await this.getUserTocken(user.user_id);
+      const newToken = await this.getUserToken(user.user_id);
       return {
         message: 'A new token has been issued due to expiration. Please retry',
         newToken,
@@ -74,7 +74,7 @@ export class UserService {
   }
 
   //4. 유저토큰 발급 메소드
-  public async getUserTocken(uuid: string) {
+  public async getUserToken(uuid: string) {
     await this.updateTokenVersion(uuid);
 
     const { freeTrialStatus, tokenVersion } = await this.checkFreetrial(uuid);
@@ -144,7 +144,7 @@ export class UserService {
 
     if (updatedUser.writing_count >= 3 && updatedUser.trial_status !== 'expired') {
       await this.userRepository.update({ user_id: user.user_id }, { trial_status: 'expired' });
-      return await this.getUserTocken(user.user_id);
+      return await this.getUserToken(user.user_id);
     }
 
     return undefined;
