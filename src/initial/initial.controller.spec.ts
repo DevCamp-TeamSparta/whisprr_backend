@@ -3,10 +3,8 @@ import { InitialController } from './initial.controller';
 import { UserService } from '../user/user.service';
 import { mockUserService } from '../user/mocks/mock.user.service';
 import { QuestionService } from '../question/question.service';
-import { TimeLimitService } from '../time_limit/time_limit.service';
 import { InstructionService } from '../instruction/instruction.service';
 import { mockQuestionService } from '../question/mocks/question.service.mock';
-import { mockTimeLimitService } from '../time_limit/mocks/timeLimit.service.mock';
 import { mockInstructionService } from '../instruction/mocks/instruction.service.mock';
 import { BadRequestException } from '@nestjs/common';
 
@@ -19,7 +17,6 @@ describe('InitialController', () => {
       providers: [
         { provide: UserService, useValue: mockUserService },
         { provide: QuestionService, useValue: mockQuestionService },
-        { provide: TimeLimitService, useValue: mockTimeLimitService },
         { provide: InstructionService, useValue: mockInstructionService },
       ],
     }).compile();
@@ -50,16 +47,14 @@ describe('InitialController', () => {
     });
 
     it('초기 세팅 정보를 반환한다.', async () => {
-      mockUserService.getUserTocken.mockResolvedValue(mockToken);
+      mockUserService.getUserToken.mockResolvedValue(mockToken);
       mockQuestionService.getQuestion.mockResolvedValue(mockQuestions);
-      mockTimeLimitService.getTimeLimit.mockResolvedValue(mockLimits);
       mockInstructionService.getInstruction.mockResolvedValue(mockInstruction);
 
       const result = await initialController.sendInitialSetting(mockUuid);
 
-      expect(mockUserService.getUserTocken).toHaveBeenCalledWith(mockUuid);
+      expect(mockUserService.getUserToken).toHaveBeenCalledWith(mockUuid);
       expect(mockQuestionService.getQuestion).toHaveBeenCalledTimes(1);
-      expect(mockTimeLimitService.getTimeLimit).toHaveBeenCalledTimes(1);
       expect(mockInstructionService.getInstruction).toHaveBeenCalledWith('interview');
       expect(result).toEqual({
         bearer_token: mockToken,

@@ -32,5 +32,6 @@ import { JournalCreationEntity } from './entities/journal.creation.entity';
     InterviewService,
     InstructionService,
   ],
+  exports: [JournalService, InterviewService],
 })
 export class JournalModule {}

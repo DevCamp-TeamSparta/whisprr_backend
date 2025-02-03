@@ -10,6 +10,8 @@ import { PurchaseStatus } from './utils/purchase.status';
 import { UserEntity } from '../user/entities/user.entity';
 import { PlanEntity } from '../plan/entities/plan.entity';
 import { UserService } from '../user/user.service';
+import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { PlanService } from 'src/plan/plan.service';
 
 @Injectable()
 export class PurchaseService {
@@ -18,7 +20,24 @@ export class PurchaseService {
     private purchaseRepository: Repository<PurchaseEntity>,
     private configService: ConfigService,
     private userService: UserService,
+    private planService: PlanService,
   ) {}
+
+  //0.구매 검증
+  public async verifyPurchase(userInfo: JwtPayload, purchaseToken: string, productId: string) {
+    const plan = await this.planService.findPlan(productId);
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+    const verifyInfo = await this.verifyPurchaseToken(plan, user, purchaseToken);
+    const token = await this.userService.getUserToken(user.user_id);
+
+    return {
+      ...verifyInfo,
+      new_token: token,
+    };
+  }
 
   //1.구매 토큰 검증
   async verifyPurchaseToken(plan: PlanEntity, user: UserEntity, purchaseToken: string) {
@@ -41,10 +60,12 @@ export class PurchaseService {
     });
     const authClient = (await auth.getClient()) as OAuth2Client;
 
-    return androidpublisher({
+    const result = androidpublisher({
       version: 'v3',
       auth: authClient,
     });
+
+    return result;
   }
 
   //1.2 구매 상태 업데이트

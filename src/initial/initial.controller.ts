@@ -1,7 +1,6 @@
 import { UserService } from '../user/user.service';
 import { BadRequestException, Controller, Get, Headers, Post } from '@nestjs/common';
 import { QuestionService } from '../question/question.service';
-import { TimeLimitService } from '../time_limit/time_limit.service';
 import { InstructionService } from '../instruction/instruction.service';
 
 @Controller('initial')
@@ -9,7 +8,6 @@ export class InitialController {
   constructor(
     private readonly userService: UserService,
     private readonly questionService: QuestionService,
-    private readonly timeLimitService: TimeLimitService,
     private readonly instructionService: InstructionService,
   ) {}
 
@@ -25,13 +23,13 @@ export class InitialController {
     if (!uuid) {
       throw new BadRequestException('UUID is missing in the headers');
     }
-    const tocken = await this.userService.getUserTocken(uuid);
+    const token = await this.userService.getUserToken(uuid);
     const questions = await this.questionService.getQuestion();
-    const limits = await this.timeLimitService.getTimeLimit();
+    const limits = 20;
     const instruction = await this.instructionService.getInstruction('interview');
 
     const response = {
-      bearer_token: tocken,
+      bearer_token: token,
       questions,
       limits,
       instruction,

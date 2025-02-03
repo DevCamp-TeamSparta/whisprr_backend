@@ -1,13 +1,23 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JournalEntity } from './entities/journal.entity';
 import { Between, LessThan, Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
-import { Journal } from '../open-ai/open-ai.service';
+import { Journal, OpenAiService } from '../open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
 import { UserService } from '../user/user.service';
 import { JournalCreationEntity } from './entities/journal.creation.entity';
 import { startOfDay, endOfDay } from 'date-fns';
+import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { JournalDto } from './dto/create_jornal.dto';
+import { InterviewService } from 'src/interview/interview.service';
+import { InstructionService } from 'src/instruction/instruction.service';
 
 interface ReturnedJournal extends JournalEntity {
   jwtToken: string;
@@ -21,10 +31,27 @@ export class JournalService {
     @InjectRepository(JournalCreationEntity)
     private journalCreationRepository: Repository<JournalCreationEntity>,
     private userService: UserService,
+    @Inject(forwardRef(() => InterviewService))
+    private interviewService: InterviewService,
+    private instructionService: InstructionService,
+    private openAiService: OpenAiService,
   ) {}
 
   //1. 저널 생성
-  async createJournal(
+  public async createJournal(userInfo: JwtPayload, jornalDto: JournalDto) {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+    await this.checkJournalCreationAvailbility(user, jornalDto.date);
+    const interview = await this.interviewService.findInterview(user, jornalDto.date);
+    const instruction = await this.instructionService.getInstruction('journal');
+    const journal = await this.openAiService.getJournalByAI(interview.content, instruction.content);
+    return await this.createJournalData(user, journal, jornalDto.date);
+  }
+
+  //1.1 저널 생성 메소드
+  async createJournalData(
     user: UserEntity,
     journal: Journal,
     date: Date,
@@ -54,7 +81,7 @@ export class JournalService {
     return returndJournal;
   }
 
-  //1.1 저널 생성 기록 생성
+  //1.2 저널 생성 기록 생성
   private async updatejournalCreation(user: UserEntity, date: Date): Promise<void> {
     const newRecord = this.journalCreationRepository.create({
       user,
@@ -66,7 +93,12 @@ export class JournalService {
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
-  async getJournalList(user: UserEntity, lastDate: Date, limit: number): Promise<JournalEntity[]> {
+  async getJournalList(userInfo: JwtPayload, lastDate: Date, limit: number) {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+
     const journals = await this.journalRepository.find({
       where: {
         user: user,
@@ -81,7 +113,14 @@ export class JournalService {
   }
 
   //3. 아이디 별 저널 상세 조회
-  async getJournal(user: UserEntity, id: number): Promise<JournalEntity> {
+  async getJournal(
+    userInfo: JwtPayload,
+    id: number,
+  ): Promise<JournalEntity | { message: string; newToken: string }> {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
     const journal = await this.journalRepository.findOne({
       where: {
         id,
@@ -99,9 +138,21 @@ export class JournalService {
 
   //4. 날짜별 저널 상세 조회
   async getJournalByDate(
-    user: UserEntity,
+    userInfo: JwtPayload,
     date: Date,
-  ): Promise<JournalEntity | { message: string }> {
+  ): Promise<
+    | {
+        journalData: JournalEntity | null;
+        questionIds: number[];
+        message?: string;
+      }
+    | { message: string }
+  > {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+
     const journal = await this.journalRepository.findOne({
       where: {
         user,
@@ -110,30 +161,57 @@ export class JournalService {
       },
     });
 
-    if (!journal) {
-      return { message: "The journal doesn't exist on these date" };
-    }
+    const interview = await this.interviewService.findInterview(user, date);
 
-    return journal;
+    const journalAndInterviewIds = {
+      journalData: journal ?? null,
+      questionIds: interview.question_id,
+      message: journal ? undefined : "The journal doesn't exist on this date",
+    };
+
+    return journalAndInterviewIds;
   }
 
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
-  async deleteJournal(user: UserEntity, date: Date): Promise<object> {
-    const journal = await this.getJournalByDate(user, date); //4번
+  async deleteJournal(
+    userInfo: JwtPayload,
+    date: Date,
+  ): Promise<
+    | {
+        journalData: JournalEntity;
+        questionIds: number[];
+      }
+    | { message: string }
+  > {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+
+    await this.interviewService.resetInterview(user, date);
+
+    const journal = await this.getJournalByDate(userInfo, date); //4번
     if ('message' in journal) {
       return { message: journal.message };
     }
     await this.journalRepository.delete({ user, date });
-    return { message: `journal id :${journal.id}, date:${journal.date} removed` };
+
+    return {
+      message: `journal id :${journal.journalData.id}, date:${journal.journalData.date} removed`,
+    };
   }
 
   //6. 저널 수정 (일단 날짜로 식별 후 수정)
   async updateJournal(
-    user: UserEntity,
+    userInfo: JwtPayload,
     date: Date,
     modifyJournalDto: ModifyJournalDto,
-  ): Promise<void> {
-    await this.getJournalByDate(user, date); //4번
+  ): Promise<{ message: string }> {
+    const user = await this.userService.findUserByUserInfo(userInfo);
+    if ('message' in user) {
+      return user;
+    }
+    await this.getJournalByDate(userInfo, date); //4번
     const updateJournal = {
       title: modifyJournalDto.title,
       keyword: modifyJournalDto.keyword,

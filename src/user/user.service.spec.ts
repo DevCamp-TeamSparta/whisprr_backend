@@ -44,7 +44,7 @@ describe('UserService', () => {
 
     it('토큰 버젼이 일치 하지 않으면 메세지와 새로 생성한 토큰을 반환한다.', async () => {
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      userService.getUserTocken = jest.fn().mockResolvedValue(mockNewToken);
+      userService.getUserToken = jest.fn().mockResolvedValue(mockNewToken);
 
       const result = await userService.findUserByUserInfo(mockUserInfoExpired);
 
@@ -87,7 +87,7 @@ describe('UserService', () => {
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUpdatedUser);
 
-      const result = await userService.changeNickname(mockUserInfo, 'kelly');
+      const result = await userService.changeNickname(mockUser, 'kelly');
 
       expect(mockUserRepository.update).toHaveBeenCalledWith(
         { user_id: mockUser.user_id },
@@ -98,12 +98,12 @@ describe('UserService', () => {
     });
   });
 
-  describe('getUserTocken', () => {
+  describe('getUserToken', () => {
     it('uuid 로 jwt 토큰을 발급한다.', async () => {
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockJwtService.sign.mockReturnValue('test-token');
 
-      const result = await userService.getUserTocken('mock-uuid');
+      const result = await userService.getUserToken('mock-uuid');
 
       expect(mockJwtService.sign).toHaveBeenCalled();
       expect(result).toBe('test-token');
