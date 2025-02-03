@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 
 import { androidpublisher } from '@googleapis/androidpublisher';
@@ -159,5 +159,22 @@ export class PurchaseService {
     }
 
     return purchase;
+  }
+
+  //6.유저 구독제 및 구매 정보 반환
+  public async getUserPlan(user: UserEntity) {
+    const plan = await this.purchaseRepository.findOne({
+      where: {
+        user,
+        expiration_date: MoreThan(new Date()),
+      },
+      relations: ['plan'],
+    });
+
+    if (!plan) {
+      return { message: 'You are not subscribed to any plan currently' };
+    }
+
+    return plan;
   }
 }

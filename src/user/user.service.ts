@@ -10,12 +10,12 @@ import { JwtPayload } from 'src/common/utils/user_info.decorator';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
+    private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
   //1.1 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
-  async findUserByUserInfo(
+  public async findUserByUserInfo(
     userInfo: JwtPayload,
   ): Promise<UserEntity | { message: string; newToken: string }> {
     const user = await this.userRepository.findOne({
@@ -39,7 +39,7 @@ export class UserService {
   }
 
   //1.2 uuid 만으로 유저 정보 조회 메소드
-  async findUser(uuid: string) {
+  public async findUser(uuid: string) {
     const user = await this.userRepository.findOne({
       where: {
         user_id: uuid,
@@ -54,7 +54,7 @@ export class UserService {
   }
 
   //2. 유저 생성 메소드
-  async createUser() {
+  public async createUser() {
     const newUser = this.userRepository.create({
       user_id: uuidv4(),
       nickname: '무명',
@@ -67,16 +67,14 @@ export class UserService {
   }
 
   //3.유저 닉네임 변경 메소드
-  async changeNickname(userInfo: JwtPayload, newNickname: string) {
-    await this.findUserByUserInfo(userInfo);
+  public async changeNickname(user: UserEntity, newNickname: string) {
+    await this.userRepository.update({ user_id: user.user_id }, { nickname: newNickname });
 
-    await this.userRepository.update({ user_id: userInfo.uuid }, { nickname: newNickname });
-
-    return await this.findUser(userInfo.uuid);
+    return await this.findUser(user.user_id);
   }
 
   //4. 유저토큰 발급 메소드
-  async getUserTocken(uuid: string) {
+  public async getUserTocken(uuid: string) {
     await this.updateTokenVersion(uuid);
 
     const { freeTrialStatus, tokenVersion } = await this.checkFreetrial(uuid);
@@ -88,7 +86,7 @@ export class UserService {
   }
 
   //4.1 유저 토큰 발급 전 토큰 버젼 업데이트
-  async updateTokenVersion(uuid: string) {
+  public async updateTokenVersion(uuid: string) {
     await this.userRepository.increment({ user_id: uuid }, 'token_version', 1);
   }
 
@@ -135,7 +133,7 @@ export class UserService {
   }
 
   //5. 저널 생성 시 작성 횟수 업데이트
-  async updateWritingCount(user: UserEntity) {
+  public async updateWritingCount(user: UserEntity) {
     await this.userRepository.increment({ user_id: user.user_id }, 'writing_count', 1);
 
     return await this.updateUserTrialStatus(user);

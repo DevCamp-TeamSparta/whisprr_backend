@@ -10,9 +10,11 @@ import {
   mockUserWithMessag,
 } from '../user/mocks/mock.user.service';
 import { UserService } from '../user/user.service';
-import { ProfileService } from './profile.service';
+
 import { mockNicknameDto, mockProfileService } from './mocks/profile.service.mock';
 import { mockPlan } from '../plan/mocks/plan.service.mock';
+import { PurchaseService } from '../purchase/purchase.service';
+import { mockPurchaseService } from 'src/purchase/mocks/purchase.service.mock';
 
 describe('ProfileController', () => {
   let profileController: ProfileController;
@@ -23,7 +25,7 @@ describe('ProfileController', () => {
       providers: [
         JwtService,
         { provide: UserService, useValue: mockUserService },
-        { provide: ProfileService, useValue: mockProfileService },
+        { provide: PurchaseService, useValue: mockPurchaseService },
       ],
     }).compile();
 
@@ -59,11 +61,11 @@ describe('ProfileController', () => {
     });
     it('유저가 가입한 플랜을 조회 후 반환한다.', async () => {
       mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
-      mockProfileService.getUserPlan.mockResolvedValue(mockPlan);
+      mockPurchaseService.getUserPlan.mockResolvedValue(mockPlan);
 
       const result = await profileController.getUserPlan(mockUserInfo);
       expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
-      expect(mockProfileService.getUserPlan).toHaveBeenCalledWith(mockUser);
+      expect(mockPurchaseService.getUserPlan).toHaveBeenCalledWith(mockUser);
 
       expect(result).toEqual(mockPlan);
     });
