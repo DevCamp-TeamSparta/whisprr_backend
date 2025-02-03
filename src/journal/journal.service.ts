@@ -98,7 +98,10 @@ export class JournalService {
   }
 
   //4. 날짜별 저널 상세 조회
-  async getJournalByDate(user: UserEntity, date: Date): Promise<JournalEntity> {
+  async getJournalByDate(
+    user: UserEntity,
+    date: Date,
+  ): Promise<JournalEntity | { message: string }> {
     const journal = await this.journalRepository.findOne({
       where: {
         user,
@@ -108,7 +111,7 @@ export class JournalService {
     });
 
     if (!journal) {
-      throw new NotFoundException('The journal does not exist.');
+      return { message: "The journal doesn't exist on these date" };
     }
 
     return journal;
@@ -117,6 +120,9 @@ export class JournalService {
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
   async deleteJournal(user: UserEntity, date: Date): Promise<object> {
     const journal = await this.getJournalByDate(user, date); //4번
+    if ('message' in journal) {
+      return { message: journal.message };
+    }
     await this.journalRepository.delete({ user, date });
     return { message: `journal id :${journal.id}, date:${journal.date} removed` };
   }
