@@ -24,4 +24,5 @@ export const mockPurchaseService = {
   verifyPurchaseToken: jest.fn(),
   updatePurchaseTable: jest.fn(),
   findUserByPurchaseToken: jest.fn(),
+  getUserPlan: jest.fn(),
 };

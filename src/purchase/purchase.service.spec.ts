@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PurchaseService } from './purchase.service';
-import { Repository } from 'typeorm';
+import { MoreThan } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { ConfigService } from '@nestjs/config';
@@ -17,7 +17,6 @@ jest.mock('google-auth-library');
 
 describe('PurchaseService', () => {
   let purchaseService: PurchaseService;
-  let purchaseRepository: Repository<PurchaseEntity>;
   let mockConfigService: Partial<ConfigService>;
 
   beforeEach(async () => {
@@ -40,7 +39,6 @@ describe('PurchaseService', () => {
     }).compile();
 
     purchaseService = module.get<PurchaseService>(PurchaseService);
-    purchaseRepository = module.get<Repository<PurchaseEntity>>(getRepositoryToken(PurchaseEntity));
   });
 
   const mockResponse = {
@@ -192,6 +190,41 @@ describe('PurchaseService', () => {
       expect(mockPurchaseRepository.findOne).toHaveBeenCalledWith({
         where: { purchase_token: 'test-purchase-token' },
         relations: ['user'],
+      });
+      expect(result).toEqual(mockPurchase);
+    });
+  });
+
+  describe('getUserPlan', () => {
+    it('가입된 플랜이 없거나 만료 시 메세지를 리턴한다.', async () => {
+      mockPurchaseRepository.findOne.mockResolvedValue(null);
+      const boundGetUserPlan = purchaseService.getUserPlan.bind({
+        purchaseRepository: mockPurchaseRepository,
+      });
+
+      const result = await boundGetUserPlan(mockUser);
+
+      expect(mockPurchaseRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          user: mockUser,
+          expiration_date: MoreThan(expect.any(Date)),
+        },
+        relations: ['plan'],
+      });
+      expect(result).toEqual({ message: 'You are not subscribed to any plan currently' });
+    });
+
+    it('가입된 플랜 존재 시 구매정보와 함께 반환한다.', async () => {
+      mockPurchaseRepository.findOne.mockResolvedValue(mockPurchase);
+
+      const result = await purchaseService.getUserPlan(mockUser);
+
+      expect(mockPurchaseRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          user: mockUser,
+          expiration_date: MoreThan(expect.any(Date)),
+        },
+        relations: ['plan'],
       });
       expect(result).toEqual(mockPurchase);
     });
