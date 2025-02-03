@@ -113,7 +113,6 @@ export class UserService {
       where: { user_id: uuid },
       relations: ['purchases'],
     });
-    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
     }

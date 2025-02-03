@@ -89,7 +89,15 @@ export class JournalController {
     if ('message' in user) {
       return user;
     }
-    return await this.journalService.getJournalByDate(user, date);
+    const journal = await this.journalService.getJournalByDate(user, date);
+    const interview = await this.interviewService.findInterview(user, date);
+
+    const journalAndInterviewIds = {
+      journalData: journal,
+      questionIds: interview.question_id,
+    };
+
+    return journalAndInterviewIds;
   }
 
   //5. 날짜별 저널 삭제(무료 사용자  이용 가능 서비스)
