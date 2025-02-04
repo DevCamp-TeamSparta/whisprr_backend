@@ -41,32 +41,46 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            export DB_HOST=${{ secrets.DB_HOST }}
-            export DB_PORT=${{ secrets.DB_PORT }}
-            export DB_USER=${{ secrets.DB_USER }}
-            export DB_USERNAME=${{ secrets.DB_USERNAME }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export DB_NAME=${{ secrets.DB_NAME }}
-            export DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
 
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-            export DB_SYNC=${{ secrets.DB_SYNC }}
-            export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          if [ -f .env ]; then
+          cp .env .env.backup
+          fi
 
-            export PORT=${{ secrets.PORT }}
-            export TIMELIMIT=${{ secrets.TIMELIMIT }}
-            export PACKAGE_NAME=${{ secrets.PACKAGE_NAME }}
+          echo  "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo  "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo  "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo  "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo  "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo  "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo  "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
 
-            echo "${{ secrets.GCP_CREDENTIALS }}" > ~/whisprr_backend/gcp-credentials.json
+          echo  "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo  "DB_SYNC=${{ secrets.DB_SYNC }}" >> .env
+          echo  "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+
+          echo  "PORT=${{ secrets.PORT }}" >> .env
+          echo  "TIMELIMIT=${{ secrets.TIMELIMIT }}" >> .env
+          echo  "PACKAGE_NAME=${{ secrets.PACKAGE_NAME }}" >> .env
+
+
+          if ! cmp -s .env .env.new; then
+            echo
+            mv .env.new .env
+          else
+            echo
+            rm .env.new
+          fi
+
+          echo "${{ secrets.GCP_CREDENTIALS }}" > ~/whisprr_backend/gcp-credentials.json
             
 
-            chmod 600 ~/whisprr_backend/gcp-credentials.json
+          chmod 600 ~/whisprr_backend/gcp-credentials.json
 
             
-            cd ~/whisprr_backend
-            git fetch origin dev
-            git reset --hard origin/dev
-            docker-compose down
-            COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose up -d --build
+          cd ~/whisprr_backend
+          git fetch origin dev
+          git reset --hard origin/dev
+          docker-compose down
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose up -d --build
 
           EOF
