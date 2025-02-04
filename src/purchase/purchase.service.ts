@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { MoreThan, Repository } from 'typeorm';
@@ -128,6 +128,10 @@ export class PurchaseService {
 
     const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
 
+    if (!purchaseWithUser) {
+      return 'User_or purchase token not found';
+    }
+
     await this.userService.updateTokenVersion(purchaseWithUser.user.user_id);
   }
 
@@ -176,7 +180,7 @@ export class PurchaseService {
     });
 
     if (!purchase) {
-      throw new NotFoundException('the user is not exist');
+      return null;
     }
 
     return purchase;
