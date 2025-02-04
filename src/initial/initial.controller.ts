@@ -2,6 +2,7 @@ import { UserService } from '../user/user.service';
 import { BadRequestException, Controller, Get, Headers, Post } from '@nestjs/common';
 import { QuestionService } from '../question/question.service';
 import { InstructionService } from '../instruction/instruction.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('initial')
 export class InitialController {
@@ -9,6 +10,7 @@ export class InitialController {
     private readonly userService: UserService,
     private readonly questionService: QuestionService,
     private readonly instructionService: InstructionService,
+    private readonly configService: ConfigService,
   ) {}
 
   //1. 어플 설치 시 최초 1회 uuid 생성 요청
@@ -25,7 +27,7 @@ export class InitialController {
     }
     const token = await this.userService.getUserToken(uuid);
     const questions = await this.questionService.getQuestion();
-    const limits = 20;
+    const limits = Number(this.configService.get<number>('TIMELIMIT'));
     const instruction = await this.instructionService.getInstruction('interview');
 
     const response = {
