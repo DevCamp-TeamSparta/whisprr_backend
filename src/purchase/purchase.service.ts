@@ -48,6 +48,8 @@ export class PurchaseService {
       token: purchaseToken,
     });
 
+    console.log(response.data);
+
     return await this.updatePurchaseRecord(response.data, user, purchaseToken, plan);
   }
 
@@ -70,9 +72,10 @@ export class PurchaseService {
 
   //1.2 구매 상태 업데이트
   async updatePurchaseRecord(response, user: UserEntity, purchaseToken: string, plan: PlanEntity) {
-    let result = PurchaseStatus.inactive;
-    if (!response.cancelReason == null) {
-      result = PurchaseStatus.active;
+    let result = PurchaseStatus.active;
+
+    if (response.cancelReason !== undefined) {
+      result = PurchaseStatus.inactive;
     }
 
     const newRecord = {
