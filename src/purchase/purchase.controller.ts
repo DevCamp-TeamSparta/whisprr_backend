@@ -29,7 +29,16 @@ export class PurchaseController {
   //2.구매 변동 시 서버에서 알림 수신 및 구매 상태 업데이트
   @Post('/pubsub')
   async getNotification(@Body('message') message, @Res() res: Response) {
-    await this.purchaseService.updatePurchaseTable(message);
-    return res.status(200).send('message received');
+    try {
+      console.log('🔔 알림 수신:', message);
+
+      await this.purchaseService.updatePurchaseTable(message);
+
+      console.log('✅ 200 OK 반환');
+      return res.status(200).send('message received');
+    } catch (error) {
+      console.error('❌ 알림 처리 중 오류 발생:', error);
+      return res.status(500).send('Internal Server Error');
+    }
   }
 }
