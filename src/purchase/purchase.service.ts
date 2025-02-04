@@ -194,7 +194,7 @@ export class PurchaseService {
   async findUserByPurchaseToken(purchaseToken: string) {
     const purchase = await this.purchaseRepository.findOne({
       where: { purchase_token: purchaseToken },
-      relations: ['user'],
+      relations: ['user', 'plan'],
     });
 
     if (!purchase) {
