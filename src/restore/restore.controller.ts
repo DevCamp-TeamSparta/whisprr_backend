@@ -1,4 +1,4 @@
-import { Controller, Get, Headers } from '@nestjs/common';
+import { Controller, Get, Headers, NotFoundException } from '@nestjs/common';
 import { PurchaseService } from '../purchase/purchase.service';
 
 @Controller('restore')
@@ -9,6 +9,9 @@ export class RestoreController {
   @Get()
   async restoreAccount(@Headers('purchaseToken') purchaseToken: string) {
     const account = await this.purchaseService.findUserByPurchaseToken(purchaseToken);
+    if (!account) {
+      throw new NotFoundException('User not found');
+    }
     return account.user;
   }
 }
