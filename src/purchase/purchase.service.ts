@@ -137,16 +137,19 @@ export class PurchaseService {
       return;
     }
 
+    const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
+    if (!purchaseWithUser) {
+      console.log('User or purchase token not found.');
+      return;
+    }
+
     const queryRunner = this.purchaseRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       const purchaseStatus = await this.checkStatus(notificationType);
-      const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
-      if (!purchaseWithUser) {
-        throw new Error('User or purchase token not found');
-      }
+
       if (purchaseStatus.status === PurchaseStatus.active) {
         console.log('🔄 Active 상태 감지! 구독 검증 실행 중...');
         const verifyInfo = await this.updatePurchaseRecord(
