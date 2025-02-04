@@ -59,114 +59,129 @@ export class PurchaseService {
   //1.2 구매 상태 업데이트
   async updatePurchaseRecord(user: UserEntity, purchaseToken: string, plan: PlanEntity) {
     const client = await this.getAndroidPublisherClient();
-
     const purchaseResponse = await client.purchases.subscriptions.get({
       packageName: this.configService.get<string>('PACKAGE_NAME'),
       subscriptionId: plan.id,
       token: purchaseToken,
     });
 
-    if (purchaseResponse.data.linkedPurchaseToken) {
-      console.log(`🔄 linkedPurchaseToken 존재: ${purchaseResponse.data.linkedPurchaseToken}`);
+    const queryRunner = this.purchaseRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-      await this.purchaseRepository.delete({
-        purchase_token: purchaseResponse.data.linkedPurchaseToken,
-      });
-    }
+    try {
+      if (purchaseResponse.data.linkedPurchaseToken) {
+        console.log(`🔄 linkedPurchaseToken 존재: ${purchaseResponse.data.linkedPurchaseToken}`);
 
-    let result = PurchaseStatus.active;
-    if (purchaseResponse.data.cancelReason !== undefined) {
-      result = PurchaseStatus.inactive;
-    }
+        await queryRunner.manager.delete(PurchaseEntity, {
+          purchase_token: purchaseResponse.data.linkedPurchaseToken,
+        });
+      }
 
-    const newRecord = {
-      plan,
-      purchase_token: purchaseToken,
-      purchase_date: new Date(Number(purchaseResponse.data.startTimeMillis)),
-      expiration_date: new Date(Number(purchaseResponse.data.expiryTimeMillis)),
-      status: result,
-    };
+      let result = PurchaseStatus.active;
+      if (purchaseResponse.data.cancelReason !== undefined) {
+        result = PurchaseStatus.inactive;
+      }
 
-    if (await this.findUserPurchaseRecord(user)) {
-      await this.purchaseRepository.update({ user }, { ...newRecord });
-    } else {
-      const newPurchase = this.purchaseRepository.create({
-        user,
-        ...newRecord,
-      });
+      const newRecord = {
+        plan,
+        purchase_token: purchaseToken,
+        purchase_date: new Date(Number(purchaseResponse.data.startTimeMillis)),
+        expiration_date: new Date(Number(purchaseResponse.data.expiryTimeMillis)),
+        status: result,
+      };
 
-      await this.purchaseRepository.save(newPurchase);
-    }
-
-    if (purchaseResponse.data.acknowledgementState === 0) {
-      // 0: 아직 확인되지 않음
-      await client.purchases.subscriptions.acknowledge({
-        packageName: this.configService.get<string>('PACKAGE_NAME'),
-        subscriptionId: plan.id,
-        token: purchaseToken,
-        requestBody: { developerPayload: 'Acknowledged by server' },
+      const existingPurchase = await queryRunner.manager.findOne(PurchaseEntity, {
+        where: { user },
       });
 
-      console.log(`✅ 구독 확인 완료: ${purchaseToken}`);
+      if (existingPurchase) {
+        await queryRunner.manager.update(PurchaseEntity, { user }, newRecord);
+      } else {
+        const newPurchase = queryRunner.manager.create(PurchaseEntity, { user, ...newRecord });
+        await queryRunner.manager.save(newPurchase);
+      }
+
+      if (purchaseResponse.data.acknowledgementState === 0) {
+        await client.purchases.subscriptions.acknowledge({
+          packageName: this.configService.get<string>('PACKAGE_NAME'),
+          subscriptionId: plan.id,
+          token: purchaseToken,
+          requestBody: { developerPayload: 'Acknowledged by server' },
+        });
+
+        console.log(`✅ 구독 확인 완료: ${purchaseToken}`);
+      }
+
+      await queryRunner.commitTransaction();
+      return newRecord;
+    } catch (error) {
+      console.error(`⛔ 트랜잭션 롤백 발생: ${error.message}`);
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    return newRecord;
-  }
-
-  //1.2.1 이전 구매 기록 있는 지 확인
-  private async findUserPurchaseRecord(user: UserEntity) {
-    const record = await this.purchaseRepository.findOne({ where: { user } });
-    return record;
   }
 
   //2. 알림 수신 시 구매 상태 업데이트
   async updatePurchaseTable(message) {
     const decodedData = JSON.parse(Buffer.from(message.data, 'base64').toString('utf-8'));
 
-    console.log('Decoded Data:', decodedData);
+    console.log('📢 RTDN 수신:', decodedData);
     const notificationType = decodedData.subscriptionNotification?.notificationType;
+    const purchaseToken = decodedData.subscriptionNotification?.purchaseToken;
 
-    if (!notificationType) {
-      console.log('notificationType이 없습니다. 테스트용 알림이거나 잘못된 데이터입니다.');
+    if (!notificationType || !purchaseToken) {
+      console.log('⛔️ 알림 데이터 부족 - 처리 불가');
       return;
     }
-    const purchaseStatus = await this.checkStatus(
-      decodedData.subscriptionNotification.notificationType,
-    );
-    const purchaseToken = decodedData.subscriptionNotification.purchaseToken;
 
-    if (purchaseStatus.status === PurchaseStatus.active) {
-      const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
-      if (!purchaseWithUser) {
-        console.log('User or purchase token not found.');
-        return;
+    const queryRunner = this.purchaseRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const purchaseStatus = await this.checkStatus(notificationType);
+
+      if (purchaseStatus.status === PurchaseStatus.active) {
+        const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
+        if (!purchaseWithUser) {
+          console.log('User or purchase token not found.');
+          return;
+        }
+
+        console.log('🔄 Active 상태 감지! 구독 검증 실행 중...');
+        const verifyInfo = await this.updatePurchaseRecord(
+          purchaseWithUser.user,
+          purchaseToken,
+          purchaseWithUser.plan,
+        );
+
+        console.log('✅ 구독 검증 완료:', verifyInfo);
+      } else {
+        await queryRunner.manager.update(
+          PurchaseEntity,
+          { purchase_token: purchaseToken },
+          { ...purchaseStatus },
+        );
+
+        const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
+        if (!purchaseWithUser) {
+          throw new Error('User or purchase token not found');
+        }
+
+        await this.userService.updateTokenVersion(purchaseWithUser.user.user_id);
       }
 
-      console.log('🔄 Active 상태 감지! 구독 검증 실행 중...');
-      const verifyInfo = await this.updatePurchaseRecord(
-        purchaseWithUser.user,
-        purchaseToken,
-        purchaseWithUser.plan,
-      );
-
-      console.log('✅ 구독 검증 완료:', verifyInfo);
-      return verifyInfo;
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      console.error(`⛔ 트랜잭션 롤백 발생: ${error.message}`);
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-
-    await this.purchaseRepository.update(
-      {
-        purchase_token: purchaseToken,
-      },
-      { ...purchaseStatus },
-    );
-
-    const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
-
-    if (!purchaseWithUser) {
-      return 'User_or purchase token not found';
-    }
-
-    await this.userService.updateTokenVersion(purchaseWithUser.user.user_id);
   }
 
   //2.1 알림 타입 별 구매 상태 분류
@@ -218,6 +233,16 @@ export class PurchaseService {
     }
 
     return purchase;
+  }
+
+  //4.구매 기록 생성
+  private async createPurchaseRecord(user, newRecord) {
+    const newPurchase = this.purchaseRepository.create({
+      user,
+      ...newRecord,
+    });
+
+    await this.purchaseRepository.save(newPurchase);
   }
 
   //6.유저 구독제 및 구매 정보 반환
