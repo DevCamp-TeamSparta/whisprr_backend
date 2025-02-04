@@ -143,14 +143,11 @@ export class PurchaseService {
 
     try {
       const purchaseStatus = await this.checkStatus(notificationType);
-
+      const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
+      if (!purchaseWithUser) {
+        throw new Error('User or purchase token not found');
+      }
       if (purchaseStatus.status === PurchaseStatus.active) {
-        const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
-        if (!purchaseWithUser) {
-          console.log('User or purchase token not found.');
-          return;
-        }
-
         console.log('🔄 Active 상태 감지! 구독 검증 실행 중...');
         const verifyInfo = await this.updatePurchaseRecord(
           purchaseWithUser.user,
@@ -165,11 +162,6 @@ export class PurchaseService {
           { purchase_token: purchaseToken },
           { ...purchaseStatus },
         );
-
-        const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
-        if (!purchaseWithUser) {
-          throw new Error('User or purchase token not found');
-        }
 
         await this.userService.updateTokenVersion(purchaseWithUser.user.user_id);
       }
@@ -233,16 +225,6 @@ export class PurchaseService {
     }
 
     return purchase;
-  }
-
-  //4.구매 기록 생성
-  private async createPurchaseRecord(user, newRecord) {
-    const newPurchase = this.purchaseRepository.create({
-      user,
-      ...newRecord,
-    });
-
-    await this.purchaseRepository.save(newPurchase);
   }
 
   //6.유저 구독제 및 구매 정보 반환
