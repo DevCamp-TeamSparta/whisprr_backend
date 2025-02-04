@@ -30,27 +30,13 @@ export class PurchaseService {
     if ('message' in user) {
       return user;
     }
-    const verifyInfo = await this.verifyPurchaseToken(plan, user, purchaseToken);
+    const verifyInfo = await this.updatePurchaseRecord(user, purchaseToken, plan);
     const token = await this.userService.getUserToken(user.user_id);
 
     return {
       ...verifyInfo,
       new_token: token,
     };
-  }
-
-  //1.구매 토큰 검증
-  async verifyPurchaseToken(plan: PlanEntity, user: UserEntity, purchaseToken: string) {
-    const client = await this.getAndroidPublisherClient();
-    const response = await client.purchases.subscriptions.get({
-      packageName: this.configService.get<string>('PACKAGE_NAME'),
-      subscriptionId: plan.id,
-      token: purchaseToken,
-    });
-
-    console.log(response.data);
-
-    return await this.updatePurchaseRecord(response.data, user, purchaseToken, plan);
   }
 
   //1.1 구글 크레덴셜 로그인 클라이언트 생성
@@ -71,18 +57,33 @@ export class PurchaseService {
   }
 
   //1.2 구매 상태 업데이트
-  async updatePurchaseRecord(response, user: UserEntity, purchaseToken: string, plan: PlanEntity) {
-    let result = PurchaseStatus.active;
+  async updatePurchaseRecord(user: UserEntity, purchaseToken: string, plan: PlanEntity) {
+    const client = await this.getAndroidPublisherClient();
 
-    if (response.cancelReason !== undefined) {
+    const purchaseResponse = await client.purchases.subscriptions.get({
+      packageName: this.configService.get<string>('PACKAGE_NAME'),
+      subscriptionId: plan.id,
+      token: purchaseToken,
+    });
+
+    if (purchaseResponse.data.linkedPurchaseToken) {
+      console.log(`🔄 linkedPurchaseToken 존재: ${purchaseResponse.data.linkedPurchaseToken}`);
+
+      await this.purchaseRepository.delete({
+        purchase_token: purchaseResponse.data.linkedPurchaseToken,
+      });
+    }
+
+    let result = PurchaseStatus.active;
+    if (purchaseResponse.data.cancelReason !== undefined) {
       result = PurchaseStatus.inactive;
     }
 
     const newRecord = {
       plan,
       purchase_token: purchaseToken,
-      purchase_date: new Date(Number(response.startTimeMillis)),
-      expiration_date: new Date(Number(response.expiryTimeMillis)),
+      purchase_date: new Date(Number(purchaseResponse.data.startTimeMillis)),
+      expiration_date: new Date(Number(purchaseResponse.data.expiryTimeMillis)),
       status: result,
     };
 
@@ -95,6 +96,18 @@ export class PurchaseService {
       });
 
       await this.purchaseRepository.save(newPurchase);
+    }
+
+    if (purchaseResponse.data.acknowledgementState === 0) {
+      // 0: 아직 확인되지 않음
+      await client.purchases.subscriptions.acknowledge({
+        packageName: this.configService.get<string>('PACKAGE_NAME'),
+        subscriptionId: plan.id,
+        token: purchaseToken,
+        requestBody: { developerPayload: 'Acknowledged by server' },
+      });
+
+      console.log(`✅ 구독 확인 완료: ${purchaseToken}`);
     }
 
     return newRecord;
@@ -130,10 +143,10 @@ export class PurchaseService {
       }
 
       console.log('🔄 Active 상태 감지! 구독 검증 실행 중...');
-      const verifyInfo = await this.verifyPurchaseToken(
-        purchaseWithUser.plan,
+      const verifyInfo = await this.updatePurchaseRecord(
         purchaseWithUser.user,
         purchaseToken,
+        purchaseWithUser.plan,
       );
 
       console.log('✅ 구독 검증 완료:', verifyInfo);
