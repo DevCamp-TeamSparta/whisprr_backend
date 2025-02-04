@@ -4,6 +4,8 @@ import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
 import { TrialAndPlanGuard } from '../common/guards/trialAndPlan.guard';
 import { QuestionAnswerArrayDto } from './dto/QandAArray.dto';
 import { InterviewDto } from './dto/start.interview.dto';
+import { InterviewEntity } from './entities/interview.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Controller('interview')
 export class InterviewController {
@@ -12,7 +14,10 @@ export class InterviewController {
   //1. 회고 시작 시 인터뷰 칼럼 생성(회고 재시작 시 인터뷰 기록 비우고 재시작)
   @UseGuards(TrialAndPlanGuard)
   @Post()
-  async startInterview(@UserInfo() userInfo: JwtPayload, @Body() InterviewDto: InterviewDto) {
+  async startInterview(
+    @UserInfo() userInfo: JwtPayload,
+    @Body() InterviewDto: InterviewDto,
+  ): Promise<Partial<InterviewEntity> | UserEntity | { message: string; newToken: string }> {
     return this.interviewService.startInterview(userInfo, InterviewDto.date);
   }
 
@@ -24,7 +29,7 @@ export class InterviewController {
     @UserInfo() userInfo: JwtPayload,
     @Param('date') date: Date,
     @Body() QandADto: QuestionAnswerArrayDto,
-  ) {
+  ): Promise<InterviewEntity | UserEntity | { message: string; newToken: string }> {
     return this.interviewService.updateInterview(
       userInfo,
       date,

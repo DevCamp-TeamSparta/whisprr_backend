@@ -38,12 +38,17 @@ export class JournalService {
   ) {}
 
   //1. 저널 생성
-  public async createJournal(userInfo: JwtPayload, jornalDto: JournalDto) {
+  public async createJournal(
+    userInfo: JwtPayload,
+    jornalDto: JournalDto,
+  ): Promise<Partial<ReturnedJournal> | { message: string; newToken: string }> {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
+
     await this.checkJournalCreationAvailbility(user, jornalDto.date);
+    await this.cheskJournalExist(user, jornalDto.date);
     const interview = await this.interviewService.findInterview(user, jornalDto.date);
     const instruction = await this.instructionService.getInstruction('journal');
     const journal = await this.openAiService.getJournalByAI(interview.content, instruction.content);
@@ -56,7 +61,6 @@ export class JournalService {
     journal: Journal,
     date: Date,
   ): Promise<Partial<ReturnedJournal>> {
-    await this.cheskJournalExist(user, date);
     const newJournal = this.journalRepository.create({
       user: user,
       title: journal.title,
@@ -67,8 +71,9 @@ export class JournalService {
     });
 
     await this.journalRepository.save(newJournal);
-    const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
     await this.updatejournalCreation(user, date);
+
+    const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
 
     const returndJournal: Partial<ReturnedJournal> = {
       title: newJournal.title,
@@ -93,7 +98,11 @@ export class JournalService {
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
-  async getJournalList(userInfo: JwtPayload, lastDate: Date, limit: number) {
+  async getJournalList(
+    userInfo: JwtPayload,
+    lastDate: Date,
+    limit: number,
+  ): Promise<JournalEntity[] | { message: string; newToken: string }> {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
@@ -112,18 +121,11 @@ export class JournalService {
     return journals;
   }
 
-  //3. 아이디 별 저널 상세 조회
-  async getJournal(
-    userInfo: JwtPayload,
-    id: number,
-  ): Promise<JournalEntity | { message: string; newToken: string }> {
-    const user = await this.userService.findUserByUserInfo(userInfo);
-    if ('message' in user) {
-      return user;
-    }
+  //3. 유저, 날짜별 저널 상세 조회(유저 토큰 검증 x)
+  async getJournalByDateWithoutUserVerify(user: UserEntity, date: Date): Promise<JournalEntity> {
     const journal = await this.journalRepository.findOne({
       where: {
-        id,
+        date,
         user,
         deleted_at: null,
       },
@@ -146,7 +148,7 @@ export class JournalService {
         questionIds: number[];
         message?: string;
       }
-    | { message: string }
+    | { message: string; newToken: string }
   > {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
@@ -173,31 +175,18 @@ export class JournalService {
   }
 
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
-  async deleteJournal(
-    userInfo: JwtPayload,
-    date: Date,
-  ): Promise<
-    | {
-        journalData: JournalEntity;
-        questionIds: number[];
-      }
-    | { message: string }
-  > {
+  async deleteJournal(userInfo: JwtPayload, date: Date): Promise<{ message: string }> {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
 
-    await this.interviewService.resetInterview(user, date);
+    const journal = await this.getJournalByDateWithoutUserVerify(user, date);
 
-    const journal = await this.getJournalByDate(userInfo, date); //4번
-    if ('message' in journal) {
-      return { message: journal.message };
-    }
     await this.journalRepository.delete({ user, date });
-
+    await this.interviewService.resetInterview(user, date);
     return {
-      message: `journal id :${journal.journalData.id}, date:${journal.journalData.date} removed`,
+      message: `journal id :${journal.id}, date:${journal.date} removed`,
     };
   }
 
@@ -206,12 +195,12 @@ export class JournalService {
     userInfo: JwtPayload,
     date: Date,
     modifyJournalDto: ModifyJournalDto,
-  ): Promise<{ message: string }> {
+  ): Promise<JournalEntity | { message: string; newToken: string }> {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
     }
-    await this.getJournalByDate(userInfo, date); //4번
+
     const updateJournal = {
       title: modifyJournalDto.title,
       keyword: modifyJournalDto.keyword,
@@ -220,6 +209,7 @@ export class JournalService {
     };
 
     await this.journalRepository.update({ user, date }, { ...updateJournal });
+    return await this.getJournalByDateWithoutUserVerify(user, date);
   }
 
   //7. 당일 저널 생성 횟수 초과 확인
@@ -242,7 +232,7 @@ export class JournalService {
     return;
   }
   //8. 회고 시작 시 저널 존재 여부 확인
-  async cheskJournalExist(user: UserEntity, date: Date) {
+  async cheskJournalExist(user: UserEntity, date: Date): Promise<void> {
     const isExistJornal = await this.journalRepository.findOne({
       where: {
         user,

@@ -41,33 +41,39 @@ export class JournalController {
     @UserInfo() userInfo: JwtPayload,
     @Query('lastDate') lastDate?: string,
     @Query('limit') limit: number = 5,
-  ) {
+  ): Promise<JournalEntity[] | { message: string; newToken: string }> {
     const effectiveLastDate = lastDate ? new Date(lastDate) : new Date();
     return await this.journalService.getJournalList(userInfo, effectiveLastDate, limit);
   }
 
-  //3. 아이디별 저널 상세 조회(무료 사용자  이용 가능 서비스)
-  @UseGuards(UserGuard)
-  @Get('details/:id')
-  async getJournal(@UserInfo() userInfo: JwtPayload, @Param('id') id: number) {
-    return await this.journalService.getJournal(userInfo, id);
-  }
-
-  //4. 날짜별 저널 상세 조회(무료 사용자  이용 가능 서비스)
+  //3. 날짜별 저널 상세 조회(무료 사용자  이용 가능 서비스)
   @UseGuards(UserGuard)
   @Get(':date')
-  async getJournalByDate(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
+  async getJournalByDate(
+    @UserInfo() userInfo: JwtPayload,
+    @Param('date') date: Date,
+  ): Promise<
+    | {
+        journalData: JournalEntity | null;
+        questionIds: number[];
+        message?: string;
+      }
+    | { message: string }
+  > {
     return await this.journalService.getJournalByDate(userInfo, date);
   }
 
-  //5. 날짜별 저널 삭제(무료 사용자  이용 가능 서비스)
+  //4. 날짜별 저널 삭제(무료 사용자  이용 가능 서비스)
   @UseGuards(UserGuard)
   @Delete(':date')
-  async deleteJournal(@UserInfo() userInfo: JwtPayload, @Param('date') date: Date) {
+  async deleteJournal(
+    @UserInfo() userInfo: JwtPayload,
+    @Param('date') date: Date,
+  ): Promise<{ message: string }> {
     return await this.journalService.deleteJournal(userInfo, date);
   }
 
-  //6. 날짜별 저널 수정(무료 체험판, 플랜 가입 여부 확인)
+  //5. 날짜별 저널 수정(무료 체험판, 플랜 가입 여부 확인)
   @UseGuards(TrialAndPlanGuard)
   @Patch(':date')
   async updateJournal(
@@ -75,8 +81,7 @@ export class JournalController {
     @Param('date') date: Date,
 
     @Body() modifyJournalDto: ModifyJournalDto,
-  ) {
-    await this.journalService.updateJournal(userInfo, date, modifyJournalDto);
-    return await this.journalService.getJournalByDate(userInfo, date);
+  ): Promise<JournalEntity | { message: string; newToken: string }> {
+    return await this.journalService.updateJournal(userInfo, date, modifyJournalDto);
   }
 }

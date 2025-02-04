@@ -19,7 +19,10 @@ export class InterviewService {
   ) {}
 
   //1. 회고 시작 시 인터뷰 기록 생성
-  async startInterview(userInfo: JwtPayload, date: Date) {
+  async startInterview(
+    userInfo: JwtPayload,
+    date: Date,
+  ): Promise<Partial<InterviewEntity> | UserEntity | { message: string; newToken: string }> {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
@@ -54,7 +57,10 @@ export class InterviewService {
   }
 
   //1.1 회고 시작 시 해당 날짜에 이미 생성된 인터뷰 기록 있는 지 확인
-  private async findInterviewAlready(user: UserEntity, date: Date) {
+  private async findInterviewAlready(
+    user: UserEntity,
+    date: Date,
+  ): Promise<InterviewEntity | null> {
     const interview = await this.interviewRepository.findOne({ where: { user, date } });
 
     if (interview) {
@@ -70,7 +76,7 @@ export class InterviewService {
     date: Date,
     QandAs: QuestionAnswerDto[],
     questionId: number,
-  ) {
+  ): Promise<InterviewEntity | UserEntity | { message: string; newToken: string }> {
     const user = await this.userService.findUserByUserInfo(userInfo);
     if ('message' in user) {
       return user;
@@ -99,7 +105,7 @@ export class InterviewService {
   }
 
   // 1.3. & 2.1. 인터뷰 업데이트 전 해당 날찌의 인터뷰 기록 존재 여부 확인
-  async findInterview(user: UserEntity, date: Date) {
+  async findInterview(user: UserEntity, date: Date): Promise<InterviewEntity> {
     const interview = await this.interviewRepository.findOne({
       where: { user, date },
     });
@@ -110,7 +116,8 @@ export class InterviewService {
   }
 
   //3. 만약 해당 날짜에 인터뷰 기록이 있다면 비우고 다시 시작
-  async resetInterview(user: UserEntity, date: Date) {
+  async resetInterview(user: UserEntity, date: Date): Promise<void> {
     await this.interviewRepository.update({ user, date }, { content: [], question_id: null });
+    return;
   }
 }
