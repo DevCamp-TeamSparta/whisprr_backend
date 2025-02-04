@@ -114,16 +114,34 @@ export class PurchaseService {
       console.log('notificationType이 없습니다. 테스트용 알림이거나 잘못된 데이터입니다.');
       return;
     }
-    const purchaeStatus = await this.checkStatus(
+    const purchaseStatus = await this.checkStatus(
       decodedData.subscriptionNotification.notificationType,
     );
     const purchaseToken = decodedData.subscriptionNotification.purchaseToken;
+
+    if (purchaseStatus.status === PurchaseStatus.active) {
+      const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
+      if (!purchaseWithUser) {
+        console.log('User or purchase token not found.');
+        return;
+      }
+
+      console.log('🔄 Active 상태 감지! 구독 검증 실행 중...');
+      const verifyInfo = await this.verifyPurchaseToken(
+        purchaseWithUser.plan,
+        purchaseWithUser.user,
+        purchaseToken,
+      );
+
+      console.log('✅ 구독 검증 완료:', verifyInfo);
+      return verifyInfo;
+    }
 
     await this.purchaseRepository.update(
       {
         purchase_token: purchaseToken,
       },
-      { ...purchaeStatus },
+      { ...purchaseStatus },
     );
 
     const purchaseWithUser = await this.findUserByPurchaseToken(purchaseToken);
