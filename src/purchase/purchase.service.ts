@@ -111,11 +111,11 @@ export class PurchaseService {
       };
 
       const existingPurchase = await queryRunner.manager.findOne(PurchaseEntity, {
-        where: { user },
+        where: { user, purchase_token: purchaseToken },
       });
 
       if (existingPurchase) {
-        await queryRunner.manager.update(PurchaseEntity, { user }, newRecord);
+        await queryRunner.manager.update(PurchaseEntity, { user }, { ...newRecord });
       } else {
         const newPurchase = queryRunner.manager.create(PurchaseEntity, { user, ...newRecord });
         await queryRunner.manager.save(newPurchase);
