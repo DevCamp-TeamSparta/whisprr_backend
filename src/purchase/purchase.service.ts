@@ -105,17 +105,21 @@ export class PurchaseService {
       const newRecord = {
         plan,
         purchase_token: purchaseToken,
-        purchase_date: new Date(purchaseResponse.data.lineItems[0].expiryTime),
-        expiration_date: new Date(purchaseResponse.data.startTime),
+        purchase_date: new Date(purchaseResponse.data.startTime),
+        expiration_date: new Date(purchaseResponse.data.lineItems[0].expiryTime),
         status: result,
       };
 
       const existingPurchase = await queryRunner.manager.findOne(PurchaseEntity, {
-        where: { user, purchase_token: purchaseToken },
+        where: { user },
       });
 
       if (existingPurchase) {
-        await queryRunner.manager.update(PurchaseEntity, { user }, { ...newRecord });
+        await queryRunner.manager.update(
+          PurchaseEntity,
+          { id: existingPurchase.id },
+          { ...newRecord },
+        );
       } else {
         const newPurchase = queryRunner.manager.create(PurchaseEntity, { user, ...newRecord });
         await queryRunner.manager.save(newPurchase);
