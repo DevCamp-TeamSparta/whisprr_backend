@@ -58,8 +58,6 @@ export class PurchaseService {
       return;
     } //purchase 토큰으로 유저 조회 불가 시 첫구매로 간주하고 클라이언트가 집접 구매 검증 요청 해야함
 
-    await this.userService.updateTokenVersion(purchaseWithUser.user.user_id);
-
     return await this.updatePurchaseRecord(
       purchaseWithUser.user,
       purchaseToken,
