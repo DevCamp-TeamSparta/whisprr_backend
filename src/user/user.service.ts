@@ -14,10 +14,24 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  //1.1 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
+  //1. 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
   public async findUserByUserInfo(
     userInfo: JwtPayload,
   ): Promise<UserEntity | { message: string; newToken: string }> {
+    const user = await this.findUserByUserInfoWhitoutTokenVerify(userInfo);
+
+    if (user.token_version !== userInfo.tokenVersion) {
+      const newToken = await this.getUserToken(user.user_id);
+      return {
+        message: 'A new token has been issued due to expiration. Please retry',
+        newToken,
+      };
+    }
+    return user;
+  }
+
+  //1.1 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
+  public async findUserByUserInfoWhitoutTokenVerify(userInfo: JwtPayload): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: {
         user_id: userInfo.uuid,
@@ -28,13 +42,6 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    if (user.token_version !== userInfo.tokenVersion) {
-      const newToken = await this.getUserToken(user.user_id);
-      return {
-        message: 'A new token has been issued due to expiration. Please retry',
-        newToken,
-      };
-    }
     return user;
   }
 
