@@ -14,10 +14,10 @@ import { ModifyJournalDto } from './dto/modify_journal.dto';
 import { UserService } from '../user/user.service';
 import { JournalCreationEntity } from './entities/journal.creation.entity';
 import { startOfDay, endOfDay } from 'date-fns';
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { JwtPayload } from '../common/utils/user_info.decorator';
 import { JournalDto } from './dto/create_jornal.dto';
-import { InterviewService } from 'src/interview/interview.service';
-import { InstructionService } from 'src/instruction/instruction.service';
+import { InterviewService } from '../interview/interview.service';
+import { InstructionService } from '../instruction/instruction.service';
 
 interface ReturnedJournal extends JournalEntity {
   jwtToken: string;
@@ -46,9 +46,8 @@ export class JournalService {
     if ('message' in user) {
       return user;
     }
+    await this.checkJournalExist(user, jornalDto.date);
 
-    await this.checkJournalCreationAvailbility(user, jornalDto.date);
-    await this.cheskJournalExist(user, jornalDto.date);
     const interview = await this.interviewService.findInterview(user, jornalDto.date);
     const instruction = await this.instructionService.getInstruction('journal');
     const journal = await this.openAiService.getJournalByAI(interview.content, instruction.content);
@@ -200,6 +199,7 @@ export class JournalService {
     if ('message' in user) {
       return user;
     }
+    await this.getJournalByDateWithoutUserVerify(user, date);
 
     const updateJournal = {
       title: modifyJournalDto.title,
@@ -232,7 +232,7 @@ export class JournalService {
     return;
   }
   //8. 회고 시작 시 저널 존재 여부 확인
-  async cheskJournalExist(user: UserEntity, date: Date): Promise<void> {
+  async checkJournalExist(user: UserEntity, date: Date): Promise<void> {
     const isExistJornal = await this.journalRepository.findOne({
       where: {
         user,

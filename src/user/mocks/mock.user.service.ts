@@ -12,6 +12,7 @@ export const mockUserService = {
   updateWritingCount: jest.fn(),
   updateUserTrialStatus: jest.fn(),
   updateTokenVersion: jest.fn(),
+  findUserByUserInfoWhitoutTokenVerify: jest.fn(),
 };
 
 export const mockUser: UserEntity = {

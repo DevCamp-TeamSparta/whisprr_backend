@@ -21,8 +21,19 @@ export const mockPurchase: PurchaseEntity = {
 };
 
 export const mockPurchaseService = {
-  verifyPurchaseToken: jest.fn(),
+  verifyPurchase: jest.fn(),
   updatePurchaseTable: jest.fn(),
   findUserByPurchaseToken: jest.fn(),
   getUserPlan: jest.fn(),
+  reciveRTDN: jest.fn(),
+};
+
+export const mockPurchaseToken = 'test-purchase-token';
+export const mockVerifyResult = {
+  plan: mockPlan,
+  purchase_token: mockPurchaseToken,
+  purchase_date: '2025-02-05T05:12:17.758Z',
+  expiration_date: '2025-02-05T05:17:15.015Z',
+  status: 'active',
+  new_token: 'new jwt token',
 };

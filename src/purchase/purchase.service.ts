@@ -10,8 +10,8 @@ import { PurchaseStatus } from './utils/purchase.status';
 import { UserEntity } from '../user/entities/user.entity';
 import { PlanEntity } from '../plan/entities/plan.entity';
 import { UserService } from '../user/user.service';
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
-import { PlanService } from 'src/plan/plan.service';
+import { JwtPayload } from '../common/utils/user_info.decorator';
+import { PlanService } from '../plan/plan.service';
 
 @Injectable()
 export class PurchaseService {
@@ -40,7 +40,7 @@ export class PurchaseService {
   }
 
   //2. RTDN 수신 시 google developer api 호출
-  async updatePurchaseTable(message) {
+  async reciveRTDN(message) {
     const decodedData = JSON.parse(Buffer.from(message.data, 'base64').toString('utf-8'));
 
     console.log('📢 RTDN 수신:', decodedData);
@@ -64,12 +64,7 @@ export class PurchaseService {
 
   //1.1 + 2.1.  google developer api 요청 및 구매 상태 업데이트
   async updatePurchaseRecord(user: UserEntity, purchaseToken: string, plan: PlanEntity) {
-    const client = await this.getAndroidPublisherClient();
-    const purchaseResponse = await client.purchases.subscriptionsv2.get({
-      packageName: this.configService.get<string>('PACKAGE_NAME'),
-      token: purchaseToken,
-    });
-
+    const purchaseResponse = await this.androidDepeloverAPI(purchaseToken);
     console.log(purchaseResponse.data);
 
     const queryRunner = this.purchaseRepository.manager.connection.createQueryRunner();
@@ -106,7 +101,8 @@ export class PurchaseService {
       };
 
       const existingPurchase = await queryRunner.manager.findOne(PurchaseEntity, {
-        where: { user },
+        where: { user: { user_id: user.user_id } },
+        lock: { mode: 'pessimistic_write' },
       });
 
       if (existingPurchase) {
@@ -131,8 +127,19 @@ export class PurchaseService {
     }
   }
 
-  //1.1.1 구글 크레덴셜 로그인 클라이언트 생성
-  async getAndroidPublisherClient() {
+  //1.1.1 developer api 요청
+  private async androidDepeloverAPI(purchaseToken: string) {
+    const client = await this.getAndroidPublisherClient();
+    const purchaseResponse = await client.purchases.subscriptionsv2.get({
+      packageName: this.configService.get<string>('PACKAGE_NAME'),
+      token: purchaseToken,
+    });
+
+    return purchaseResponse;
+  }
+
+  //1.1.1.1 구글 크레덴셜 로그인 클라이언트 생성
+  private async getAndroidPublisherClient() {
     const keyFile = this.configService.get<string>('GOOGLE_KEY_FILE');
     const auth = new GoogleAuth({
       keyFilename: keyFile,
@@ -140,12 +147,12 @@ export class PurchaseService {
     });
     const authClient = (await auth.getClient()) as OAuth2Client;
 
-    const result = androidpublisher({
+    const client = androidpublisher({
       version: 'v3',
       auth: authClient,
     });
 
-    return result;
+    return client;
   }
 
   //3. 구매 토큰으로 유저 조회(복원)

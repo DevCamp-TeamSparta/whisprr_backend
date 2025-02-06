@@ -1,12 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InterviewController } from './interview.controller';
-import {
-  mockUser,
-  mockUserInfo,
-  mockUserInfoExpired,
-  mockUserService,
-  mockUserWithMessag,
-} from '../user/mocks/mock.user.service';
+import { mockUser, mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
 import { UserService } from '../user/user.service';
 import { InterviewService } from './interview.service';
 import {
@@ -38,6 +32,7 @@ describe('InterviewController', () => {
   describe('startInterview', () => {
     const mockResult = {
       content: [],
+      question_id: null,
       date: '2025-01-20',
       created_at: new Date(),
       user: mockUser,
@@ -45,22 +40,12 @@ describe('InterviewController', () => {
       id: 1,
     };
 
-    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
-      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
-      const result = await interviewController.startInterview(
-        mockUserInfoExpired,
-        mockInterviewDto,
-      );
-      expect(result).toEqual(mockUserWithMessag);
-    });
     it('인터뷰기록을 생성하고 반환한다.', async () => {
-      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockInterviewService.startInterview.mockResolvedValue(mockResult);
 
       const result = await interviewController.startInterview(mockUserInfo, mockInterviewDto);
-      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockInterviewService.startInterview).toHaveBeenCalledWith(
-        mockUser,
+        mockUserInfo,
         mockInterviewDto.date,
       );
       expect(result).toEqual(mockResult);
@@ -70,6 +55,7 @@ describe('InterviewController', () => {
   describe('updateInterview', () => {
     const mockResult = {
       content: [{ question: 'test?', answer: 'test' }],
+      question_id: [1],
       date: '2025-01-20',
       created_at: new Date(),
       user: mockUser,
@@ -79,16 +65,7 @@ describe('InterviewController', () => {
 
     const mockDate: Date = new Date('2025-01-20');
 
-    it('user 객체 안에 messge 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
-      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
-      const result = await interviewController.startInterview(
-        mockUserInfoExpired,
-        mockInterviewDto,
-      );
-      expect(result).toEqual(mockUserWithMessag);
-    });
     it('인터뷰기록을 업데이트 하고 반환한다.', async () => {
-      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockInterviewService.updateInterview.mockResolvedValue(mockResult);
 
       const result = await interviewController.updateInterview(
@@ -96,11 +73,11 @@ describe('InterviewController', () => {
         mockDate,
         mockUpdateInterviewDto,
       );
-      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockInterviewService.updateInterview).toHaveBeenCalledWith(
-        mockUser,
+        mockUserInfo,
         mockDate,
         mockUpdateInterviewDto.interviews,
+        mockUpdateInterviewDto.questionId,
       );
       expect(result).toEqual(mockResult);
     });

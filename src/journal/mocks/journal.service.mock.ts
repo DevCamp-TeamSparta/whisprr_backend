@@ -12,6 +12,7 @@ export const mockJournalService = {
   deleteJournal: jest.fn(),
   updateJournal: jest.fn(),
   checkJournalCreationAvailbility: jest.fn(),
+  checkJournalExist: jest.fn(),
 };
 
 export const mockJournalRepository = {
@@ -92,4 +93,10 @@ export const mockJournalCreationRepository = {
   count: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
+};
+
+export const mockJournalDetails = {
+  journalData: mockJournal,
+  questionIds: null,
+  message: undefined,
 };

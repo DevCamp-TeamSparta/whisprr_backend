@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { InterviewEntity } from './entities/interview.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { QuestionAnswerDto } from './dto/questionAndAnswer.dto';
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
-import { UserService } from 'src/user/user.service';
-import { JournalService } from 'src/journal/journal.service';
+import { JwtPayload } from '../common/utils/user_info.decorator';
+import { UserService } from '../user/user.service';
+import { JournalService } from '../journal/journal.service';
 
 @Injectable()
 export class InterviewService {
@@ -28,7 +28,7 @@ export class InterviewService {
       return user;
     }
 
-    await this.journalService.cheskJournalExist(user, date);
+    await this.journalService.checkJournalExist(user, date);
     await this.journalService.checkJournalCreationAvailbility(user, date);
     const existingInterview = await this.findInterviewAlready(user, date);
 

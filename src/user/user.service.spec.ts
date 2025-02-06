@@ -83,9 +83,8 @@ describe('UserService', () => {
 
   describe('changeNickname', () => {
     it('닉네임을 변경하고 반환한다.', async () => {
-      mockUserRepository.findOne
-        .mockResolvedValueOnce(mockUser)
-        .mockResolvedValueOnce(mockUpdatedUser);
+      mockUserRepository.update.mockResolvedValue(null);
+      mockUserRepository.findOne.mockResolvedValue(mockUpdatedUser);
 
       const result = await userService.changeNickname(mockUser, 'kelly');
 
