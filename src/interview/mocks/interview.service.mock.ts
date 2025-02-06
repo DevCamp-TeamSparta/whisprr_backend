@@ -4,7 +4,7 @@ import { InterviewDto } from '../dto/start.interview.dto';
 export const mockInterviewService = {
   startInterview: jest.fn(),
   findInterviewAlready: jest.fn(),
-  restartInterview: jest.fn(),
+  resetInterview: jest.fn(),
   updateInterview: jest.fn(),
   findInterview: jest.fn(),
 };

@@ -1,17 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JournalController } from './journal.controller';
 import { JournalService } from './journal.service';
 import { JwtService } from '@nestjs/jwt';
 import { JournalEntity } from './entities/journal.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { OpenAiService } from 'src/open-ai/open-ai.service';
-import { UserService } from 'src/user/user.service';
-import { InterviewService } from 'src/interview/interview.service';
-import { InterviewEntity } from 'src/interview/entities/interview.entity';
-import { InstructionService } from 'src/instruction/instruction.service';
-import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { OpenAiService } from '../open-ai/open-ai.service';
+import { UserService } from '../user/user.service';
+import { InterviewService } from '../interview/interview.service';
+import { InterviewEntity } from '../interview/entities/interview.entity';
+import { InstructionService } from '../instruction/instruction.service';
+import { InstructionEntity } from '../instruction/entities/instruction.entity';
 import { JournalCreationEntity } from './entities/journal.creation.entity';
+import { InterviewModule } from 'src/interview/interview.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JournalCreationEntity } from './entities/journal.creation.entity';
       InstructionEntity,
       JournalCreationEntity,
     ]),
+    forwardRef(() => InterviewModule),
   ],
   controllers: [JournalController],
   providers: [

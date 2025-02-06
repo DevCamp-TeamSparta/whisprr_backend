@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { InterviewController } from './interview.controller';
 import { InterviewService } from './interview.service';
 import { UserService } from 'src/user/user.service';
@@ -23,7 +23,7 @@ import { JournalModule } from 'src/journal/journal.module';
       JournalEntity,
       InstructionEntity,
     ]),
-    JournalModule,
+    forwardRef(() => JournalModule),
   ],
   controllers: [InterviewController],
   providers: [

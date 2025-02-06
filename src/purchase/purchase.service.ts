@@ -10,8 +10,8 @@ import { PurchaseStatus } from './utils/purchase.status';
 import { UserEntity } from '../user/entities/user.entity';
 import { PlanEntity } from '../plan/entities/plan.entity';
 import { UserService } from '../user/user.service';
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
-import { PlanService } from 'src/plan/plan.service';
+import { JwtPayload } from '../common/utils/user_info.decorator';
+import { PlanService } from '../plan/plan.service';
 
 @Injectable()
 export class PurchaseService {
@@ -40,7 +40,7 @@ export class PurchaseService {
   }
 
   //2. RTDN 수신 시 google developer api 호출
-  async updatePurchaseTable(message) {
+  async reciveRTDN(message) {
     const decodedData = JSON.parse(Buffer.from(message.data, 'base64').toString('utf-8'));
 
     console.log('📢 RTDN 수신:', decodedData);

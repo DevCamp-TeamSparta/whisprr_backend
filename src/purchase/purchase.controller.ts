@@ -23,7 +23,7 @@ export class PurchaseController {
   //2.구매 변동 시 서버에서 알림 수신 및 구매 상태 업데이트
   @Post('/pubsub')
   async getNotification(@Body('message') message, @Res() res: Response) {
-    await this.purchaseService.updatePurchaseTable(message);
+    await this.purchaseService.reciveRTDN(message);
     return res.status(200).send('message received');
   }
 }

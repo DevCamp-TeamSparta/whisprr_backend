@@ -2,18 +2,26 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InterviewService } from './interview.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { InterviewEntity } from './entities/interview.entity';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import {
   mockInterview,
   mockInterviewRepository,
   mockUpdateInterviewDto,
 } from './mocks/interview.service.mock';
-import { Repository } from 'typeorm';
-import { mockUser } from '../user/mocks/mock.user.service';
+
+import {
+  mockUser,
+  mockUserInfo,
+  mockUserInfoExpired,
+  mockUserService,
+  mockUserWithMessag,
+} from '../user/mocks/mock.user.service';
+import { UserService } from '../user/user.service';
+import { JournalService } from '../journal/journal.service';
+import { mockJournalService } from '../journal/mocks/journal.service.mock';
 
 describe('InterviewService', () => {
   let interviewService: InterviewService;
-  let interviewRepository: Repository<InterviewEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,24 +31,71 @@ describe('InterviewService', () => {
           provide: getRepositoryToken(InterviewEntity),
           useValue: mockInterviewRepository,
         },
+        { provide: UserService, useValue: mockUserService },
+        { provide: JournalService, useValue: mockJournalService },
       ],
     }).compile();
 
     interviewService = module.get<InterviewService>(InterviewService);
-    interviewRepository = module.get<Repository<InterviewEntity>>(
-      getRepositoryToken(InterviewEntity),
-    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
   const mockDate = new Date('2025-01-20');
+
   describe('startInterview', () => {
+    it('user 객체에 토큰 버젼 불일치 메세지가 존재하면 반환한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
+
+      const result = await interviewService.startInterview(mockUserInfoExpired, mockDate);
+
+      expect(result).toEqual(mockUserWithMessag);
+    });
+
+    it('해당 날짜에 이미 생성된 저널이 있으면 ConflictException를 반환한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
+      mockJournalService.checkJournalExist.mockRejectedValue(new ConflictException());
+
+      await expect(interviewService.startInterview(mockUserInfo, mockDate)).rejects.toThrow(
+        ConflictException,
+      );
+
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
+      expect(mockJournalService.checkJournalExist).toHaveBeenCalledWith(mockUser, mockDate);
+    });
+
+    it('해당 날짜에 같은 날짜의 저널을 3회 이상 생성하면 ConflictException를 반환한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
+      mockJournalService.checkJournalExist.mockResolvedValue(null);
+      mockJournalService.checkJournalCreationAvailbility.mockRejectedValue(new ConflictException());
+
+      await expect(interviewService.startInterview(mockUserInfo, mockDate)).rejects.toThrow(
+        ConflictException,
+      );
+
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
+      expect(mockJournalService.checkJournalExist).toHaveBeenCalledWith(mockUser, mockDate);
+      expect(mockJournalService.checkJournalCreationAvailbility).toHaveBeenCalledWith(
+        mockUser,
+        mockDate,
+      );
+    });
+
     it('해당 날짜에 이미 생성된 인터뷰 기록이 있으면 해당 인터뷰 기록을 반환한다', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
+      mockJournalService.checkJournalExist.mockResolvedValue(null);
+      mockJournalService.checkJournalCreationAvailbility.mockResolvedValue(null);
       mockInterviewRepository.findOne.mockResolvedValue(mockInterview);
 
-      const result = await interviewService.startInterview(mockUser, mockDate);
+      const result = await interviewService.startInterview(mockUserInfo, mockDate);
+
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
+      expect(mockJournalService.checkJournalExist).toHaveBeenCalledWith(mockUser, mockDate);
+      expect(mockJournalService.checkJournalCreationAvailbility).toHaveBeenCalledWith(
+        mockUser,
+        mockDate,
+      );
 
       expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
         where: { user: mockUser, date: mockDate },
@@ -49,11 +104,25 @@ describe('InterviewService', () => {
     });
 
     it('해당 날짜에 중복된 인터뷰가 없으면 인터뷰 기록을 생성하고 반환한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
+      mockJournalService.checkJournalExist.mockResolvedValue(null);
+      mockJournalService.checkJournalCreationAvailbility.mockResolvedValue(null);
       mockInterviewRepository.findOne.mockResolvedValue(null);
       mockInterviewRepository.create.mockReturnValue(mockInterview);
       mockInterviewRepository.save.mockResolvedValue(mockInterview);
 
-      const result = await interviewService.startInterview(mockUser, mockDate);
+      const result = await interviewService.startInterview(mockUserInfo, mockDate);
+
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
+      expect(mockJournalService.checkJournalExist).toHaveBeenCalledWith(mockUser, mockDate);
+      expect(mockJournalService.checkJournalCreationAvailbility).toHaveBeenCalledWith(
+        mockUser,
+        mockDate,
+      );
+
+      expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
+        where: { user: mockUser, date: mockDate },
+      });
 
       expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
         where: { user: mockUser, date: mockDate },
@@ -65,18 +134,41 @@ describe('InterviewService', () => {
         date: mockDate,
       });
       expect(mockInterviewRepository.save).toHaveBeenCalledWith(mockInterview);
-      expect(result).toEqual(mockInterview);
+
+      const returnedInterview = {
+        content: mockInterview.content,
+        date: mockInterview.date,
+        question_id: mockInterview.question_id,
+        created_at: mockInterview.created_at,
+        deleted_at: mockInterview.deleted_at,
+      };
+      expect(result).toEqual(returnedInterview);
     });
   });
 
   describe('updateInterview', () => {
+    it('user 객체에 토큰 버젼 불일치 메세지가 존재하면 반환한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
+
+      const result = await interviewService.startInterview(mockUserInfoExpired, mockDate);
+
+      expect(result).toEqual(mockUserWithMessag);
+    });
+
     it('해당 날짜에 인터뷰 기록이 없다면 NotfoundException을 전달한다.', async () => {
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
       mockInterviewRepository.findOne.mockResolvedValue(null);
 
       await expect(
-        interviewService.updateInterview(mockUser, mockDate, mockUpdateInterviewDto.interviews),
+        interviewService.updateInterview(
+          mockUserInfo,
+          mockDate,
+          mockUpdateInterviewDto.interviews,
+          mockUpdateInterviewDto.questionId,
+        ),
       ).rejects.toThrow(NotFoundException);
 
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
         where: { user: mockUser, date: mockDate },
       });
@@ -88,31 +180,35 @@ describe('InterviewService', () => {
         ...mockInterview.content,
         ...mockUpdateInterviewDto.interviews.map((item) => JSON.stringify(item)),
       ];
+      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
 
       mockInterviewRepository.findOne
-        .mockResolvedValueOnce(mockInterview) // 업데이트 이전 데이터
-        .mockResolvedValueOnce({ ...mockInterview, content: updatedMockContent }); // 업데이트 이후 데이터
+        .mockResolvedValueOnce(mockInterview)
+        .mockResolvedValueOnce({ ...mockInterview, content: updatedMockContent, question_id: [1] });
 
       mockInterviewRepository.update.mockResolvedValue(null);
 
       const result = await interviewService.updateInterview(
-        mockUser,
+        mockUserInfo,
         mockDate,
         mockUpdateInterviewDto.interviews,
+        mockUpdateInterviewDto.questionId,
       );
 
+      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
       expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
         where: { user: mockUser, date: mockDate },
       });
 
       expect(mockInterviewRepository.update).toHaveBeenCalledWith(
         { date: mockDate },
-        { content: updatedMockContent },
+        { content: updatedMockContent, question_id: [1] },
       );
 
       expect(result).toEqual({
         ...mockInterview,
         content: updatedMockContent,
+        question_id: [1],
       });
     });
   });
@@ -139,6 +235,20 @@ describe('InterviewService', () => {
       expect(mockInterviewRepository.findOne).toHaveBeenCalledWith({
         where: { user: mockUser, date: mockDate },
       });
+    });
+  });
+
+  describe('resetInterview', () => {
+    it('날짜에 해당하는 인터뷰 기록이 있다면 content 를 비우게 업데이트한다.', async () => {
+      mockInterviewRepository.update.mockResolvedValue(null);
+
+      const result = await interviewService.resetInterview(mockUser, mockDate);
+
+      expect(mockInterviewRepository.update).toHaveBeenCalledWith(
+        { user: mockUser, date: mockDate },
+        { content: [], question_id: null },
+      );
+      expect(result).toEqual(undefined);
     });
   });
 });

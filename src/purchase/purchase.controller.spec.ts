@@ -3,16 +3,15 @@ import { PurchaseController } from './purchase.controller';
 import { PurchaseService } from './purchase.service';
 import { UserService } from '../user/user.service';
 import { PlanService } from '../plan/plan.service';
-import { mockPurchaseService } from './mocks/purchase.service.mock';
 import {
-  mockUser,
-  mockUserInfo,
-  mockUserInfoExpired,
-  mockUserService,
-  mockUserWithMessag,
-} from '../user/mocks/mock.user.service';
-import { mockPlan, mockPlanService } from '../plan/mocks/plan.service.mock';
+  mockPurchaseService,
+  mockPurchaseToken,
+  mockVerifyResult,
+} from './mocks/purchase.service.mock';
+import { mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
+import { mockPlanService } from '../plan/mocks/plan.service.mock';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 describe('PurchaseController', () => {
   let purchaseController: PurchaseController;
@@ -30,40 +29,22 @@ describe('PurchaseController', () => {
     purchaseController = module.get<PurchaseController>(PurchaseController);
   });
 
-  describe('verifyPurchaseToken', () => {
-    it('user 객체 안에 message 프로퍼티가 있으면 user객체를 리턴한다.', async () => {
-      mockUserService.findUserByUserInfo.mockResolvedValue(mockUserWithMessag);
-      const result = await purchaseController.verifyPurchase(
-        mockUserInfoExpired,
-        'test-purchase-token',
-        'test-product-id',
-      );
-      expect(result).toEqual(mockUserWithMessag);
-    });
+  describe('verifyPurchase', () => {
     it('구매 검증 후 jwt 토큰을 재발급 한다.', async () => {
-      const mockNewToken = 'new-jwt-token';
-      const mockResponse = { verified: true };
+      mockPurchaseService.verifyPurchase.mockResolvedValue(mockVerifyResult);
 
-      mockPlanService.findPlan.mockResolvedValue(mockPlan);
-      mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
-      mockUserService.getUserToken.mockResolvedValue(mockNewToken);
-      mockPurchaseService.verifyPurchaseToken.mockResolvedValue(mockResponse);
-
-      const result = await purchaseController.verifyPurchase(
+      const result = await mockPurchaseService.verifyPurchase(
         mockUserInfo,
-        'test-purchase-token',
-        'test-product-id',
+        mockPurchaseToken,
+        'test',
       );
 
-      expect(mockPlanService.findPlan).toHaveBeenCalledWith('test-product-id');
-      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
-      expect(mockUserService.getUserToken).toHaveBeenCalledWith(mockUser.user_id);
-      expect(mockPurchaseService.verifyPurchaseToken).toHaveBeenCalledWith(
-        mockPlan,
-        mockUser,
-        'test-purchase-token',
+      expect(mockPurchaseService.verifyPurchase).toHaveBeenCalledWith(
+        mockUserInfo,
+        mockPurchaseToken,
+        'test',
       );
-      expect(result).toEqual({ ...mockResponse, new_token: mockNewToken });
+      expect(result).toEqual(mockVerifyResult);
     });
   });
 
@@ -71,11 +52,18 @@ describe('PurchaseController', () => {
     it('알림 수신 시 구매 기록을 업데이트 한다.', async () => {
       const mockMessage = { data: 'test-message' };
 
-      mockPurchaseService.updatePurchaseTable.mockResolvedValue(undefined);
+      const resMock = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      } as unknown as Response;
 
-      await purchaseController.getNotification(mockMessage);
+      mockPurchaseService.reciveRTDN.mockResolvedValue(undefined);
 
-      expect(mockPurchaseService.updatePurchaseTable).toHaveBeenCalledWith(mockMessage);
+      await purchaseController.getNotification(mockMessage, resMock);
+
+      expect(mockPurchaseService.reciveRTDN).toHaveBeenCalledWith(mockMessage);
+      expect(resMock.status).toHaveBeenCalledWith(200);
+      expect(resMock.send).toHaveBeenCalledWith('message received');
     });
   });
 });
