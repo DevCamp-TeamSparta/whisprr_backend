@@ -101,7 +101,8 @@ export class PurchaseService {
       };
 
       const existingPurchase = await queryRunner.manager.findOne(PurchaseEntity, {
-        where: { user },
+        where: { user: { user_id: user.user_id } },
+        lock: { mode: 'pessimistic_write' },
       });
 
       if (existingPurchase) {
