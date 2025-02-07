@@ -3,6 +3,7 @@ import { BadRequestException, Controller, Get, Headers, Post } from '@nestjs/com
 import { QuestionService } from '../question/question.service';
 import { InstructionService } from '../instruction/instruction.service';
 import { ConfigService } from '@nestjs/config';
+import { parse as uuidParse } from 'uuid';
 
 @Controller('initial')
 export class InitialController {
@@ -25,7 +26,8 @@ export class InitialController {
     if (!uuid) {
       throw new BadRequestException('UUID is missing in the headers');
     }
-    const token = await this.userService.getUserToken(uuid);
+    const pareduuid = Buffer.from(uuidParse(uuid));
+    const token = await this.userService.getUserToken(pareduuid);
     const questions = await this.questionService.getQuestion();
     const limits = Number(this.configService.get<number>('TIMELIMIT'));
     const instruction = await this.instructionService.getInstruction('interview');

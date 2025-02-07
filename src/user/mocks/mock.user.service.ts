@@ -1,5 +1,6 @@
 import { JwtPayload } from '../../common/utils/user_info.decorator';
 import { UserEntity } from '../entities/user.entity';
+import { parse as uuidParse } from 'uuid';
 
 export const mockUserService = {
   findUserByUserInfo: jest.fn(),
@@ -16,7 +17,7 @@ export const mockUserService = {
 };
 
 export const mockUser: UserEntity = {
-  user_id: 'mock_uuid',
+  user_id: Buffer.from(uuidParse('mock_uuid')),
   nickname: '무명',
   trial_status: 'active',
   writing_count: 0,
@@ -30,7 +31,7 @@ export const mockUser: UserEntity = {
 };
 
 export const mockUpdatedUser: UserEntity = {
-  user_id: 'mock_uuid',
+  user_id: Buffer.from(uuidParse('mock_uuid')),
   nickname: 'kelly',
   trial_status: 'active',
   writing_count: 0,
@@ -64,7 +65,7 @@ export const mockUserWithMessag = {
 };
 
 export const mockUserInfoExpired: JwtPayload = {
-  uuid: mockUser.user_id,
+  uuid: 'mock_uuid',
   tokenVersion: 2,
   freeTrialStatus: 'available',
   planStatus: 'available',
