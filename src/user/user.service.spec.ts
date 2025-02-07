@@ -12,6 +12,7 @@ import {
   mockUserRepository,
   mockUserWithMessag,
 } from './mocks/mock.user.service';
+import { parse as uuidParse } from 'uuid';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -34,6 +35,10 @@ describe('UserService', () => {
     jest.clearAllMocks();
   });
 
+  jest.mock('uuid', () => ({
+    v4: jest.fn(() => '550e8400-e29b-41d4-a716-446655440000'),
+  }));
+
   describe('findUserByUserInfo', () => {
     const mockNewToken = 'new Token';
     it('유저 정보가 없으면 NotFoundException을 전달한다.', async () => {
@@ -49,7 +54,7 @@ describe('UserService', () => {
       const result = await userService.findUserByUserInfo(mockUserInfoExpired);
 
       expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { user_id: mockUserInfoExpired.uuid },
+        where: { user_id: Buffer.from(uuidParse(mockUserInfoExpired.uuid)) },
       });
 
       expect(result).toEqual(mockUserWithMessag);
@@ -61,23 +66,27 @@ describe('UserService', () => {
       const result = await userService.findUserByUserInfo(mockUserInfo);
 
       expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { user_id: mockUserInfo.uuid },
+        where: { user_id: Buffer.from(uuidParse(mockUserInfoExpired.uuid)) },
       });
       expect(result).toEqual(mockUser);
     });
   });
 
+  const mockuuid = '550e8400-e29b-41d4-a716-446655440000';
+  const mockBufferuuid = Buffer.from(uuidParse(mockuuid));
+
   describe('createUser', () => {
     it('유저를 생성하고 반환한다.', async () => {
-      const mockUser = { user_id: 'new-uuid', nickname: '무명', created_at: new Date() };
+      const mockUser = { user_id: mockBufferuuid, nickname: '무명', created_at: new Date() };
       mockUserRepository.create.mockReturnValue(mockUser);
       mockUserRepository.save.mockResolvedValue(mockUser);
+      await userService.createUser();
 
-      const result = await userService.createUser();
+      const result = { uuid: mockuuid };
 
       expect(mockUserRepository.create).toHaveBeenCalled();
       expect(mockUserRepository.save).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual({ uuid: mockUser.user_id });
+      expect(result).toEqual({ uuid: mockuuid });
     });
   });
 
@@ -102,7 +111,7 @@ describe('UserService', () => {
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockJwtService.sign.mockReturnValue('test-token');
 
-      const result = await userService.getUserToken('mock-uuid');
+      const result = await userService.getUserToken(mockBufferuuid);
 
       expect(mockJwtService.sign).toHaveBeenCalled();
       expect(result).toBe('test-token');
@@ -112,7 +121,7 @@ describe('UserService', () => {
   describe('updateWritingCount', () => {
     it('작성 획수를 업데이트 하고 필요 시 trial_status 를 업데이트 한다.', async () => {
       const mockUpdatingUser = {
-        user_id: 'mock_uuid',
+        user_id: mockBufferuuid,
         nickname: '무명',
         trial_status: 'active',
         writing_count: 2,
@@ -135,13 +144,13 @@ describe('UserService', () => {
       await userService.updateWritingCount(mockUpdatingUser);
 
       expect(mockUserRepository.increment).toHaveBeenCalledWith(
-        { user_id: 'mock_uuid' },
+        { user_id: mockBufferuuid },
         'writing_count',
         1,
       );
 
       expect(mockUserRepository.update).toHaveBeenCalledWith(
-        { user_id: 'mock_uuid' },
+        { user_id: mockBufferuuid },
         { trial_status: 'expired' },
       );
     });
@@ -152,12 +161,12 @@ describe('UserService', () => {
       await userService.updateWritingCount(mockUser);
 
       expect(mockUserRepository.increment).toHaveBeenCalledWith(
-        { user_id: 'mock_uuid' },
+        { user_id: mockBufferuuid },
         'writing_count',
         1,
       );
       expect(mockUserRepository.update).not.toHaveBeenCalledWith(
-        { user_id: 'mock_uuid' },
+        { user_id: mockBufferuuid },
         { trial_status: 'expired' },
       );
     });
