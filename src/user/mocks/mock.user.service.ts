@@ -17,7 +17,7 @@ export const mockUserService = {
 };
 
 export const mockUser: UserEntity = {
-  user_id: Buffer.from(uuidParse('mock_uuid')),
+  user_id: Buffer.from(uuidParse('550e8400-e29b-41d4-a716-446655440000')),
   nickname: '무명',
   trial_status: 'active',
   writing_count: 0,
@@ -31,7 +31,7 @@ export const mockUser: UserEntity = {
 };
 
 export const mockUpdatedUser: UserEntity = {
-  user_id: Buffer.from(uuidParse('mock_uuid')),
+  user_id: Buffer.from(uuidParse('550e8400-e29b-41d4-a716-446655440000')),
   nickname: 'kelly',
   trial_status: 'active',
   writing_count: 0,
@@ -45,7 +45,7 @@ export const mockUpdatedUser: UserEntity = {
 };
 
 export const mockUserInfo: JwtPayload = {
-  uuid: 'mock_uuid',
+  uuid: '550e8400-e29b-41d4-a716-446655440000',
   freeTrialStatus: 'available',
   planStatus: 'non-available',
   tokenVersion: 1,
@@ -65,7 +65,7 @@ export const mockUserWithMessag = {
 };
 
 export const mockUserInfoExpired: JwtPayload = {
-  uuid: 'mock_uuid',
+  uuid: '550e8400-e29b-41d4-a716-446655440000',
   tokenVersion: 2,
   freeTrialStatus: 'available',
   planStatus: 'available',
