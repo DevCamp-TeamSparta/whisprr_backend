@@ -92,8 +92,8 @@ export class UserService {
 
     await this.updateTokenVersion(Bufferuuid);
 
-    const { freeTrialStatus, tokenVersion } = await this.checkFreetrial(Bufferuuid);
-    const planStatus = await this.checkPlanActive(Bufferuuid);
+    const { freeTrialStatus, tokenVersion, planStatus } =
+      await this.checkFreetrialAndPlanActive(Bufferuuid);
 
     const payload = { uuid, freeTrialStatus, tokenVersion, planStatus };
     const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY });
@@ -105,25 +105,8 @@ export class UserService {
     await this.userRepository.increment({ user_id: uuid }, 'token_version', 1);
   }
 
-  //4.2 유저 토큰 발급 전 무료 체험판 만료 여부 확인 및 토큰 버젼 저장
-  private async checkFreetrial(uuid: Buffer) {
-    const user = await this.userRepository.findOne({
-      where: { user_id: uuid },
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    let trialStatus = 'non-available';
-    if (user.trial_status === 'active') {
-      trialStatus = 'available';
-    }
-
-    return { freeTrialStatus: trialStatus, tokenVersion: user.token_version };
-  }
-
-  //4.3 유저 토큰 발급 전 플랜 만료 확인
-  private async checkPlanActive(uuid: Buffer) {
+  //4.2 유저 토큰 발급 전 무료 체험판 및 플랜 만료 여부 확인 및 토큰 버젼 저장
+  private async checkFreetrialAndPlanActive(uuid: Buffer) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },
       relations: ['purchases'],
@@ -133,17 +116,20 @@ export class UserService {
     }
 
     const purchase = user.purchases;
-
+    let planStatus = 'non-available';
     if (purchase) {
       const isNotExpired = purchase.expiration_date > new Date(); // 만료 여부 확인
-
       if (isNotExpired) {
-        return 'available';
+        planStatus = 'available';
       }
     }
 
-    // 구매 내역이 없거나 비활성화된 경우
-    return 'non-available';
+    let trialStatus = 'non-available';
+    if (user.trial_status === 'active') {
+      trialStatus = 'available';
+    }
+
+    return { freeTrialStatus: trialStatus, tokenVersion: user.token_version, planStatus };
   }
 
   //5. 저널 생성 시 작성 횟수 업데이트
