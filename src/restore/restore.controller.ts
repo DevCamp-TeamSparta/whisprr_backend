@@ -1,5 +1,6 @@
 import { Controller, Get, Headers, NotFoundException } from '@nestjs/common';
 import { PurchaseService } from '../purchase/purchase.service';
+import { stringify as uuidStringify } from 'uuid';
 
 @Controller('restore')
 export class RestoreController {
@@ -12,6 +13,7 @@ export class RestoreController {
     if (!account) {
       throw new NotFoundException('User not found');
     }
-    return account.user;
+    const uuid = uuidStringify(account.user.user_id);
+    return { uuid: uuid };
   }
 }
