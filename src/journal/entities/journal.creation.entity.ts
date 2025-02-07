@@ -13,7 +13,7 @@ export class JournalCreationEntity {
   created_at: Date;
 
   // m:1 user
-  @ManyToOne(() => UserEntity, (user) => user.journal_creations)
+  @ManyToOne(() => UserEntity, (user) => user.journal_creations, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: UserEntity;
 }

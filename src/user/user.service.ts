@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { parse as uuidParse } from 'uuid';
+import { stringify as uuidStringify } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/common/utils/user_info.decorator';
 
@@ -30,11 +32,13 @@ export class UserService {
     return user;
   }
 
-  //1.1 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
+  //1.1 토큰으로 유저 정보 조회
   public async findUserByUserInfoWhitoutTokenVerify(userInfo: JwtPayload): Promise<UserEntity> {
+    const uuidBuffer = Buffer.from(uuidParse(userInfo.uuid) as Uint8Array);
+
     const user = await this.userRepository.findOne({
       where: {
-        user_id: userInfo.uuid,
+        user_id: uuidBuffer,
       },
     });
 
@@ -46,7 +50,7 @@ export class UserService {
   }
 
   //1.2 uuid 만으로 유저 정보 조회 메소드
-  public async findUser(uuid: string) {
+  public async findUser(uuid: Buffer) {
     const user = await this.userRepository.findOne({
       where: {
         user_id: uuid,
@@ -62,15 +66,17 @@ export class UserService {
 
   //2. 유저 생성 메소드
   public async createUser() {
+    const uuid = uuidv4();
+    const uuidBuffer = Buffer.from(uuidParse(uuid) as Uint8Array);
     const newUser = this.userRepository.create({
-      user_id: uuidv4(),
-      nickname: '무명',
+      user_id: uuidBuffer,
+      nickname: 'Unnamed user',
       created_at: new Date(),
     });
 
     await this.userRepository.save(newUser);
 
-    return { uuid: newUser.user_id };
+    return { uuid: uuid };
   }
 
   //3.유저 닉네임 변경 메소드
@@ -81,11 +87,13 @@ export class UserService {
   }
 
   //4. 유저토큰 발급 메소드
-  public async getUserToken(uuid: string) {
-    await this.updateTokenVersion(uuid);
+  public async getUserToken(Bufferuuid: Buffer) {
+    const uuid = uuidStringify(Bufferuuid);
 
-    const { freeTrialStatus, tokenVersion } = await this.checkFreetrial(uuid);
-    const planStatus = await this.checkPlanActive(uuid);
+    await this.updateTokenVersion(Bufferuuid);
+
+    const { freeTrialStatus, tokenVersion } = await this.checkFreetrial(Bufferuuid);
+    const planStatus = await this.checkPlanActive(Bufferuuid);
 
     const payload = { uuid, freeTrialStatus, tokenVersion, planStatus };
     const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY });
@@ -93,12 +101,12 @@ export class UserService {
   }
 
   //4.1 유저 토큰 발급 전 토큰 버젼 업데이트
-  public async updateTokenVersion(uuid: string) {
+  public async updateTokenVersion(uuid: Buffer) {
     await this.userRepository.increment({ user_id: uuid }, 'token_version', 1);
   }
 
   //4.2 유저 토큰 발급 전 무료 체험판 만료 여부 확인 및 토큰 버젼 저장
-  private async checkFreetrial(uuid: string) {
+  private async checkFreetrial(uuid: Buffer) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },
     });
@@ -115,7 +123,7 @@ export class UserService {
   }
 
   //4.3 유저 토큰 발급 전 플랜 만료 확인
-  private async checkPlanActive(uuid: string) {
+  private async checkPlanActive(uuid: Buffer) {
     const user = await this.userRepository.findOne({
       where: { user_id: uuid },
       relations: ['purchases'],

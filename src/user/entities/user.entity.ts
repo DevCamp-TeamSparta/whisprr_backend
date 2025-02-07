@@ -6,8 +6,8 @@ import { Entity, Column, OneToMany, PrimaryColumn, OneToOne } from 'typeorm';
 
 @Entity('users')
 export class UserEntity {
-  @PrimaryColumn({ type: 'varchar' })
-  user_id: string;
+  @PrimaryColumn({ type: 'binary', length: 16 })
+  user_id: Buffer;
 
   @Column({
     type: 'varchar',
@@ -37,18 +37,20 @@ export class UserEntity {
   deleted_at: Date;
 
   // 1 : M journals
-  @OneToMany(() => JournalEntity, (journals) => journals.user)
+  @OneToMany(() => JournalEntity, (journals) => journals.user, { onDelete: 'CASCADE' })
   journals: JournalEntity[];
 
   //1 : m interviews
-  @OneToMany(() => InterviewEntity, (interviews) => interviews.user)
+  @OneToMany(() => InterviewEntity, (interviews) => interviews.user, { onDelete: 'CASCADE' })
   interviews: InterviewEntity[];
 
   //1 : 1 purchase_infos
-  @OneToOne(() => PurchaseEntity, (purchase) => purchase.user)
+  @OneToOne(() => PurchaseEntity, (purchase) => purchase.user, { onDelete: 'CASCADE' })
   purchases: PurchaseEntity;
 
   //1: m journal_creations
-  @OneToMany(() => JournalCreationEntity, (jouranl_creations) => jouranl_creations.user)
+  @OneToMany(() => JournalCreationEntity, (jouranl_creations) => jouranl_creations.user, {
+    onDelete: 'CASCADE',
+  })
   journal_creations: JournalCreationEntity[];
 }

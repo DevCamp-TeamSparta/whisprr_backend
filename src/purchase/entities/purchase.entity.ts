@@ -29,7 +29,7 @@ export class PurchaseEntity {
   expiration_date: Date;
 
   //1: 1 user
-  @OneToOne(() => UserEntity, (user) => user.purchases)
+  @OneToOne(() => UserEntity, (user) => user.purchases, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: UserEntity;
 

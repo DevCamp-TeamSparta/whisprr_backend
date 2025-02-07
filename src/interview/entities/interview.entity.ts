@@ -26,7 +26,7 @@ export class InterviewEntity {
   deleted_at: Date;
 
   //m: 1 user
-  @ManyToOne(() => UserEntity, (user) => user.interviews)
+  @ManyToOne(() => UserEntity, (user) => user.interviews, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: UserEntity;
 }
