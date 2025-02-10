@@ -132,6 +132,7 @@ describe('UserService', () => {
         purchases: null,
         journal_creations: null,
         token_version: 1,
+        reports: null,
       };
 
       mockUserRepository.findOne.mockResolvedValueOnce({

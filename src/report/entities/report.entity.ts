@@ -1,6 +1,6 @@
 import { UserEntity } from '../../user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Category, Reason } from '../report.reasons';
+import { Category } from '../report.reasons';
 
 @Entity('reports')
 export class ReportEntity {
@@ -8,17 +8,10 @@ export class ReportEntity {
   id: number;
 
   @Column({
-    type: 'enum',
-    enum: ['harmful_content', 'user_defined_reason'],
+    type: 'json',
     nullable: false,
   })
-  reason: Reason;
-
-  @Column({
-    type: 'json',
-    nullable: true,
-  })
-  category: Category[];
+  reason: Category[];
 
   @Column({ type: 'varchar', nullable: true })
   user_defined_reason: string;

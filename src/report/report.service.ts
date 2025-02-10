@@ -30,10 +30,9 @@ export class ReportService {
     const report = this.reportRepository.create({
       user: user,
       reported_at: new Date(),
-      reason: reportDto.reason,
       user_defined_reason: reportDto.userDefinedReason,
       journal_date: reportDto.journalDate,
-      category: reportDto.category,
+      reason: reportDto.reason,
     });
     await this.reportRepository.save(report);
     return { messaga: 'report was accepted.' };
@@ -42,14 +41,13 @@ export class ReportService {
   //2. 신고목록 열람(관리자 열람용)
 
   public async getAllReport() {
-    const reports = await this.reportRepository.find();
+    const reports = await this.reportRepository.find({ relations: ['user'] });
     const mappedReports = reports.map((report) => ({
       id: report.id,
       user_id: uuidStringify(report.user.user_id),
       reported_at: report.reported_at,
       reason: report.reason,
       user_defined_reason: report.user_defined_reason,
-      category: report.category,
     }));
 
     return mappedReports;
@@ -61,7 +59,7 @@ export class ReportService {
     const uuidBuffer = Buffer.from(uuidParse(uuid) as Uint8Array);
     const user = await this.userService.findUser(uuidBuffer);
 
-    const reports = await this.reportRepository.find({ where: { user } });
+    const reports = await this.reportRepository.find({ where: { user }, relations: ['user'] });
 
     const mappedReports = reports.map((report) => ({
       id: report.id,
@@ -69,7 +67,6 @@ export class ReportService {
       reported_at: report.reported_at,
       reason: report.reason,
       user_defined_reason: report.user_defined_reason,
-      category: report.category,
     }));
 
     return mappedReports;
@@ -78,7 +75,7 @@ export class ReportService {
   //4. 신고 아이디별 신고 상세 열람(관리자 열람용)
 
   public async getReportById(id: number) {
-    const report = await this.reportRepository.findOne({ where: { id } });
+    const report = await this.reportRepository.findOne({ where: { id }, relations: ['user'] });
     const interview = await this.interviewService.findInterview(report.user, report.journal_date);
     const journal = await this.journalService.getJournalByDateWithoutUserVerify(
       report.user,
@@ -106,7 +103,6 @@ export class ReportService {
       reported_at: report.reported_at,
       reason: report.reason,
       user_defined_reason: report.user_defined_reason,
-      category: report.category,
       interview: organizedInterview,
       journal: organizedJournal,
     };
