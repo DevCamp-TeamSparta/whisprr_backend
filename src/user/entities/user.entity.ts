@@ -3,6 +3,7 @@ import { InterviewEntity } from '../../interview/entities/interview.entity';
 import { JournalEntity } from '../../journal/entities/journal.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { Entity, Column, OneToMany, PrimaryColumn, OneToOne } from 'typeorm';
+import { ReportEntity } from '../../report/entities/report.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -53,4 +54,10 @@ export class UserEntity {
     onDelete: 'CASCADE',
   })
   journal_creations: JournalCreationEntity[];
+
+  //1: m reports
+  @OneToMany(() => ReportEntity, (report) => report.user, {
+    onDelete: 'CASCADE',
+  })
+  reports: ReportEntity[];
 }
