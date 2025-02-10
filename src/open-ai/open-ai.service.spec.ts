@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OpenAiService } from './open-ai.service';
 import { ConfigService } from '@nestjs/config';
 import { InternalServerErrorException } from '@nestjs/common';
-import { OpenAI, mockParse } from 'openai';
 
 jest.mock('openai', () => {
   const mockParse = jest.fn().mockResolvedValue({
@@ -58,6 +57,7 @@ describe('OpenAiService', () => {
   it('저널을 생성하고 반환한다.', async () => {
     const mockInstruction = 'Generate a journal.';
     const mockInterview = ['Question 1', 'Answer 1'];
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { mockParse } = require('openai');
 
     const result = await openAiService.getJournalByAI(mockInterview, mockInstruction);
@@ -91,6 +91,7 @@ describe('OpenAiService', () => {
   it('저널 생성에 실패하면 에러를 반환한다.', async () => {
     const mockInstruction = 'Generate a journal.';
     const mockInterview = ['Question 1', 'Answer 1'];
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { mockParse } = require('openai');
 
     mockParse.mockRejectedValueOnce(new Error('API error'));
