@@ -25,6 +25,8 @@ import { InstructionEntity } from './instruction/entities/instruction.entity';
 import { OpenAiService } from './open-ai/open-ai.service';
 import { OpenAiModule } from './open-ai/open-ai.module';
 import { JournalCreationEntity } from './journal/entities/journal.creation.entity';
+import { ReportModule } from './report/report.module';
+import { ReportEntity } from './report/entities/report.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -44,6 +46,7 @@ const typeOrmModuleOptions = {
       PlanEntity,
       InstructionEntity,
       JournalCreationEntity,
+      ReportEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
@@ -78,6 +81,7 @@ const typeOrmModuleOptions = {
     UserModule,
     PlanModule,
     OpenAiModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService, OpenAiService],

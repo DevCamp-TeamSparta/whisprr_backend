@@ -14,6 +14,7 @@ export interface Journal {
 export class OpenAiService {
   constructor(private readonly configService: ConfigService) {}
 
+  //1. open ai 저널 생성
   async getJournalByAI(interview: string[], instruction: string) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {

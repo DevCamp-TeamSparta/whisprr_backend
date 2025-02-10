@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OpenAiService } from './open-ai.service';
 import { ConfigService } from '@nestjs/config';
 import { InternalServerErrorException } from '@nestjs/common';
-import OpenAI from 'openai';
+import { OpenAI, mockParse } from 'openai';
 
 jest.mock('openai', () => {
   const mockParse = jest.fn().mockResolvedValue({
