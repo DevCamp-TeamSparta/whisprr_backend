@@ -15,7 +15,7 @@ export class PlanEntity {
   @Column({
     type: 'decimal',
     precision: 6,
-    scale: 3,
+    scale: 2,
     default: 0,
     nullable: false,
   })
