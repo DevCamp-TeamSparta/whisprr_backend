@@ -27,6 +27,7 @@ import { OpenAiModule } from './open-ai/open-ai.module';
 import { JournalCreationEntity } from './journal/entities/journal.creation.entity';
 import { ReportModule } from './report/report.module';
 import { ReportEntity } from './report/entities/report.entity';
+import { OtpService } from './otp/otp.service';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -84,6 +85,6 @@ const typeOrmModuleOptions = {
     ReportModule,
   ],
   controllers: [AppController],
-  providers: [AppService, OpenAiService],
+  providers: [AppService, OpenAiService, OtpService],
 })
 export class AppModule {}
