@@ -95,7 +95,7 @@ export class InterviewService {
     const serializedContent = newContent.map((item) => JSON.stringify(item));
 
     await this.interviewRepository.update(
-      { date },
+      { date, user },
       { content: serializedContent, question_id: questionIds },
     );
 

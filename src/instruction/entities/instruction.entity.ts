@@ -13,7 +13,7 @@ export class InstructionEntity {
   target: string;
 
   @Column({
-    type: 'text',
+    type: 'longtext',
     nullable: false,
   })
   content: string;
