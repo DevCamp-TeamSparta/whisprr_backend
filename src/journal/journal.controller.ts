@@ -74,7 +74,7 @@ export class JournalController {
   }
 
   //5. 날짜별 저널 수정(무료 체험판, 플랜 가입 여부 확인)
-  @UseGuards(TrialAndPlanGuard)
+  @UseGuards(UserGuard)
   @Patch(':date')
   async updateJournal(
     @UserInfo() userInfo: JwtPayload,
