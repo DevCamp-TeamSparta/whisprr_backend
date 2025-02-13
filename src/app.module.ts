@@ -12,7 +12,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { RestoreModule } from './restore/restore.module';
 import { UserModule } from './user/user.module';
 import { PlanModule } from './plan/plan.module';
 import { UserEntity } from './user/entities/user.entity';
@@ -78,7 +77,6 @@ const typeOrmModuleOptions = {
     QuestionModule,
     InstructionModule,
     InitialModule,
-    RestoreModule,
     UserModule,
     PlanModule,
     OpenAiModule,

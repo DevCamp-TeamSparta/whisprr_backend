@@ -2,6 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
+export type NodeMailerConfigOption = {
+  server: {
+    host: string;
+    port: number;
+    auth: {
+      user: string;
+      pass: string;
+    };
+    tls: {
+      rejectUnauthorized: false;
+    };
+    pool: true;
+  };
+  from: string;
+};
+
 @Injectable()
 export class OtpService {
   constructor(private configService: ConfigService) {}
@@ -13,16 +29,26 @@ export class OtpService {
     const emailAdress = this.configService.get<string>('YOUR_EMAIL');
     const appPassword = this.configService.get<string>('APP_PASSWORD');
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: emailAdress,
-        pass: appPassword,
+    const gmailConfig: NodeMailerConfigOption = {
+      server: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+          user: emailAdress,
+          pass: appPassword,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+        pool: true,
       },
-    });
+      from: emailAdress,
+    };
+
+    const transporter = nodemailer.createTransport(gmailConfig.server);
 
     const info = await transporter.sendMail({
-      from: '"whisprr" <your-email@gmail.com>',
+      from: `"whisprr" <${emailAdress}>`,
       to: email,
       subject: 'whisprr verify',
       text: 'welcome!',
