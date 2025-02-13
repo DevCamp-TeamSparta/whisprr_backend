@@ -90,12 +90,22 @@ export class InterviewService {
         answer: parsedItem.answer,
       };
     });
-    const newContent = [...existingContent, ...QandAs];
+
+    const formattedQandAs = QandAs.map((item) =>
+      JSON.stringify({
+        question: item.question,
+        answer: item.answer,
+      }),
+    );
+
+    const serializedContent = [
+      ...existingContent.map((item) => JSON.stringify(item)),
+      ...formattedQandAs,
+    ];
+
     const questionIds = Array.isArray(interview.question_id)
       ? [...interview.question_id, questionId]
       : [interview.question_id, questionId].filter((id) => id !== null);
-
-    const serializedContent = newContent.map((item) => JSON.stringify(item));
 
     await this.interviewRepository.update(
       { date, user },
