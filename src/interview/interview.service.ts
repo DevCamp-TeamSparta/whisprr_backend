@@ -83,10 +83,13 @@ export class InterviewService {
     }
     const interview = await this.findInterview(user, date);
 
-    const existingContent = interview.content.map((item) =>
-      typeof item === 'string' ? JSON.parse(item) : item,
-    );
-
+    const existingContent = interview.content.map((item) => {
+      const parsedItem = typeof item === 'string' ? JSON.parse(item) : item;
+      return {
+        question: parsedItem.question,
+        answer: parsedItem.answer,
+      };
+    });
     const newContent = [...existingContent, ...QandAs];
     const questionIds = Array.isArray(interview.question_id)
       ? [...interview.question_id, questionId]
