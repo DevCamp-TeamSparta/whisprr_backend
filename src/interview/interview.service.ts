@@ -83,19 +83,32 @@ export class InterviewService {
     }
     const interview = await this.findInterview(user, date);
 
-    const existingContent = interview.content.map((item) =>
-      typeof item === 'string' ? JSON.parse(item) : item,
+    const existingContent = interview.content.map((item) => {
+      const parsedItem = typeof item === 'string' ? JSON.parse(item) : item;
+      return {
+        question: parsedItem.question,
+        answer: parsedItem.answer,
+      };
+    });
+
+    const formattedQandAs = QandAs.map((item) =>
+      JSON.stringify({
+        question: item.question,
+        answer: item.answer,
+      }),
     );
 
-    const newContent = [...existingContent, ...QandAs];
+    const serializedContent = [
+      ...existingContent.map((item) => JSON.stringify(item)),
+      ...formattedQandAs,
+    ];
+
     const questionIds = Array.isArray(interview.question_id)
       ? [...interview.question_id, questionId]
       : [interview.question_id, questionId].filter((id) => id !== null);
 
-    const serializedContent = newContent.map((item) => JSON.stringify(item));
-
     await this.interviewRepository.update(
-      { date },
+      { date, user },
       { content: serializedContent, question_id: questionIds },
     );
 
