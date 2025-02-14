@@ -81,40 +81,53 @@ export class InterviewService {
     if ('message' in user) {
       return user;
     }
+
     const interview = await this.findInterview(user, date);
-
-    const existingContent = interview.content.map((item) => {
-      const parsedItem = typeof item === 'string' ? JSON.parse(item) : item;
-      return {
-        question: parsedItem.question,
-        answer: parsedItem.answer,
-      };
-    });
-
-    const formattedQandAs = QandAs.map((item) =>
-      JSON.stringify({
-        question: item.question,
-        answer: item.answer,
-      }),
+    const { serializedContent, uniqueQuestionIds } = this.removeDuplicatesInterview(
+      interview,
+      QandAs,
+      questionId,
     );
-
-    const serializedContent = [
-      ...existingContent.map((item) => JSON.stringify(item)),
-      ...formattedQandAs,
-    ];
-
-    const questionIds = Array.isArray(interview.question_id)
-      ? [...interview.question_id, questionId]
-      : [interview.question_id, questionId].filter((id) => id !== null);
 
     await this.interviewRepository.update(
       { date, user },
-      { content: serializedContent, question_id: questionIds },
+      { content: serializedContent, question_id: uniqueQuestionIds },
     );
 
-    const updatedInterview = await this.findInterview(user, date);
+    return this.findInterview(user, date);
+  }
 
-    return updatedInterview;
+  private removeDuplicatesInterview(
+    existingInterview: InterviewEntity,
+    interviewToBeAdded: QuestionAnswerDto[],
+    questionIdToBeAdded: number,
+  ): { serializedContent: string[]; uniqueQuestionIds: number[] } {
+    const existingContentSet = new Set<string>(
+      existingInterview.content.map((item) =>
+        JSON.stringify(typeof item === 'string' ? JSON.parse(item) : item),
+      ),
+    );
+
+    interviewToBeAdded.forEach((item) =>
+      existingContentSet.add(
+        JSON.stringify({
+          question: item.question,
+          answer: item.answer,
+        }),
+      ),
+    );
+
+    const serializedContent = Array.from(existingContentSet);
+
+    const questionIds = [
+      ...(Array.isArray(existingInterview.question_id)
+        ? existingInterview.question_id
+        : [existingInterview.question_id]
+      ).filter((id) => id !== null),
+      questionIdToBeAdded,
+    ];
+    const uniqueQuestionIds = Array.from(new Set(questionIds));
+    return { serializedContent, uniqueQuestionIds };
   }
 
   // 1.3. & 2.1. 인터뷰 업데이트 전 해당 날찌의 인터뷰 기록 존재 여부 확인
