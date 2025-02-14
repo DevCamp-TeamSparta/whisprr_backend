@@ -40,7 +40,7 @@ export class OtpService {
     return { message: `Verification mail sent!: ${info.messageId}` };
   }
 
-  public createTransporter() {
+  public createTransporter(): nodemailer.Transporter {
     const emailAdress = this.getEmailAddress();
     const appPassword = this.configService.get<string>('APP_PASSWORD');
 
