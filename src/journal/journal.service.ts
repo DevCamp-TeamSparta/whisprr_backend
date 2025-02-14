@@ -114,7 +114,7 @@ export class JournalService {
         deleted_at: null,
       },
       order: { date: 'DESC' },
-      take: limit,
+      ...(limit ? { take: limit } : {}),
     });
 
     return journals;
