@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -169,10 +169,10 @@ export class UserService {
   public async createOrfindUserByEmail(
     email: string,
     verifyCode: string,
-  ): Promise<{ uuid: string }> {
+  ): Promise<{ uuid: string } | { message: string }> {
     const result = this.otpService.verifyOTP(email, verifyCode);
-    if (!result) {
-      throw new UnauthorizedException();
+    if ('message' in result) {
+      return result;
     }
 
     const user = await this.findUserByEmail(email);

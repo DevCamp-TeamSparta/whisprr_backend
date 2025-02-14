@@ -26,7 +26,22 @@ export class OtpService {
   public async sendVerifyEmail(email: string): Promise<{ message: string }> {
     const OTPCode = this.generateOTP(email);
     const message = this.writeEmailHtml(OTPCode);
-    const emailAdress = this.configService.get<string>('YOUR_EMAIL');
+    const transporter = this.createTransporter();
+    const emailAdress = this.getEmailAddress();
+
+    const info = await transporter.sendMail({
+      from: `"whisprr" <${emailAdress}>`,
+      to: email,
+      subject: 'whisprr verify',
+      text: 'welcome!',
+      html: message,
+    });
+
+    return { message: `Verification mail sent!: ${info.messageId}` };
+  }
+
+  public createTransporter() {
+    const emailAdress = this.getEmailAddress();
     const appPassword = this.configService.get<string>('APP_PASSWORD');
 
     const gmailConfig: NodeMailerConfigOption = {
@@ -46,16 +61,11 @@ export class OtpService {
     };
 
     const transporter = nodemailer.createTransport(gmailConfig.server);
+    return transporter;
+  }
 
-    const info = await transporter.sendMail({
-      from: `"whisprr" <${emailAdress}>`,
-      to: email,
-      subject: 'whisprr verify',
-      text: 'welcome!',
-      html: message,
-    });
-
-    return { message: `Verification mail sent!: ${info.messageId}` };
+  private getEmailAddress(): string {
+    return this.configService.get<string>('YOUR_EMAIL');
   }
 
   public generateOTP(email: string): string {
@@ -67,27 +77,23 @@ export class OtpService {
     return otp;
   }
 
-  public verifyOTP(email: string, OTPCode: string): boolean {
+  public verifyOTP(email: string, OTPCode: string): object | { message: string } {
     const storedOtp = this.otpStore[email];
     if (!storedOtp) {
-      console.log('No OTP found for this email.');
-      return false;
+      return { message: 'No OTP found for this email address. Please request a new one.' };
     }
 
     if (Date.now() > storedOtp.expiresAt) {
-      console.log('OTP has expired.');
       delete this.otpStore[email];
-      return false;
+      return { message: 'The OTP has expired. Please request a new one.' };
     }
 
     if (storedOtp.otp !== OTPCode) {
-      console.log('Incorrect OTP.');
-      return false;
+      return { message: 'Incorrect OTP. Please try again.' };
     }
 
     console.log('OTP verified successfully.');
-    delete this.otpStore[email];
-    return true;
+    return { success: true };
   }
 
   public writeEmailHtml(verifyCode: string): string {
