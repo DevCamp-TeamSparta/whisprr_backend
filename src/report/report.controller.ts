@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards, Param } from '@nestjs/common';
-import { UserGuard } from 'src/common/guards/user.guard';
-import { JwtPayload, UserInfo } from 'src/common/utils/user_info.decorator';
+import { UserGuard } from '../common/guards/user.guard';
+import { JwtPayload, UserInfo } from '../common/utils/user_info.decorator';
 import { ReportService } from './report.service';
 import { ReportDto } from './dto/report.dto';
 

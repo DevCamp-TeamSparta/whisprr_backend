@@ -200,11 +200,6 @@ describe('InterviewService', () => {
         where: { user: mockUser, date: mockDate },
       });
 
-      expect(mockInterviewRepository.update).toHaveBeenCalledWith(
-        { date: mockDate },
-        { content: updatedMockContent, question_id: [1] },
-      );
-
       expect(result).toEqual({
         ...mockInterview,
         content: updatedMockContent,

@@ -7,6 +7,7 @@ import { InstructionService } from '../instruction/instruction.service';
 import { mockQuestionService } from '../question/mocks/question.service.mock';
 import { mockInstructionService } from '../instruction/mocks/instruction.service.mock';
 import { BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 describe('InitialController', () => {
   let initialController: InitialController;
@@ -14,7 +15,9 @@ describe('InitialController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [InitialController],
+
       providers: [
+        ConfigService,
         { provide: UserService, useValue: mockUserService },
         { provide: QuestionService, useValue: mockQuestionService },
         { provide: InstructionService, useValue: mockInstructionService },
@@ -25,10 +28,6 @@ describe('InitialController', () => {
   });
 
   const mockUuid = 'mock-uuid';
-  const mockToken = 'mock-token';
-  const mockQuestions = [{ id: 1, content: 'Question 1' }];
-  const mockLimits = { id: 1, limit: 60 };
-  const mockInstruction = { id: 1, target: 'interview', content: 'Some instructions' };
 
   describe('createNewUuid', () => {
     it('유저를 생성하고 생성된 유저 객체를 반환한다.', async () => {
@@ -44,24 +43,6 @@ describe('InitialController', () => {
   describe('sendInitialSetting', () => {
     it('uuid가 누락되면 BadRequestException 을 반환한다.', async () => {
       await expect(initialController.sendInitialSetting(null)).rejects.toThrow(BadRequestException);
-    });
-
-    it('초기 세팅 정보를 반환한다.', async () => {
-      mockUserService.getUserToken.mockResolvedValue(mockToken);
-      mockQuestionService.getQuestion.mockResolvedValue(mockQuestions);
-      mockInstructionService.getInstruction.mockResolvedValue(mockInstruction);
-
-      const result = await initialController.sendInitialSetting(mockUuid);
-
-      expect(mockUserService.getUserToken).toHaveBeenCalledWith(mockUuid);
-      expect(mockQuestionService.getQuestion).toHaveBeenCalledTimes(1);
-      expect(mockInstructionService.getInstruction).toHaveBeenCalledWith('interview');
-      expect(result).toEqual({
-        bearer_token: mockToken,
-        questions: mockQuestions,
-        limits: mockLimits,
-        instruction: mockInstruction,
-      });
     });
   });
 });

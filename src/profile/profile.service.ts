@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { PurchaseService } from 'src/purchase/purchase.service';
-import { UserService } from 'src/user/user.service';
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { PurchaseService } from '../purchase/purchase.service';
+import { UserService } from '../user/user.service';
+import { JwtPayload } from '../common/utils/user_info.decorator';
 
 @Injectable()
 export class ProfileService {

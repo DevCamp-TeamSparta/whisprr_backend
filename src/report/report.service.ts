@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReportEntity } from './entities/report.entity';
 import { Repository } from 'typeorm';
-import { UserService } from 'src/user/user.service';
-import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { UserService } from '../user/user.service';
+import { JwtPayload } from '../common/utils/user_info.decorator';
 import { parse as uuidParse } from 'uuid';
 import { ReportDto } from './dto/report.dto';
 
 import { stringify as uuidStringify } from 'uuid';
-import { InterviewService } from 'src/interview/interview.service';
-import { JournalService } from 'src/journal/journal.service';
+import { InterviewService } from '../interview/interview.service';
+import { JournalService } from '../journal/journal.service';
 
 @Injectable()
 export class ReportService {
