@@ -4,7 +4,7 @@ import { JournalEntity } from '../../journal/entities/journal.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { Entity, Column, OneToMany, PrimaryColumn, OneToOne } from 'typeorm';
 import { ReportEntity } from '../../report/entities/report.entity';
-import { CustomQuestionEntity } from './user.custom.question.entity';
+import { CustomQuestionEntity } from '../../question/entities/user.custom.question.entity';
 
 @Entity('users')
 export class UserEntity {
