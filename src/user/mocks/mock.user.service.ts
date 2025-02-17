@@ -18,6 +18,7 @@ export const mockUserService = {
 
 export const mockUser: UserEntity = {
   user_id: Buffer.from(uuidParse('550e8400-e29b-41d4-a716-446655440000')),
+  email: 'test@test.com',
   nickname: '무명',
   trial_status: 'active',
   writing_count: 0,
@@ -33,6 +34,7 @@ export const mockUser: UserEntity = {
 
 export const mockUpdatedUser: UserEntity = {
   user_id: Buffer.from(uuidParse('550e8400-e29b-41d4-a716-446655440000')),
+  email: 'test@test.com',
   nickname: 'kelly',
   trial_status: 'active',
   writing_count: 0,

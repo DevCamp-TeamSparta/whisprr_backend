@@ -17,6 +17,7 @@ import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 import { JournalService } from 'src/journal/journal.service';
 import { JournalEntity } from 'src/journal/entities/journal.entity';
 import { JournalCreationEntity } from 'src/journal/entities/journal.creation.entity';
+import { OtpService } from 'src/otp/otp.service';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { JournalCreationEntity } from 'src/journal/entities/journal.creation.ent
     InstructionService,
     OpenAiService,
     JournalService,
+    OtpService,
   ],
 })
 export class PurchaseModule {}

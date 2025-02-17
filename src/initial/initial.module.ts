@@ -9,6 +9,7 @@ import { InstructionEntity } from '../instruction/entities/instruction.entity';
 import { UserService } from 'src/user/user.service';
 import { QuestionService } from 'src/question/question.service';
 import { InstructionService } from 'src/instruction/instruction.service';
+import { OtpService } from 'src/otp/otp.service';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { InstructionService } from 'src/instruction/instruction.service';
     TypeOrmModule.forFeature([UserEntity, QuestionEntity, InstructionEntity]),
   ],
   controllers: [InitialController],
-  providers: [UserService, QuestionService, InstructionService, UserService],
+  providers: [UserService, QuestionService, InstructionService, UserService, OtpService],
 })
 export class InitialModule {}

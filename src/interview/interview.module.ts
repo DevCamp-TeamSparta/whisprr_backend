@@ -13,6 +13,7 @@ import { InstructionService } from 'src/instruction/instruction.service';
 import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 import { OpenAiService } from 'src/open-ai/open-ai.service';
 import { JournalModule } from 'src/journal/journal.module';
+import { OtpService } from 'src/otp/otp.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { JournalModule } from 'src/journal/journal.module';
     JournalService,
     InstructionService,
     OpenAiService,
+    OtpService,
   ],
 })
 export class InterviewModule {}

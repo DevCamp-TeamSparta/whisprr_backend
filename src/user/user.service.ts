@@ -7,6 +7,7 @@ import { parse as uuidParse } from 'uuid';
 import { stringify as uuidStringify } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/common/utils/user_info.decorator';
+import { OtpService } from 'src/otp/otp.service';
 
 @Injectable()
 export class UserService {
@@ -14,6 +15,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
+    private otpService: OtpService,
   ) {}
 
   //1. 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
@@ -65,10 +67,11 @@ export class UserService {
   }
 
   //2. 유저 생성 메소드
-  public async createUser() {
+  public async createUser(email: string) {
     const uuid = uuidv4();
     const uuidBuffer = Buffer.from(uuidParse(uuid) as Uint8Array);
     const newUser = this.userRepository.create({
+      email,
       user_id: uuidBuffer,
       nickname: 'Unnamed user',
       created_at: new Date(),
@@ -149,5 +152,34 @@ export class UserService {
     }
 
     return undefined;
+  }
+
+  //6.email로 사용자 조회
+  private async findUserByEmail(email: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    return user;
+  }
+
+  //7.email로 초기 사용자 생성 or 기존 사용자 반환
+  public async createOrfindUserByEmail(
+    email: string,
+    verifyCode: string,
+  ): Promise<{ uuid: string } | { message: string }> {
+    const result = this.otpService.verifyOTP(email, verifyCode);
+    if ('message' in result) {
+      return result;
+    }
+
+    const user = await this.findUserByEmail(email);
+    if (user) {
+      return { uuid: uuidStringify(user.user_id) };
+    }
+    const newUserUuid = await this.createUser(email);
+    return newUserUuid;
   }
 }
