@@ -26,9 +26,8 @@ import { OpenAiModule } from './open-ai/open-ai.module';
 import { JournalCreationEntity } from './journal/entities/journal.creation.entity';
 import { ReportModule } from './report/report.module';
 import { ReportEntity } from './report/entities/report.entity';
-import { CustomQuestionEntity } from './user/entities/user.custom.question.entity';
+import { CustomQuestionEntity } from './question/entities/user.custom.question.entity';
 import { OtpService } from './otp/otp.service';
-
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({

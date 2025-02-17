@@ -10,6 +10,7 @@ import { UserService } from 'src/user/user.service';
 import { QuestionService } from 'src/question/question.service';
 import { InstructionService } from 'src/instruction/instruction.service';
 import { OtpService } from 'src/otp/otp.service';
+import { CustomQuestionEntity } from 'src/question/entities/user.custom.question.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { OtpService } from 'src/otp/otp.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntity, QuestionEntity, InstructionEntity]),
+    TypeOrmModule.forFeature([UserEntity, QuestionEntity, InstructionEntity, CustomQuestionEntity]),
   ],
   controllers: [InitialController],
   providers: [UserService, QuestionService, InstructionService, UserService, OtpService],

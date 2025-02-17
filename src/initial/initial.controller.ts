@@ -39,7 +39,7 @@ export class InitialController {
     }
     const pareduuid = Buffer.from(uuidParse(uuid));
     const token = await this.userService.getUserToken(pareduuid);
-    const questions = await this.questionService.getQuestion();
+    const questions = await this.questionService.getQuestion(pareduuid);
     const limits = Number(this.configService.get<number>('TIMELIMIT'));
     const instruction = await this.instructionService.getInstruction('interview');
 
