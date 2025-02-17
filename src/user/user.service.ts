@@ -170,10 +170,7 @@ export class UserService {
     email: string,
     verifyCode: string,
   ): Promise<{ uuid: string } | { message: string }> {
-    const result = this.otpService.verifyOTP(email, verifyCode);
-    if ('message' in result) {
-      return result;
-    }
+    this.otpService.verifyOTP(email, verifyCode);
 
     const user = await this.findUserByEmail(email);
     if (user) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
@@ -80,16 +80,18 @@ export class OtpService {
   public verifyOTP(email: string, OTPCode: string): object | { message: string } {
     const storedOtp = this.otpStore[email];
     if (!storedOtp) {
-      return { message: 'No OTP found for this email address. Please request a new one.' };
+      throw new BadRequestException(
+        'No OTP found for this email address. Please request a new one.',
+      );
     }
 
     if (Date.now() > storedOtp.expiresAt) {
       delete this.otpStore[email];
-      return { message: 'The OTP has expired. Please request a new one.' };
+      throw new BadRequestException('The OTP has expired. Please request a new one.');
     }
 
     if (storedOtp.otp !== OTPCode) {
-      return { message: 'Incorrect OTP. Please try again.' };
+      throw new BadRequestException('Incorrect OTP. Please try again.');
     }
 
     console.log('OTP verified successfully.');
