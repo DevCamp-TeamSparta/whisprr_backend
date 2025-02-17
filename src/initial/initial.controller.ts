@@ -4,7 +4,6 @@ import { QuestionService } from '../question/question.service';
 import { InstructionService } from '../instruction/instruction.service';
 import { ConfigService } from '@nestjs/config';
 import { parse as uuidParse } from 'uuid';
-import { ParsesService } from 'src/parses/parses.service';
 
 @Controller('initial')
 export class InitialController {
@@ -13,7 +12,6 @@ export class InitialController {
     private readonly questionService: QuestionService,
     private readonly instructionService: InstructionService,
     private readonly configService: ConfigService,
-    private readonly parseService: ParsesService,
   ) {}
 
   //1. 어플 설치 시 최초 1회 uuid 생성 요청
@@ -33,14 +31,12 @@ export class InitialController {
     const questions = await this.questionService.getQuestion();
     const limits = Number(this.configService.get<number>('TIMELIMIT'));
     const instruction = await this.instructionService.getInstruction('interview');
-    const parses = await this.parseService.getParses();
 
     const response = {
       bearer_token: token,
       questions,
       limits,
       instruction,
-      parses,
     };
 
     return response;
