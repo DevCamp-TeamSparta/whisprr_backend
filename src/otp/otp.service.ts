@@ -3,22 +3,6 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
-export type NodeMailerConfigOption = {
-  server: {
-    host: string;
-    port: number;
-    auth: {
-      user: string;
-      pass: string;
-    };
-    tls: {
-      rejectUnauthorized: false;
-    };
-    pool: true;
-  };
-  from: string;
-};
-
 @Injectable()
 export class OtpService {
   constructor(private configService: ConfigService) {}
@@ -41,27 +25,29 @@ export class OtpService {
     return { message: `Verification mail sent!: ${info.messageId}` };
   }
 
-  public createTransporter(): nodemailer.Transporter {
+  public createTransporter() {
     const emailAdress = this.getEmailAddress();
-    const appPassword = this.configService.get<string>('APP_PASSWORD');
 
-    const gmailConfig: NodeMailerConfigOption = {
-      server: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        auth: {
-          user: emailAdress,
-          pass: appPassword,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-        pool: true,
+    const clientId = this.configService.get<string>('CLIENT_ID');
+    const clientSecret = this.configService.get<string>('CLIENT_SECRET');
+    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        type: 'OAuth2',
+        user: emailAdress,
+        clientId: clientId,
+        clientSecret: clientSecret,
+        refreshToken: refreshToken,
       },
-      from: emailAdress,
-    };
-
-    const transporter = nodemailer.createTransport(gmailConfig.server);
+      tls: {
+        rejectUnauthorized: false,
+      },
+      pool: true,
+    });
     return transporter;
   }
 

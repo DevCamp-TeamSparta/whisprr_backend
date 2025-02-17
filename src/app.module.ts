@@ -71,7 +71,6 @@ const typeOrmModuleOptions = {
         DB_SYNC: Joi.boolean().required(),
         PACKAGE_NAME: Joi.string().required(),
         YOUR_EMAIL: Joi.string().required(),
-        APP_PASSWORD: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
