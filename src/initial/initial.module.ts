@@ -9,6 +9,8 @@ import { InstructionEntity } from '../instruction/entities/instruction.entity';
 import { UserService } from 'src/user/user.service';
 import { QuestionService } from 'src/question/question.service';
 import { InstructionService } from 'src/instruction/instruction.service';
+import { ParseAfterInterviewEntity } from 'src/parses/entities/parses.entity';
+import { ParsesService } from 'src/parses/parses.service';
 
 @Module({
   imports: [
@@ -18,9 +20,14 @@ import { InstructionService } from 'src/instruction/instruction.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntity, QuestionEntity, InstructionEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      QuestionEntity,
+      InstructionEntity,
+      ParseAfterInterviewEntity,
+    ]),
   ],
   controllers: [InitialController],
-  providers: [UserService, QuestionService, InstructionService, UserService],
+  providers: [UserService, QuestionService, InstructionService, UserService, ParsesService],
 })
 export class InitialModule {}
