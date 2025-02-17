@@ -4,6 +4,7 @@ import { JournalEntity } from '../../journal/entities/journal.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { Entity, Column, OneToMany, PrimaryColumn, OneToOne } from 'typeorm';
 import { ReportEntity } from '../../report/entities/report.entity';
+import { CustomQuestionEntity } from './user.custom.question.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -66,4 +67,10 @@ export class UserEntity {
     onDelete: 'CASCADE',
   })
   reports: ReportEntity[];
+
+  //1: m user_custom_questions
+  @OneToMany(() => CustomQuestionEntity, (user_custom_questions) => user_custom_questions.user, {
+    onDelete: 'CASCADE',
+  })
+  user_custom_questions: CustomQuestionEntity[];
 }

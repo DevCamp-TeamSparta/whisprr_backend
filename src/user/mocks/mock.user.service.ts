@@ -30,6 +30,7 @@ export const mockUser: UserEntity = {
   journal_creations: null,
   token_version: 1,
   reports: null,
+  user_custom_questions: null,
 };
 
 export const mockUpdatedUser: UserEntity = {
@@ -46,6 +47,7 @@ export const mockUpdatedUser: UserEntity = {
   journal_creations: null,
   token_version: 1,
   reports: null,
+  user_custom_questions: null,
 };
 
 export const mockUserInfo: JwtPayload = {

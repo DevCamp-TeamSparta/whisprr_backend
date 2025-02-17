@@ -26,7 +26,9 @@ import { OpenAiModule } from './open-ai/open-ai.module';
 import { JournalCreationEntity } from './journal/entities/journal.creation.entity';
 import { ReportModule } from './report/report.module';
 import { ReportEntity } from './report/entities/report.entity';
+import { CustomQuestionEntity } from './user/entities/user.custom.question.entity';
 import { OtpService } from './otp/otp.service';
+
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -39,6 +41,7 @@ const typeOrmModuleOptions = {
     database: configService.get('DB_NAME'),
     entities: [
       UserEntity,
+      CustomQuestionEntity,
       InterviewEntity,
       JournalEntity,
       QuestionEntity,
@@ -67,6 +70,9 @@ const typeOrmModuleOptions = {
         DB_PORT: Joi.number().required(),
         DB_NAME: Joi.string().required(),
         DB_SYNC: Joi.boolean().required(),
+        PACKAGE_NAME: Joi.string().required(),
+        YOUR_EMAIL: Joi.string().required(),
+        APP_PASSWORD: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
