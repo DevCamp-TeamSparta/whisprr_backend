@@ -13,6 +13,7 @@ import { InstructionService } from '../instruction/instruction.service';
 import { InstructionEntity } from '../instruction/entities/instruction.entity';
 import { JournalCreationEntity } from './entities/journal.creation.entity';
 import { InterviewModule } from 'src/interview/interview.module';
+import { OtpService } from 'src/otp/otp.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { InterviewModule } from 'src/interview/interview.module';
     UserService,
     InterviewService,
     InstructionService,
+    OtpService,
   ],
   exports: [JournalService, InterviewService],
 })

@@ -15,6 +15,7 @@ import { InstructionService } from 'src/instruction/instruction.service';
 import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 import { OpenAiService } from 'src/open-ai/open-ai.service';
 import { UserModule } from 'src/user/user.module';
+import { OtpService } from 'src/otp/otp.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UserModule } from 'src/user/user.module';
     JwtService,
     InstructionService,
     OpenAiService,
+    OtpService,
   ],
 })
 export class ReportModule {}

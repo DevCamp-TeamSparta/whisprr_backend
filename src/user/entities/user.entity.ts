@@ -14,6 +14,12 @@ export class UserEntity {
   @Column({
     type: 'varchar',
     nullable: false,
+  })
+  email: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false,
     default: '무명',
   })
   nickname: string;

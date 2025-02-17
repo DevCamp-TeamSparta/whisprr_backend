@@ -30,6 +30,14 @@ export class PurchaseService {
     if ('message' in user) {
       return user;
     }
+
+    const PurchaseTokenOrner = await this.findUserByPurchaseToken(purchaseToken);
+    if (PurchaseTokenOrner && user.email !== PurchaseTokenOrner.user.email) {
+      return {
+        message: `Account: ${PurchaseTokenOrner.user.email} already owns this purchase. To restore your subscription, please reinstall the app and log in with that account. `,
+      };
+    }
+
     const verifyInfo = await this.updatePurchaseRecord(user, purchaseToken, plan);
     const token = await this.userService.getUserToken(user.user_id);
 

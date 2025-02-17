@@ -9,10 +9,11 @@ import { PurchaseService } from 'src/purchase/purchase.service';
 import { PlanService } from 'src/plan/plan.service';
 import { PlanEntity } from 'src/plan/entities/plan.entity';
 import { ProfileService } from './profile.service';
+import { OtpService } from 'src/otp/otp.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, PurchaseEntity, PlanEntity])],
   controllers: [ProfileController],
-  providers: [PurchaseService, UserService, JwtService, PlanService, ProfileService],
+  providers: [PurchaseService, UserService, JwtService, PlanService, ProfileService, OtpService],
 })
 export class ProfileModule {}

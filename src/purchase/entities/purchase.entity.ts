@@ -11,6 +11,7 @@ export class PurchaseEntity {
   @Column({
     type: 'varchar',
     nullable: false,
+    unique: true,
   })
   purchase_token: string;
 
