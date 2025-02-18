@@ -16,6 +16,7 @@ import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 import { OpenAiService } from 'src/open-ai/open-ai.service';
 import { UserModule } from 'src/user/user.module';
 import { OtpService } from 'src/otp/otp.service';
+import { OAuth2Service } from 'src/otp/oauth2.service';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { OtpService } from 'src/otp/otp.service';
     InstructionService,
     OpenAiService,
     OtpService,
+    OAuth2Service,
   ],
 })
 export class ReportModule {}

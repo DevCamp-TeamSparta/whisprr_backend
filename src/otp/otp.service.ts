@@ -2,16 +2,20 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { OAuth2Service } from './oauth2.service';
 
 @Injectable()
 export class OtpService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private oauth2Service: OAuth2Service,
+  ) {}
   private otpStore: Record<string, { otp: string; expiresAt: number }> = {};
 
   public async sendVerifyEmail(email: string): Promise<{ message: string }> {
     const OTPCode = this.generateOTP(email);
     const message = this.writeEmailHtml(OTPCode);
-    const transporter = this.createTransporter();
+    const transporter = await this.createTransporter();
     const emailAdress = this.getEmailAddress();
 
     const info = await transporter.sendMail({
@@ -25,12 +29,12 @@ export class OtpService {
     return { message: `Verification mail sent!: ${info.messageId}` };
   }
 
-  public createTransporter() {
+  public async createTransporter() {
     const emailAdress = this.getEmailAddress();
 
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
-    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
+    const accessToken = await this.oauth2Service.getAccessToken();
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -41,7 +45,7 @@ export class OtpService {
         user: emailAdress,
         clientId: clientId,
         clientSecret: clientSecret,
-        refreshToken: refreshToken,
+        accessToken: accessToken,
       },
       tls: {
         rejectUnauthorized: false,
