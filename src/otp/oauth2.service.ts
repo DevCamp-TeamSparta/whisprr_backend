@@ -6,24 +6,24 @@ import { google } from 'googleapis';
 export class OAuth2Service {
   constructor(private configService: ConfigService) {}
 
-  public async getOauth2Client() {
-    const clientId = this.configService.get<string>('CLIENT_ID');
-    const clientSecret = this.configService.get<string>('CLIENT_SECRET');
+  //   public async getOauth2Client() {
+  //     const clientId = this.configService.get<string>('CLIENT_ID');
+  //     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
 
-    const redirectUrl = this.configService.get<string>('REDIRECT_URL');
+  //     const redirectUrl = this.configService.get<string>('REDIRECT_URL');
 
-    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  //     const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
 
-    return oauth2Client;
-  }
+  //     return oauth2Client;
+  //   }
 
-  public async getAccessToken() {
-    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
+  //   public async getAccessToken() {
+  //     const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
 
-    const oauth2Client = await this.getOauth2Client();
+  //     const oauth2Client = await this.getOauth2Client();
 
-    oauth2Client.setCredentials({ refresh_token: refreshToken });
-    const { token } = await oauth2Client.getAccessToken();
-    return token;
-  }
+  //     oauth2Client.setCredentials({ refresh_token: refreshToken });
+  //     const { token } = await oauth2Client.getAccessToken();
+  //     return token;
+  //   }
 }

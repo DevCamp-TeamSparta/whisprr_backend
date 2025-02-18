@@ -34,7 +34,7 @@ export class OtpService {
 
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
-    const accessToken = await this.oauth2Service.getAccessToken();
+    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -45,7 +45,7 @@ export class OtpService {
         user: emailAdress,
         clientId: clientId,
         clientSecret: clientSecret,
-        accessToken: accessToken,
+        refreshToken: refreshToken,
       },
       tls: {
         rejectUnauthorized: false,
