@@ -10,11 +10,12 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { OtpService } from 'src/otp/otp.service';
 import { OAuth2Service } from 'src/otp/oauth2.service';
+import { RedisService } from 'src/otp/redis.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([QuestionEntity, CustomQuestionEntity, UserEntity])],
   controllers: [QuestionController],
-  providers: [QuestionService, UserService, OtpService, OAuth2Service, JwtService],
+  providers: [QuestionService, UserService, OtpService, OAuth2Service, JwtService, RedisService],
   exports: [QuestionService],
 })
 export class QuestionModule {}

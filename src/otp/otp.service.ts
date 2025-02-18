@@ -1,16 +1,31 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { OAuth2Service } from './oauth2.service';
+import { RedisService } from './redis.service';
 
 @Injectable()
 export class OtpService {
   constructor(
     private configService: ConfigService,
     private oauth2Service: OAuth2Service,
+    private redisService: RedisService,
   ) {}
-  private otpStore: Record<string, { otp: string; expiresAt: number }> = {};
+  async storeOTP(email: string, otp: string): Promise<void> {
+    const redis = this.redisService.getClient();
+    await redis.set(`otp:${email}`, otp, 'EX', 120);
+  }
+
+  async getOTP(email: string): Promise<string | null> {
+    const redis = this.redisService.getClient();
+    return await redis.get(`otp:${email}`);
+  }
+
+  async deleteOTP(email: string): Promise<void> {
+    const redis = this.redisService.getClient();
+    await redis.del(`otp:${email}`);
+  }
 
   public async sendVerifyEmail(email: string): Promise<{ message: string }> {
     const OTPCode = this.generateOTP(email);
@@ -34,7 +49,7 @@ export class OtpService {
 
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
-    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
+    const accessToken = await this.oauth2Service.getAccessToken();
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -45,7 +60,7 @@ export class OtpService {
         user: emailAdress,
         clientId: clientId,
         clientSecret: clientSecret,
-        refreshToken: refreshToken,
+        accessToken: accessToken,
       },
       tls: {
         rejectUnauthorized: false,
@@ -61,32 +76,24 @@ export class OtpService {
 
   public generateOTP(email: string): string {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 2 * 60 * 1000;
-    this.otpStore[email] = { otp, expiresAt };
+    this.storeOTP(email, otp);
     console.log(`Generated OTP for ${email}: ${otp}`);
 
     return otp;
   }
 
-  public verifyOTP(email: string, OTPCode: string): object | { message: string } {
-    const storedOtp = this.otpStore[email];
+  public async verifyOTP(email: string, OTPCode: string): Promise<object | { message: string }> {
+    const storedOtp = await this.getOTP(email);
     if (!storedOtp) {
-      throw new BadRequestException(
-        'No OTP found for this email address. Please request a new one.',
-      );
-    }
-
-    if (Date.now() > storedOtp.expiresAt) {
-      delete this.otpStore[email];
-
       throw new UnauthorizedException('The OTP has expired. Please request a new one.');
     }
 
-    if (storedOtp.otp !== OTPCode) {
+    if (storedOtp !== OTPCode) {
       throw new UnauthorizedException('Incorrect OTP. Please try again.');
     }
 
     console.log('OTP verified successfully.');
+    await this.deleteOTP(email);
     return { success: true };
   }
 

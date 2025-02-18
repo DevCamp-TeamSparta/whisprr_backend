@@ -1,29 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-// import { google } from 'googleapis';
+import { google } from 'googleapis';
+import { RedisService } from './redis.service';
 
 @Injectable()
 export class OAuth2Service {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private redisService: RedisService,
+  ) {}
 
-  //   public async getOauth2Client() {
-  //     const clientId = this.configService.get<string>('CLIENT_ID');
-  //     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
+  async storeAccessToken(token: string, expiresIn: number): Promise<void> {
+    const redis = this.redisService.getClient();
+    await redis.set(`oauth2_access_token`, token, 'EX', expiresIn);
+  }
 
-  //     const redirectUrl = this.configService.get<string>('REDIRECT_URL');
+  async getAccessTokenfromRedis(): Promise<string | null> {
+    const redis = this.redisService.getClient();
+    return await redis.get(`oauth2_access_token`);
+  }
 
-  //     const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  public async getOauth2Client() {
+    const clientId = this.configService.get<string>('CLIENT_ID');
+    const clientSecret = this.configService.get<string>('CLIENT_SECRET');
 
-  //     return oauth2Client;
-  //   }
+    const redirectUrl = this.configService.get<string>('REDIRECT_URL');
 
-  //   public async getAccessToken() {
-  //     const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
+    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
 
-  //     const oauth2Client = await this.getOauth2Client();
+    return oauth2Client;
+  }
 
-  //     oauth2Client.setCredentials({ refresh_token: refreshToken });
-  //     const { token } = await oauth2Client.getAccessToken();
-  //     return token;
-  //   }
+  public async getAccessToken(): Promise<string> {
+    const cachedToken = await this.getAccessTokenfromRedis();
+
+    if (cachedToken) {
+      console.log('🔄 Using cached access token');
+      return cachedToken;
+    }
+    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
+    const oauth2Client = await this.getOauth2Client();
+
+    oauth2Client.setCredentials({ refresh_token: refreshToken });
+    const { token } = await oauth2Client.getAccessToken();
+
+    const expiresIn = 3600;
+    await this.storeAccessToken(token, expiresIn);
+    return token;
+  }
 }
