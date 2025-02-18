@@ -1,4 +1,9 @@
 services:
+  redis:
+    image: redis
+    container_name: redis-container
+    ports:
+      - '6379:6379'
   app:
     image: app-image
     build:
@@ -21,6 +26,8 @@ services:
       DB_SYNC: ${DB_SYNC}
       PORT: ${PORT}
       TIMELIMIT: ${TIMELIMIT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
     depends_on:
       - db

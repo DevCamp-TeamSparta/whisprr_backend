@@ -83,6 +83,20 @@ jobs:
           sed -i '/^PACKAGE_NAME[ =]/d' .env
           echo "PACKAGE_NAME=${{ secrets.PACKAGE_NAME }}" >> .env
 
+          sed -i '/^REDIRECT_URI[ =]/d' .env
+          echo "PACKAGE_NAME=${{ secrets.REDIRECT_URI }}" >> .env
+
+          sed -i '/^REFRESH_TOKEN[ =]/d' .env
+          echo "PACKAGE_NAME=${{ secrets.REFRESH_TOKEN }}" >> .env
+
+          sed -i '/^CLIENT_SECRET[ =]/d' .env
+          echo "PACKAGE_NAME=${{ secrets.CLIENT_SECRET }}" >> .env
+
+          sed -i '/^CLIENT_ID[ =]/d' .env
+          echo "PACKAGE_NAME=${{ secrets.CLIENT_ID }}" >> .env
+
+          sed -i '/^YOUR_EMAIL[ =]/d' .env
+          echo "PACKAGE_NAME=${{ secrets.YOUR_EMAIL }}" >> .env
 
           echo "${{ secrets.GCP_CREDENTIALS }}" > ~/whisprr_backend/gcp-credentials.json
             

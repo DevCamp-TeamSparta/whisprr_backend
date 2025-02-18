@@ -12,6 +12,7 @@ import { ProfileService } from './profile.service';
 import { OtpService } from 'src/otp/otp.service';
 import { OAuth2Service } from 'src/otp/oauth2.service';
 import { UserModule } from 'src/user/user.module';
+import { RedisService } from 'src/otp/redis.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, PurchaseEntity, PlanEntity]), UserModule],
@@ -24,6 +25,7 @@ import { UserModule } from 'src/user/user.module';
     ProfileService,
     OtpService,
     OAuth2Service,
+    RedisService,
   ],
 })
 export class ProfileModule {}

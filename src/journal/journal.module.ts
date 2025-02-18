@@ -15,6 +15,7 @@ import { JournalCreationEntity } from './entities/journal.creation.entity';
 import { InterviewModule } from 'src/interview/interview.module';
 import { OtpService } from 'src/otp/otp.service';
 import { OAuth2Service } from 'src/otp/oauth2.service';
+import { RedisService } from 'src/otp/redis.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OAuth2Service } from 'src/otp/oauth2.service';
     InstructionService,
     OtpService,
     OAuth2Service,
+    RedisService,
   ],
   exports: [JournalService, InterviewService],
 })

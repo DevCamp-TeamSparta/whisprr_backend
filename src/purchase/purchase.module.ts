@@ -19,6 +19,7 @@ import { JournalEntity } from 'src/journal/entities/journal.entity';
 import { JournalCreationEntity } from 'src/journal/entities/journal.creation.entity';
 import { OtpService } from 'src/otp/otp.service';
 import { OAuth2Service } from 'src/otp/oauth2.service';
+import { RedisService } from 'src/otp/redis.service';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { OAuth2Service } from 'src/otp/oauth2.service';
     JournalService,
     OtpService,
     OAuth2Service,
+    RedisService,
   ],
 })
 export class PurchaseModule {}

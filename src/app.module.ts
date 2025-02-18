@@ -29,6 +29,7 @@ import { ReportEntity } from './report/entities/report.entity';
 import { CustomQuestionEntity } from './question/entities/user.custom.question.entity';
 import { OtpService } from './otp/otp.service';
 import { OAuth2Service } from './otp/oauth2.service';
+import { RedisService } from './otp/redis.service';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -88,6 +89,6 @@ const typeOrmModuleOptions = {
     ReportModule,
   ],
   controllers: [AppController],
-  providers: [AppService, OpenAiService, OtpService, OAuth2Service],
+  providers: [AppService, OpenAiService, OtpService, OAuth2Service, RedisService],
 })
 export class AppModule {}
