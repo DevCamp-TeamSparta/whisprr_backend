@@ -28,7 +28,7 @@ export class OtpService {
   }
 
   public async sendVerifyEmail(email: string): Promise<{ message: string }> {
-    const OTPCode = this.generateOTP(email);
+    const OTPCode = await this.generateOTP(email);
     const message = this.writeEmailHtml(OTPCode);
     const transporter = await this.createTransporter();
     const emailAdress = this.getEmailAddress();
@@ -44,6 +44,8 @@ export class OtpService {
     return { message: `Verification mail sent!: ${info.messageId}` };
   }
 
+  private transporter: nodemailer.Transporter;
+
   public async createTransporter() {
     const emailAdress = this.getEmailAddress();
 
@@ -51,7 +53,7 @@ export class OtpService {
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
     const accessToken = await this.oauth2Service.getAccessToken();
 
-    const transporter = nodemailer.createTransport({
+    this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
       secure: false,
@@ -67,16 +69,16 @@ export class OtpService {
       },
       pool: true,
     });
-    return transporter;
+    return this.transporter;
   }
 
   private getEmailAddress(): string {
     return this.configService.get<string>('YOUR_EMAIL');
   }
 
-  public generateOTP(email: string): string {
+  public async generateOTP(email: string): Promise<string> {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    this.storeOTP(email, otp);
+    await this.storeOTP(email, otp);
     console.log(`Generated OTP for ${email}: ${otp}`);
 
     return otp;
