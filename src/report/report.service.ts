@@ -35,7 +35,7 @@ export class ReportService {
       reason: reportDto.reason,
     });
     await this.reportRepository.save(report);
-    return { messaga: 'report was accepted.' };
+    return await this.getReportById(report.id);
   }
 
   //2. 신고목록 열람(관리자 열람용)
@@ -103,8 +103,8 @@ export class ReportService {
       reported_at: report.reported_at,
       reason: report.reason,
       user_defined_reason: report.user_defined_reason,
-      interview: organizedInterview,
-      journal: organizedJournal,
+      reported_interview: organizedInterview,
+      reported_journal: organizedJournal,
     };
 
     return response;
