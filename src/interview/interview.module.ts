@@ -14,7 +14,6 @@ import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 import { OpenAiService } from 'src/open-ai/open-ai.service';
 import { JournalModule } from 'src/journal/journal.module';
 import { OtpService } from 'src/otp/otp.service';
-import { OAuth2Service } from 'src/otp/oauth2.service';
 import { RedisService } from 'src/otp/redis.service';
 
 @Module({
@@ -37,7 +36,6 @@ import { RedisService } from 'src/otp/redis.service';
     InstructionService,
     OpenAiService,
     OtpService,
-    OAuth2Service,
     RedisService,
   ],
 })

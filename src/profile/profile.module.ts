@@ -10,7 +10,6 @@ import { PlanService } from 'src/plan/plan.service';
 import { PlanEntity } from 'src/plan/entities/plan.entity';
 import { ProfileService } from './profile.service';
 import { OtpService } from 'src/otp/otp.service';
-import { OAuth2Service } from 'src/otp/oauth2.service';
 import { UserModule } from 'src/user/user.module';
 import { RedisService } from 'src/otp/redis.service';
 
@@ -24,7 +23,6 @@ import { RedisService } from 'src/otp/redis.service';
     PlanService,
     ProfileService,
     OtpService,
-    OAuth2Service,
     RedisService,
   ],
 })

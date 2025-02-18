@@ -28,7 +28,6 @@ import { ReportModule } from './report/report.module';
 import { ReportEntity } from './report/entities/report.entity';
 import { CustomQuestionEntity } from './question/entities/user.custom.question.entity';
 import { OtpService } from './otp/otp.service';
-import { OAuth2Service } from './otp/oauth2.service';
 import { RedisService } from './otp/redis.service';
 
 const typeOrmModuleOptions = {
@@ -89,6 +88,6 @@ const typeOrmModuleOptions = {
     ReportModule,
   ],
   controllers: [AppController],
-  providers: [AppService, OpenAiService, OtpService, OAuth2Service, RedisService],
+  providers: [AppService, OpenAiService, OtpService, RedisService],
 })
 export class AppModule {}

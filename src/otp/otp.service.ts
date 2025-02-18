@@ -1,15 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { OAuth2Service } from './oauth2.service';
 import { RedisService } from './redis.service';
 
 @Injectable()
 export class OtpService {
   constructor(
     private configService: ConfigService,
-    private oauth2Service: OAuth2Service,
     private redisService: RedisService,
   ) {}
   async storeOTP(email: string, otp: string): Promise<void> {
@@ -51,7 +48,7 @@ export class OtpService {
 
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
-    const accessToken = await this.oauth2Service.getAccessToken();
+    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
 
     this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -62,7 +59,7 @@ export class OtpService {
         user: emailAdress,
         clientId: clientId,
         clientSecret: clientSecret,
-        accessToken: accessToken,
+        refreshToken: refreshToken,
       },
       tls: {
         rejectUnauthorized: false,

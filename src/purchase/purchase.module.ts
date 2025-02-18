@@ -18,7 +18,6 @@ import { JournalService } from 'src/journal/journal.service';
 import { JournalEntity } from 'src/journal/entities/journal.entity';
 import { JournalCreationEntity } from 'src/journal/entities/journal.creation.entity';
 import { OtpService } from 'src/otp/otp.service';
-import { OAuth2Service } from 'src/otp/oauth2.service';
 import { RedisService } from 'src/otp/redis.service';
 
 @Module({
@@ -49,7 +48,6 @@ import { RedisService } from 'src/otp/redis.service';
     OpenAiService,
     JournalService,
     OtpService,
-    OAuth2Service,
     RedisService,
   ],
 })

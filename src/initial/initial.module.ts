@@ -11,7 +11,6 @@ import { QuestionService } from 'src/question/question.service';
 import { InstructionService } from 'src/instruction/instruction.service';
 import { OtpService } from 'src/otp/otp.service';
 import { CustomQuestionEntity } from 'src/question/entities/user.custom.question.entity';
-import { OAuth2Service } from 'src/otp/oauth2.service';
 import { RedisService } from 'src/otp/redis.service';
 
 @Module({
@@ -31,7 +30,6 @@ import { RedisService } from 'src/otp/redis.service';
     InstructionService,
     UserService,
     OtpService,
-    OAuth2Service,
     RedisService,
   ],
 })
