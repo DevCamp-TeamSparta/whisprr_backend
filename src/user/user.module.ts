@@ -6,6 +6,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { OtpService } from 'src/otp/otp.service';
 import { RedisService } from 'src/otp/redis.service';
+import { OAuth2Service } from 'src/otp/oAuth2.service';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { RedisService } from 'src/otp/redis.service';
     }),
     TypeOrmModule.forFeature([UserEntity]),
   ],
-  providers: [UserService, OtpService, JwtService, RedisService],
+  providers: [UserService, OtpService, JwtService, RedisService, OAuth2Service],
   exports: [UserService],
 })
 export class UserModule {}

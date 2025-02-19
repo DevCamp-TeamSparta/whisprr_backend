@@ -12,6 +12,7 @@ import { InstructionService } from 'src/instruction/instruction.service';
 import { OtpService } from 'src/otp/otp.service';
 import { CustomQuestionEntity } from 'src/question/entities/user.custom.question.entity';
 import { RedisService } from 'src/otp/redis.service';
+import { OAuth2Service } from 'src/otp/oAuth2.service';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { RedisService } from 'src/otp/redis.service';
     UserService,
     OtpService,
     RedisService,
+    OAuth2Service,
   ],
 })
 export class InitialModule {}

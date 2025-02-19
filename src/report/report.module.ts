@@ -18,6 +18,7 @@ import { UserModule } from 'src/user/user.module';
 import { OtpService } from 'src/otp/otp.service';
 
 import { RedisService } from 'src/otp/redis.service';
+import { OAuth2Service } from 'src/otp/oAuth2.service';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { RedisService } from 'src/otp/redis.service';
     OpenAiService,
     OtpService,
     RedisService,
+    OAuth2Service,
   ],
 })
 export class ReportModule {}
