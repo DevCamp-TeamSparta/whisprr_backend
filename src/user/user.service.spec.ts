@@ -76,11 +76,12 @@ describe('UserService', () => {
   const mockBufferuuid = Buffer.from(uuidParse(mockuuid));
 
   describe('createUser', () => {
+    const mockEmail = 'test@test.com';
     it('유저를 생성하고 반환한다.', async () => {
       const mockUser = { user_id: mockBufferuuid, nickname: '무명', created_at: new Date() };
       mockUserRepository.create.mockReturnValue(mockUser);
       mockUserRepository.save.mockResolvedValue(mockUser);
-      await userService.createUser();
+      await userService.createUser(mockEmail);
 
       const result = { uuid: mockuuid };
 
@@ -122,6 +123,7 @@ describe('UserService', () => {
     it('작성 획수를 업데이트 하고 필요 시 trial_status 를 업데이트 한다.', async () => {
       const mockUpdatingUser = {
         user_id: mockBufferuuid,
+        email: 'test@test.com',
         nickname: '무명',
         trial_status: 'active',
         writing_count: 2,
@@ -133,6 +135,7 @@ describe('UserService', () => {
         journal_creations: null,
         token_version: 1,
         reports: null,
+        user_custom_questions: null,
       };
 
       mockUserRepository.findOne.mockResolvedValueOnce({

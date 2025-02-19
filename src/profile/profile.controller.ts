@@ -30,7 +30,7 @@ export class ProfileController {
   @UseGuards(UserGuard)
   @Get()
   async getProfile(@UserInfo() userInfo: JwtPayload) {
-    const user = await this.userService.findUserByUserInfo(userInfo);
+    const user = await this.userService.findUserByUserInfoWhitoutTokenVerify(userInfo);
     return user;
   }
 }

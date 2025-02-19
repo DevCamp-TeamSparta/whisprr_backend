@@ -81,7 +81,9 @@ describe('ProfileController', () => {
       mockUserService.findUserByUserInfo.mockResolvedValue(mockUser);
 
       const result = await profileController.getProfile(mockUserInfo);
-      expect(mockUserService.findUserByUserInfo).toHaveBeenCalledWith(mockUserInfo);
+      expect(mockUserService.findUserByUserInfoWhitoutTokenVerify).toHaveBeenCalledWith(
+        mockUserInfo,
+      );
 
       expect(result).toEqual(mockUser);
     });
