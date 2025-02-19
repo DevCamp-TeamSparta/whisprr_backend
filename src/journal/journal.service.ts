@@ -101,11 +101,8 @@ export class JournalService {
     userInfo: JwtPayload,
     lastDate: Date,
     limit: number,
-  ): Promise<JournalEntity[] | { message: string; newToken: string }> {
-    const user = await this.userService.findUserByUserInfo(userInfo);
-    if ('message' in user) {
-      return user;
-    }
+  ): Promise<JournalEntity[]> {
+    const user = await this.userService.findUserByUserInfoWhitoutTokenVerify(userInfo);
 
     const journals = await this.journalRepository.find({
       where: {
@@ -141,18 +138,12 @@ export class JournalService {
   async getJournalByDate(
     userInfo: JwtPayload,
     date: Date,
-  ): Promise<
-    | {
-        journalData: JournalEntity | null;
-        questionIds: number[];
-        message?: string;
-      }
-    | { message: string; newToken: string }
-  > {
-    const user = await this.userService.findUserByUserInfo(userInfo);
-    if ('message' in user) {
-      return user;
-    }
+  ): Promise<{
+    journalData: JournalEntity | null;
+    questionIds: number[];
+    message?: string;
+  }> {
+    const user = await this.userService.findUserByUserInfoWhitoutTokenVerify(userInfo);
 
     const journal = await this.journalRepository.findOne({
       where: {
@@ -175,10 +166,7 @@ export class JournalService {
 
   //5. 저널 삭제 (일단 날짜로 식별 후 삭제)
   async deleteJournal(userInfo: JwtPayload, date: Date): Promise<{ message: string }> {
-    const user = await this.userService.findUserByUserInfo(userInfo);
-    if ('message' in user) {
-      return user;
-    }
+    const user = await this.userService.findUserByUserInfoWhitoutTokenVerify(userInfo);
 
     const journal = await this.getJournalByDateWithoutUserVerify(user, date);
 
@@ -195,10 +183,8 @@ export class JournalService {
     date: Date,
     modifyJournalDto: ModifyJournalDto,
   ): Promise<JournalEntity | { message: string; newToken: string }> {
-    const user = await this.userService.findUserByUserInfo(userInfo);
-    if ('message' in user) {
-      return user;
-    }
+    const user = await this.userService.findUserByUserInfoWhitoutTokenVerify(userInfo);
+
     await this.getJournalByDateWithoutUserVerify(user, date);
 
     const updateJournal = {

@@ -41,7 +41,7 @@ export class JournalController {
     @UserInfo() userInfo: JwtPayload,
     @Query('lastDate') lastDate?: string,
     @Query('limit') limit?: number,
-  ): Promise<JournalEntity[] | { message: string; newToken: string }> {
+  ): Promise<JournalEntity[]> {
     const effectiveLastDate = lastDate ? new Date(lastDate) : new Date();
     return await this.journalService.getJournalList(userInfo, effectiveLastDate, limit);
   }
