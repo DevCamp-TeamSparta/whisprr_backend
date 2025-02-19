@@ -5,7 +5,7 @@ WORKDIR /home/ubuntu/whisprr_backend
 COPY . .
 COPY package.json yarn.lock ./
 
-RUN RUN yarn install --production
+RUN yarn install --production
 RUN yarn build
 
 EXPOSE 3000
