@@ -62,9 +62,9 @@ describe('OtpService', () => {
   });
 
   describe('verifyOTP', () => {
-    it('should verify a valid OTP and return success', () => {
+    it('should verify a valid OTP and return success', async () => {
       const email = 'user@example.com';
-      const otp = otpService.generateOTP(email);
+      const otp = await otpService.generateOTP(email);
 
       const result = otpService.verifyOTP(email, otp);
 

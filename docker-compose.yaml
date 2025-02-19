@@ -4,7 +4,7 @@ services:
     container_name: redis-container
     ports:
       - '6379:6379'
-    command: redis-server --maxmemory 10mb --maxmemory-policy allkeys-lru
+    mem_limit: 10M
     networks:
       - app-network
 
@@ -18,40 +18,10 @@ services:
     env_file:
       - .env
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
       GOOGLE_KEY_FILE: /home/ubuntu/whisprr_backend/gcp-credentials.json
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PACKAGE_NAME: ${PACKAGE_NAME}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      DB_SYNC: ${DB_SYNC}
-      PORT: ${PORT}
-      TIMELIMIT: ${TIMELIMIT}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-
     depends_on:
-      - db
       - redis
     command: yarn run start
-    networks:
-      - app-network
-
-  db:
-    image: mysql:8.0
-    container_name: mysql-db
-    env_file:
-      - .env
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-    ports:
-      - '3307:3306'
     networks:
       - app-network
 
