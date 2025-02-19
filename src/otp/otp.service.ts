@@ -50,7 +50,6 @@ export class OtpService {
 
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
-    const refreshToken = this.configService.get<string>('REFRESH_TOKEN');
     const accessToken = await this.oauth2Service.getAccessToken();
 
     this.transporter = nodemailer.createTransport({
@@ -62,7 +61,6 @@ export class OtpService {
         user: emailAdress,
         clientId: clientId,
         clientSecret: clientSecret,
-        refreshToken: refreshToken,
         accessToken: accessToken,
       },
       tls: {
