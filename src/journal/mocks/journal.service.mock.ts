@@ -1,4 +1,4 @@
-import { mockUser } from '../../user/mocks/mock.user.service';
+import { mockUser } from '../../user/mocks/user.service.mock';
 import { JournalEntity } from '../entities/journal.entity';
 import { JournalDto } from '../dto/create_jornal.dto';
 import { ModifyJournalDto } from '../dto/modify_journal.dto';

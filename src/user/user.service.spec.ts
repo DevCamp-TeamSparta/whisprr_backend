@@ -11,7 +11,7 @@ import {
   mockUserInfoExpired,
   mockUserRepository,
   mockUserWithMessag,
-} from './mocks/mock.user.service';
+} from './mocks/user.service.mock';
 import { parse as uuidParse } from 'uuid';
 
 describe('UserService', () => {

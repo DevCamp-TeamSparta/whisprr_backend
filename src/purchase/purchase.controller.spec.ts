@@ -8,7 +8,7 @@ import {
   mockPurchaseToken,
   mockVerifyResult,
 } from './mocks/purchase.service.mock';
-import { mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
+import { mockUserInfo, mockUserService } from '../user/mocks/user.service.mock';
 import { mockPlanService } from '../plan/mocks/plan.service.mock';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';

@@ -11,7 +11,7 @@ import {
   mockUserInfoExpired,
   mockUserService,
   mockUserWithMessag,
-} from '../user/mocks/mock.user.service';
+} from '../user/mocks/user.service.mock';
 import { mockPlan, mockPlanService } from '../plan/mocks/plan.service.mock';
 import { mockPurchase, mockPurchaseRepository } from './mocks/purchase.service.mock';
 import { NotFoundException } from '@nestjs/common';

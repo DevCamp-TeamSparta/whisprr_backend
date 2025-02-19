@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JournalController } from './journal.controller';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
+import { mockUserInfo, mockUserService } from '../user/mocks/user.service.mock';
 import {
   mockJournal,
   mockJournalDto,

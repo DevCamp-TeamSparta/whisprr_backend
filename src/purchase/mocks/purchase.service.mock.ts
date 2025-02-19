@@ -1,6 +1,6 @@
 import { mockPlan } from '../../plan/mocks/plan.service.mock';
 import { PurchaseEntity } from '../entities/purchase.entity';
-import { mockUser } from '../../user/mocks/mock.user.service';
+import { mockUser } from '../../user/mocks/user.service.mock';
 import { PurchaseStatus } from '../utils/purchase.status';
 
 export const mockPurchaseRepository = {

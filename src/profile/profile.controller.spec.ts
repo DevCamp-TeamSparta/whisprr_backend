@@ -8,7 +8,7 @@ import {
   mockUserInfoExpired,
   mockUserService,
   mockUserWithMessag,
-} from '../user/mocks/mock.user.service';
+} from '../user/mocks/user.service.mock';
 import { UserService } from '../user/user.service';
 
 import { mockNicknameDto, mockProfileService } from './mocks/profile.service.mock';

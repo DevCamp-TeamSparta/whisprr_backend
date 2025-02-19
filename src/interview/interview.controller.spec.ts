@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InterviewController } from './interview.controller';
-import { mockUser, mockUserInfo, mockUserService } from '../user/mocks/mock.user.service';
+import { mockUser, mockUserInfo, mockUserService } from '../user/mocks/user.service.mock';
 import { UserService } from '../user/user.service';
 import { InterviewService } from './interview.service';
 import {

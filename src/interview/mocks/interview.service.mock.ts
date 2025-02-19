@@ -1,4 +1,4 @@
-import { mockUser } from '../../user/mocks/mock.user.service';
+import { mockUser } from '../../user/mocks/user.service.mock';
 import { InterviewDto } from '../dto/start.interview.dto';
 
 export const mockInterviewService = {

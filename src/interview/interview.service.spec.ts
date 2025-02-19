@@ -15,7 +15,7 @@ import {
   mockUserInfoExpired,
   mockUserService,
   mockUserWithMessag,
-} from '../user/mocks/mock.user.service';
+} from '../user/mocks/user.service.mock';
 import { UserService } from '../user/user.service';
 import { JournalService } from '../journal/journal.service';
 import { mockJournalService } from '../journal/mocks/journal.service.mock';

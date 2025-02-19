@@ -21,7 +21,7 @@ import {
   mockUserRepository,
   mockUserService,
   mockUserWithMessag,
-} from '../user/mocks/mock.user.service';
+} from '../user/mocks/user.service.mock';
 import { mockJournalByAI, mockOpenAiService } from '../open-ai/mocks/openAI.service.mock';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';

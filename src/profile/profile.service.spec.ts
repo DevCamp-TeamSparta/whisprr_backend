@@ -7,7 +7,7 @@ import {
   mockUser,
   mockUserInfo,
   mockUserRepository,
-} from '../user/mocks/mock.user.service';
+} from '../user/mocks/user.service.mock';
 import { PurchaseEntity } from '../purchase/entities/purchase.entity';
 import { mockPurchase, mockPurchaseRepository } from '../purchase/mocks/purchase.service.mock';
 import { mockNicknameDto } from './mocks/profile.service.mock';
