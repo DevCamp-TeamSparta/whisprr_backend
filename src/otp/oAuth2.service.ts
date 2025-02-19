@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import { RedisService } from './redis.service';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class OAuth2Service {
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
     const redirectUrl = this.configService.get<string>('REDIRECT_URL');
 
-    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+    const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
 
     return oauth2Client;
   }
