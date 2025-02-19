@@ -92,8 +92,17 @@ jobs:
           sed -i '/^CLIENT_ID[ =]/d' .env
           echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
 
+          sed -i '/^REDIRECT_URI[ =]/d' .env
+          echo "REDIRECT_URI=${{ secrets.REDIRECT_URI }}" >> .env
+
           sed -i '/^YOUR_EMAIL[ =]/d' .env
           echo "YOUR_EMAIL=${{ secrets.YOUR_EMAIL }}" >> .env
+
+          sed -i '/^REDIS_HOST[ =]/d' .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+
+          sed -i '/^REDIS_PORT[ =]/d' .env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
 
           echo "${{ secrets.GCP_CREDENTIALS }}" > ~/whisprr_backend/gcp-credentials.json
             

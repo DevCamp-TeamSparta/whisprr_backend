@@ -16,6 +16,12 @@ export class PurchaseEntity {
   purchase_token: string;
 
   @Column({
+    type: 'varchar',
+    nullable: false,
+  })
+  order_id: string;
+
+  @Column({
     type: 'enum',
     enum: PurchaseStatus,
     default: PurchaseStatus.inactive,

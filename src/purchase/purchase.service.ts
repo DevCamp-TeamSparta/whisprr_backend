@@ -103,6 +103,7 @@ export class PurchaseService {
       const newRecord = {
         plan,
         purchase_token: purchaseToken,
+        order_id: purchaseResponse.data.latestOrderId,
         purchase_date: new Date(purchaseResponse.data.startTime),
         expiration_date: new Date(purchaseResponse.data.lineItems[0].expiryTime),
         status: result,
