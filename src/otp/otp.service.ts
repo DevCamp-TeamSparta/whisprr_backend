@@ -33,7 +33,7 @@ export class OtpService {
     const emailAdress = this.getEmailAddress();
 
     const info = await transporter.sendMail({
-      from: `"whisprr" <${emailAdress}>`,
+      from: `"Whisprr" <${emailAdress}>`,
       to: email,
       subject: '[Whisprr] Email Verification Code',
       text: 'welcome!',
