@@ -7,7 +7,6 @@ export class AdminEntity {
 
   @Column({
     type: 'varchar',
-    length: 15,
     nullable: false,
   })
   password: string;
