@@ -30,21 +30,21 @@ export class AdminController {
 
   //3. 신고목록 열람(관리자 열람용)
   @UseGuards(AdminGuard)
-  @Get('/all')
+  @Get('report/all')
   async getAllReport() {
     return await this.reportService.getAllReport();
   }
 
   //4. 유저별 신고 목록 열람(관리자 열람용)
   @UseGuards(AdminGuard)
-  @Get('/user')
+  @Get('report/user')
   async getUserReport(@Query('email') email: string) {
     return await this.reportService.getUserReport(email);
   }
 
   //5. 신고 아이디별 신고 상세 열람(관리자 열람용)
   @UseGuards(AdminGuard)
-  @Get('/:id')
+  @Get('report/:id')
   async getReportById(@Param('id') id: number) {
     return await this.reportService.getReportById(id);
   }

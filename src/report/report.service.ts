@@ -43,6 +43,7 @@ export class ReportService {
     const reports = await this.reportRepository.find({ relations: ['user'] });
     const mappedReports = reports.map((report) => ({
       id: report.id,
+      user_email: report.user.email,
       user_id: uuidStringify(report.user.user_id),
       reported_at: report.reported_at,
       reason: report.reason,
@@ -101,6 +102,7 @@ export class ReportService {
     };
     const response = {
       id: report.id,
+      user_email: report.user.email,
       user_id: uuidStringify(report.user.user_id),
       reported_at: report.reported_at,
       reason: report.reason,
