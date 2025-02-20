@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReportEntity } from './entities/report.entity';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { JwtPayload } from 'src/common/utils/user_info.decorator';
-import { parse as uuidParse } from 'uuid';
 import { ReportDto } from './dto/report.dto';
 
 import { stringify as uuidStringify } from 'uuid';
@@ -55,14 +54,17 @@ export class ReportService {
 
   //3. 유저별 신고 목록 열람(관리자 열람용)
 
-  public async getUserReport(uuid: string) {
-    const uuidBuffer = Buffer.from(uuidParse(uuid) as Uint8Array);
-    const user = await this.userService.findUser(uuidBuffer);
+  public async getUserReport(email: string) {
+    const user = await this.userService.findUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     const reports = await this.reportRepository.find({ where: { user }, relations: ['user'] });
 
     const mappedReports = reports.map((report) => ({
       id: report.id,
+      user_email: report.user.email,
       user_id: uuidStringify(report.user.user_id),
       reported_at: report.reported_at,
       reason: report.reason,
