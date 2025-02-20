@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@n
 import { ReportService } from 'src/report/report.service';
 import { AdminService } from './admin.service';
 import { AdminDto } from './dto/admin.dto';
-import { AdminEntity } from './entities/admin.entity';
 import { AdminGuard } from 'src/common/guards/admin.guard';
 import { UserService } from 'src/user/user.service';
 
@@ -16,7 +15,7 @@ export class AdminController {
 
   //1. 관리자 계정 생성
   @Post()
-  async createAdminAccount(@Body() adminDto: AdminDto): Promise<AdminEntity> {
+  async createAdminAccount(@Body() adminDto: AdminDto): Promise<{ message: string }> {
     return await this.adminService.createAdminAccount(adminDto);
   }
 
@@ -25,7 +24,7 @@ export class AdminController {
   async loginAdminAccount(
     @Body('email') email: string,
     @Body('password') password: string,
-  ): Promise<string> {
+  ): Promise<{ token: string }> {
     return await this.adminService.loginAdminAccount(email, password);
   }
 
