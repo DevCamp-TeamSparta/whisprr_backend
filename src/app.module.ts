@@ -30,6 +30,8 @@ import { CustomQuestionEntity } from './question/entities/user.custom.question.e
 import { OtpService } from './otp/otp.service';
 import { RedisService } from './otp/redis.service';
 import { OAuth2Service } from './otp/oAuth2.service';
+import { AdminModule } from './admin/admin.module';
+import { AdminEntity } from './admin/entities/admin.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -51,6 +53,7 @@ const typeOrmModuleOptions = {
       InstructionEntity,
       JournalCreationEntity,
       ReportEntity,
+      AdminEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
@@ -87,6 +90,7 @@ const typeOrmModuleOptions = {
     PlanModule,
     OpenAiModule,
     ReportModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, OpenAiService, OtpService, RedisService, OAuth2Service],

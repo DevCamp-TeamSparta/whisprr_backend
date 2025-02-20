@@ -8,6 +8,7 @@ import { stringify as uuidStringify } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/common/utils/user_info.decorator';
 import { OtpService } from 'src/otp/otp.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,8 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
-    private otpService: OtpService,
+    private readonly otpService: OtpService,
+    private readonly configService: ConfigService,
   ) {}
 
   //1. 토큰으로 유저 정보 조회 및 토큰 버젼 일치 검사
@@ -99,7 +101,9 @@ export class UserService {
       await this.checkFreetrialAndPlanActive(Bufferuuid);
 
     const payload = { uuid, freeTrialStatus, tokenVersion, planStatus };
-    const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY });
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_SECRET_KEY'),
+    });
     return token;
   }
 
@@ -155,7 +159,7 @@ export class UserService {
   }
 
   //6.email로 사용자 조회
-  private async findUserByEmail(email: string): Promise<UserEntity> {
+  public async findUserByEmail(email: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: {
         email,
@@ -178,5 +182,16 @@ export class UserService {
     }
     const newUserUuid = await this.createUser(email);
     return newUserUuid;
+  }
+
+  //8. email 로 user 계정 삭제
+  public async deleteUserAccount(email: string): Promise<{ message: string }> {
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.userRepository.delete({ email });
+    return { message: `User ${email} account was deleted!` };
   }
 }

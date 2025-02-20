@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class TrialAndPlanGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
@@ -24,13 +24,13 @@ export class TrialAndPlanGuard implements CanActivate {
       secret: this.configService.get<string>('JWT_SECRET_KEY'),
     });
 
-    const { freeTrialStatus, planStatus } = payload;
+    const { IsAdmin } = payload;
 
-    if (freeTrialStatus === 'non-available' && planStatus === 'non-available') {
-      throw new ForbiddenException('Access denied: trial and plan are non-available');
+    if (IsAdmin !== true) {
+      throw new ForbiddenException('Access denied: not admin account');
     }
 
-    request.user = payload;
+    request.admin = payload;
 
     return true;
   }
