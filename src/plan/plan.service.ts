@@ -10,6 +10,7 @@ export class PlanService {
     private planRepository: Repository<PlanEntity>,
   ) {}
 
+  //1. plan 조회 메서드
   async findPlan(planId: string) {
     const plan = await this.planRepository.findOne({
       where: {

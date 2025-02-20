@@ -65,6 +65,8 @@ export class AdminService {
     return await this.getAdminToken(email);
   }
 
+  //3.1 비밀 번호 비교 메서드
+
   private async comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
   }

@@ -9,6 +9,8 @@ export class InstructionService {
     @InjectRepository(InstructionEntity)
     private instructionRepository: Repository<InstructionEntity>,
   ) {}
+
+  //1. instruction 조회 메서드
   async getInstruction(target: string): Promise<InstructionEntity> {
     return await this.instructionRepository.findOne({
       where: { target },

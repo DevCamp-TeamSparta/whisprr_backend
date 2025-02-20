@@ -97,6 +97,7 @@ export class InterviewService {
     return this.findInterview(user, date);
   }
 
+  //2.1 중복된 인터뷰 기록 삭제 메소드
   private removeDuplicatesInterview(
     existingInterview: InterviewEntity,
     interviewToBeAdded: QuestionAnswerDto[],
