@@ -53,9 +53,6 @@ jobs:
           sed -i '/^DB_USER[ =]/d' .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
 
-          sed -i '/^DB_USERNAME[ =]/d' .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-
           sed -i '/^DB_PASSWORD[ =]/d' .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
