@@ -19,7 +19,4 @@ export class OriginalJournalEntity {
 
   @Column({ type: 'longtext', nullable: false })
   content: string;
-
-  @Column({ type: 'date', nullable: false })
-  date: Date;
 }
