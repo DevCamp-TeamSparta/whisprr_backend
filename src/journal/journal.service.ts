@@ -64,50 +64,54 @@ export class JournalService {
     journal: Journal,
     date: Date,
   ): Promise<Partial<ReturnedJournal>> {
-    return await this.dataSource.transaction(async (manager) => {
-      const savedOriginal = await manager
-        .getRepository(OriginalJournalEntity)
-        .createQueryBuilder()
-        .insert()
-        .values({
+    try {
+      return await this.dataSource.transaction(async (manager) => {
+        const savedOriginal = await manager
+          .getRepository(OriginalJournalEntity)
+          .createQueryBuilder()
+          .insert()
+          .values({
+            title: journal.title,
+            keyword: journal.keyword,
+            content: journal.content,
+          })
+          .execute();
+
+        const originalJournalId = savedOriginal.identifiers[0].id;
+        const createdAt = new Date();
+
+        await manager
+          .getRepository(JournalEntity)
+          .createQueryBuilder()
+          .insert()
+          .values({
+            user: { user_id: user.user_id },
+            originalJournal: { id: originalJournalId },
+            title: journal.title,
+            keyword: journal.keyword,
+            content: journal.content,
+            created_at: createdAt,
+            date: date,
+          })
+          .execute();
+
+        await this.updatejournalCreation(manager, user, date);
+
+        const jwtToken = await this.userService.updateWritingCount(manager, user);
+
+        return {
           title: journal.title,
           keyword: journal.keyword,
           content: journal.content,
-        })
-        .execute();
-
-      const originalJournalId = savedOriginal.identifiers[0].id;
-      const createdAt = new Date();
-
-      await manager
-        .getRepository(JournalEntity)
-        .createQueryBuilder()
-        .insert()
-        .values({
-          user: { user_id: user.user_id },
-          originalJournal: { id: originalJournalId },
-          title: journal.title,
-          keyword: journal.keyword,
-          content: journal.content,
-          created_at: createdAt,
           date: date,
-        })
-        .execute();
-
-      await this.updatejournalCreation(manager, user, date);
-
-      const jwtToken = await this.userService.updateWritingCount(manager, user); //UserService 5번
-
-      const returndJournal: Partial<ReturnedJournal> = {
-        title: journal.title,
-        keyword: journal.keyword,
-        content: journal.content,
-        date: date,
-        created_at: createdAt,
-        jwtToken,
-      };
-      return returndJournal;
-    });
+          created_at: createdAt,
+          jwtToken,
+        };
+      });
+    } catch (error) {
+      console.error('❌ Journal creation failed:', error);
+      throw new Error('Journal creation failed. Please try again later.');
+    }
   }
 
   //1.2 저널 생성 기록 생성
