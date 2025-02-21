@@ -173,7 +173,7 @@ export class UserService {
   public async createOrfindUserByEmail(
     email: string,
     verifyCode: string,
-  ): Promise<{ uuid: string } | { message: string }> {
+  ): Promise<{ uuid: string } | { message: string } | { uuid: string; message: string }> {
     await this.otpService.verifyOTP(email, verifyCode);
 
     const user = await this.findUserByEmail(email);

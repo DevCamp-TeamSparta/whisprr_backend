@@ -27,7 +27,9 @@ export class InitialController {
 
   //2. 어플 설치 시 최초 1회 uuid 생성 요청
   @Post()
-  async createOrRestoreUser(@Body() initialDto: InitialDto) {
+  async createOrRestoreUser(
+    @Body() initialDto: InitialDto,
+  ): Promise<{ uuid: string } | { message: string } | { uuid: string; message: string }> {
     return await this.userService.createOrfindUserByEmail(initialDto.email, initialDto.verifyCode);
   }
 
