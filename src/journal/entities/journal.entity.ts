@@ -7,7 +7,9 @@ import {
   ManyToOne,
   Unique,
   DeleteDateColumn,
+  OneToOne,
 } from 'typeorm';
+import { OriginalJournalEntity } from './original.jounal.entity';
 
 @Entity('journals')
 @Unique(['user', 'date'])
@@ -46,4 +48,9 @@ export class JournalEntity {
   @ManyToOne(() => UserEntity, (user) => user.journals, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: UserEntity;
+
+  // 1:1 original_journal
+  @OneToOne(() => OriginalJournalEntity, { cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'original_id' })
+  originalJournal: OriginalJournalEntity;
 }

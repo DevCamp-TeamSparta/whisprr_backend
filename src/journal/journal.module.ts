@@ -16,6 +16,7 @@ import { InterviewModule } from 'src/interview/interview.module';
 import { OtpService } from 'src/otp/otp.service';
 import { RedisService } from 'src/otp/redis.service';
 import { OAuth2Service } from 'src/otp/oAuth2.service';
+import { OriginalJournalEntity } from './entities/original.jounal.entity';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { OAuth2Service } from 'src/otp/oAuth2.service';
       InterviewEntity,
       InstructionEntity,
       JournalCreationEntity,
+      OriginalJournalEntity,
     ]),
     forwardRef(() => InterviewModule),
   ],

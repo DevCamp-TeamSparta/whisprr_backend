@@ -21,6 +21,7 @@ import { JournalCreationEntity } from 'src/journal/entities/journal.creation.ent
 import { InstructionEntity } from 'src/instruction/entities/instruction.entity';
 import { InstructionService } from 'src/instruction/instruction.service';
 import { OpenAiService } from 'src/open-ai/open-ai.service';
+import { OriginalJournalEntity } from 'src/journal/entities/original.jounal.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { OpenAiService } from 'src/open-ai/open-ai.service';
       InterviewEntity,
       JournalEntity,
       JournalCreationEntity,
+      OriginalJournalEntity,
       InstructionEntity,
     ]),
     UserModule,

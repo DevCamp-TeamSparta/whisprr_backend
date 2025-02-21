@@ -80,7 +80,7 @@ export class ReportService {
   public async getReportById(id: number) {
     const report = await this.reportRepository.findOne({ where: { id }, relations: ['user'] });
     const interview = await this.interviewService.findInterview(report.user, report.journal_date);
-    const journal = await this.journalService.getJournalByDateWithoutUserVerify(
+    const journal = await this.journalService.findJournalWithOriginal(
       report.user,
       report.journal_date,
     );
@@ -99,6 +99,7 @@ export class ReportService {
       title: journal.title,
       keyword: journal.keyword,
       content: journal.content,
+      original: journal.originalJournal,
     };
     const response = {
       id: report.id,

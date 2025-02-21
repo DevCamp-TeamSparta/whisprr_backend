@@ -20,6 +20,7 @@ import { JournalCreationEntity } from 'src/journal/entities/journal.creation.ent
 import { OtpService } from 'src/otp/otp.service';
 import { RedisService } from 'src/otp/redis.service';
 import { OAuth2Service } from 'src/otp/oAuth2.service';
+import { OriginalJournalEntity } from 'src/journal/entities/original.jounal.entity';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OAuth2Service } from 'src/otp/oAuth2.service';
       InstructionEntity,
       JournalEntity,
       JournalCreationEntity,
+      OriginalJournalEntity,
     ]),
   ],
   controllers: [PurchaseController],

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { parse as uuidParse } from 'uuid';
 import { stringify as uuidStringify } from 'uuid';
@@ -140,18 +140,21 @@ export class UserService {
   }
 
   //5. 저널 생성 시 작성 횟수 업데이트
-  public async updateWritingCount(user: UserEntity) {
-    await this.userRepository.increment({ user_id: user.user_id }, 'writing_count', 1);
+  public async updateWritingCount(manager: EntityManager, user: UserEntity) {
+    await manager.increment(UserEntity, { user_id: user.user_id }, 'writing_count', 1);
 
-    return await this.updateUserTrialStatus(user);
+    return await this.updateUserTrialStatus(manager, user);
   }
 
   //5.1 저널 생성 시 작성 횟 수 3회 이상 시 무료 체험판 종료
-  private async updateUserTrialStatus(user: UserEntity) {
-    const updatedUser = await this.findUser(user.user_id);
+  private async updateUserTrialStatus(manager: EntityManager, user: UserEntity) {
+    const updatedUser = await manager.findOne(UserEntity, {
+      where: { user_id: user.user_id },
+    });
 
-    if (updatedUser.writing_count >= 3 && updatedUser.trial_status !== 'expired') {
-      await this.userRepository.update({ user_id: user.user_id }, { trial_status: 'expired' });
+    if (updatedUser && updatedUser.writing_count >= 3 && updatedUser.trial_status !== 'expired') {
+      await manager.update(UserEntity, { user_id: user.user_id }, { trial_status: 'expired' });
+
       return await this.getUserToken(user.user_id);
     }
 

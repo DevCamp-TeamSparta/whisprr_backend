@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JournalEntity } from './entities/journal.entity';
-import { Between, LessThan, Repository } from 'typeorm';
+import { Between, DataSource, EntityManager, LessThan, Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { Journal, OpenAiService } from '../open-ai/open-ai.service';
 import { ModifyJournalDto } from './dto/modify_journal.dto';
@@ -18,6 +18,7 @@ import { JwtPayload } from '../common/utils/user_info.decorator';
 import { JournalDto } from './dto/create_jornal.dto';
 import { InterviewService } from '../interview/interview.service';
 import { InstructionService } from '../instruction/instruction.service';
+import { OriginalJournalEntity } from './entities/original.jounal.entity';
 
 interface ReturnedJournal extends JournalEntity {
   jwtToken: string;
@@ -35,6 +36,9 @@ export class JournalService {
     private interviewService: InterviewService,
     private instructionService: InstructionService,
     private openAiService: OpenAiService,
+    @InjectRepository(OriginalJournalEntity)
+    private originalJournalRepository: Repository<OriginalJournalEntity>,
+    private dataSource: DataSource,
   ) {}
 
   //1. 저널 생성
@@ -60,40 +64,65 @@ export class JournalService {
     journal: Journal,
     date: Date,
   ): Promise<Partial<ReturnedJournal>> {
-    const newJournal = this.journalRepository.create({
-      user: user,
-      title: journal.title,
-      keyword: journal.keyword,
-      content: journal.content,
-      created_at: new Date(),
-      date: date,
+    return await this.dataSource.transaction(async (manager) => {
+      const savedOriginal = await manager
+        .getRepository(OriginalJournalEntity)
+        .createQueryBuilder()
+        .insert()
+        .values({
+          title: journal.title,
+          keyword: journal.keyword,
+          content: journal.content,
+        })
+        .execute();
+
+      const originalJournalId = savedOriginal.identifiers[0].id;
+      const createdAt = new Date();
+
+      await manager
+        .getRepository(JournalEntity)
+        .createQueryBuilder()
+        .insert()
+        .values({
+          user: { user_id: user.user_id },
+          originalJournal: { id: originalJournalId },
+          title: journal.title,
+          keyword: journal.keyword,
+          content: journal.content,
+          created_at: createdAt,
+          date: date,
+        })
+        .execute();
+
+      await this.updatejournalCreation(manager, user, date);
+
+      const jwtToken = await this.userService.updateWritingCount(manager, user); //UserService 5번
+
+      const returndJournal: Partial<ReturnedJournal> = {
+        title: journal.title,
+        keyword: journal.keyword,
+        content: journal.content,
+        date: date,
+        created_at: createdAt,
+        jwtToken,
+      };
+      return returndJournal;
     });
-
-    await this.journalRepository.save(newJournal);
-    await this.updatejournalCreation(user, date);
-
-    const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
-
-    const returndJournal: Partial<ReturnedJournal> = {
-      title: newJournal.title,
-      keyword: newJournal.keyword,
-      content: newJournal.content,
-      date: newJournal.date,
-      created_at: newJournal.created_at,
-      jwtToken,
-    };
-    return returndJournal;
   }
 
   //1.2 저널 생성 기록 생성
-  private async updatejournalCreation(user: UserEntity, date: Date): Promise<void> {
-    const newRecord = this.journalCreationRepository.create({
-      user,
-      journal_date: date,
-      created_at: new Date(),
-    });
 
-    await this.journalCreationRepository.save(newRecord);
+  private async updatejournalCreation(manager: EntityManager, user: UserEntity, date: Date) {
+    return await manager
+      .getRepository(JournalCreationEntity)
+      .createQueryBuilder()
+      .insert()
+      .values({
+        user: user,
+        journal_date: date,
+        created_at: new Date(),
+      })
+      .execute();
   }
 
   //2. 저널 목록 조회 (lastDate: 이전 요청 저널들 중 마지막 저널의 해당 날짜, limit: 저널 요청 개수)
@@ -171,6 +200,7 @@ export class JournalService {
     const journal = await this.getJournalByDateWithoutUserVerify(user, date);
 
     await this.journalRepository.delete({ user, date });
+
     await this.interviewService.resetInterview(user, date);
     return {
       message: `journal id :${journal.id}, date:${journal.date} removed`,
@@ -229,5 +259,22 @@ export class JournalService {
     if (isExistJornal) {
       throw new ConflictException('the journal already exist');
     }
+  }
+
+  //9. 유저, 날짜별 저널 + 원본 조회
+  public async findJournalWithOriginal(user: UserEntity, date: Date) {
+    const journal = await this.journalRepository.findOne({
+      where: {
+        date,
+        user,
+        deleted_at: null,
+      },
+      relations: ['originalJournal'],
+    });
+    if (!journal) {
+      throw new NotFoundException('The journal does not exist.');
+    }
+
+    return journal;
   }
 }

@@ -19,6 +19,7 @@ import { OtpService } from 'src/otp/otp.service';
 
 import { RedisService } from 'src/otp/redis.service';
 import { OAuth2Service } from 'src/otp/oAuth2.service';
+import { OriginalJournalEntity } from 'src/journal/entities/original.jounal.entity';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { OAuth2Service } from 'src/otp/oAuth2.service';
       InterviewEntity,
       JournalEntity,
       JournalCreationEntity,
+      OriginalJournalEntity,
       InstructionEntity,
     ]),
     UserModule,

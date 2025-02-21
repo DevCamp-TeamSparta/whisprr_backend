@@ -32,6 +32,7 @@ import { RedisService } from './otp/redis.service';
 import { OAuth2Service } from './otp/oAuth2.service';
 import { AdminModule } from './admin/admin.module';
 import { AdminEntity } from './admin/entities/admin.entity';
+import { OriginalJournalEntity } from './journal/entities/original.jounal.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -54,6 +55,7 @@ const typeOrmModuleOptions = {
       JournalCreationEntity,
       ReportEntity,
       AdminEntity,
+      OriginalJournalEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
