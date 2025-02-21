@@ -180,8 +180,8 @@ export class UserService {
     if (user) {
       return { uuid: uuidStringify(user.user_id) };
     }
-    const newUserUuid = await this.createUser(email);
-    return newUserUuid;
+    const { uuid, message } = await this.createUser(email);
+    return { uuid, message };
   }
 
   //8. email 로 user 계정 삭제
