@@ -43,38 +43,73 @@ CI/CD: Github actions
 
 Equipment: Nodemailer
 
-## Project setup
+###  Backend  
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)  
+###  Database  
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)  ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)  
+###  Deployment  
+![AWS EC2](https://img.shields.io/badge/AWS_EC2-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)  ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)  
+###  APIs  
+![OpenAI API](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)  ![Google Android Developers API](https://img.shields.io/badge/Google_Android_Developers-3DDC84?style=for-the-badge&logo=android&logoColor=white)  
+###  CI/CD  
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)  
+###  Equipment  
+![Nodemailer](https://img.shields.io/badge/Nodemailer-009688?style=for-the-badge&logo=gmail&logoColor=white)
 
+
+# 🎚️ Achitecture 
+
+
+
+# 🔧 Installation & Setup
+
+### 1. source code clone
 ```bash
-$ yarn install
+$ git clone https://github.com/DevCamp-TeamSparta/whisprr_backend.git
+$ cd whisprr_backend
 ```
 
-## Compile and run the project
-
+### 2. docker and docker compose installation in ubuntu 
 ```bash
-# development
-$ yarn run start
+$ sudo apt update -y
+$ sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 
-# production mode
-$ yarn run start:prod
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+$ sudo add-apt-repository "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+$ sudo apt update -y
+$ sudo apt install -y docker-ce docker-ce-cli containerd.io
+$ sudo systemctl start docker
+$ sudo systemctl enable docker
+
+$ sudo usermod -aG docker $USER
+$ newgrp docker
 ```
 
-## Run tests
+```bash
+$ sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+$ sudo chmod +x /usr/local/bin/docker-compose
+```
+
+### 3. Build and run the project
 
 ```bash
-# unit tests
-$ yarn run test
-
+$ docker compose build
+$ docker compose up
 ```
 
 ## 💡 Future Plans
 
 🔥 기본 회고 질문 사용자 커스텀 기능
 
-## Support
+## 🔗 Links
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Project notion: https://www.notion.so/teamsparta/Whisprr-1752dc3ef514802aac1afe3fd4308850
+
+- Landing page: https://whisprr.spartastudio.app/
 
 ## Stay in touch
 
 - Website - [https://whisprr.spartastudio.app/](https://whisprr.spartastudio.app/)
+
