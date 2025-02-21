@@ -69,7 +69,7 @@ export class UserService {
   }
 
   //2. 유저 생성 메소드
-  public async createUser(email: string) {
+  private async createUser(email: string): Promise<{ uuid: string; message: string }> {
     const uuid = uuidv4();
     const uuidBuffer = Buffer.from(uuidParse(uuid) as Uint8Array);
     const newUser = this.userRepository.create({
@@ -81,7 +81,7 @@ export class UserService {
 
     await this.userRepository.save(newUser);
 
-    return { uuid: uuid };
+    return { uuid: uuid, message: `it's new user` };
   }
 
   //3.유저 닉네임 변경 메소드

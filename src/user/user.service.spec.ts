@@ -75,22 +75,6 @@ describe('UserService', () => {
   const mockuuid = '550e8400-e29b-41d4-a716-446655440000';
   const mockBufferuuid = Buffer.from(uuidParse(mockuuid));
 
-  describe('createUser', () => {
-    const mockEmail = 'test@test.com';
-    it('유저를 생성하고 반환한다.', async () => {
-      const mockUser = { user_id: mockBufferuuid, nickname: '무명', created_at: new Date() };
-      mockUserRepository.create.mockReturnValue(mockUser);
-      mockUserRepository.save.mockResolvedValue(mockUser);
-      await userService.createUser(mockEmail);
-
-      const result = { uuid: mockuuid };
-
-      expect(mockUserRepository.create).toHaveBeenCalled();
-      expect(mockUserRepository.save).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual({ uuid: mockuuid });
-    });
-  });
-
   describe('changeNickname', () => {
     it('닉네임을 변경하고 반환한다.', async () => {
       mockUserRepository.update.mockResolvedValue(null);
