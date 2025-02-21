@@ -139,27 +139,26 @@ export class UserService {
     return { freeTrialStatus: trialStatus, tokenVersion: user.token_version, planStatus };
   }
 
+  //5. 저널 생성 시 작성 횟수 업데이트
   public async updateWritingCount(manager: EntityManager, user: UserEntity) {
     await manager.increment(UserEntity, { user_id: user.user_id }, 'writing_count', 1);
 
-    const result = await manager
-      .createQueryBuilder()
-      .select('writing_count')
-      .from(UserEntity, 'user')
-      .where('user.user_id = :userId', { userId: user.user_id })
-      .getRawOne();
+    return await this.updateUserTrialStatus(manager, user);
+  }
 
-    if (result.writing_count >= 3) {
-      return await this.updateUserTrialStatus(manager, user.user_id);
+  //5.1 저널 생성 시 작성 횟 수 3회 이상 시 무료 체험판 종료
+  private async updateUserTrialStatus(manager: EntityManager, user: UserEntity) {
+    const updatedUser = await manager.findOne(UserEntity, {
+      where: { user_id: user.user_id },
+    });
+
+    if (updatedUser && updatedUser.writing_count >= 3 && updatedUser.trial_status !== 'expired') {
+      await manager.update(UserEntity, { user_id: user.user_id }, { trial_status: 'expired' });
+
+      return await this.getUserToken(user.user_id);
     }
 
     return undefined;
-  }
-
-  private async updateUserTrialStatus(manager: EntityManager, userId: Buffer) {
-    await manager.update(UserEntity, { user_id: userId }, { trial_status: 'expired' });
-
-    return await this.getUserToken(userId);
   }
 
   //6.email로 사용자 조회
