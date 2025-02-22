@@ -35,6 +35,7 @@ export const mockJournal: JournalEntity = {
   created_at: new Date('2025-01-20T00:00:00.000Z'),
   updated_at: null,
   deleted_at: null,
+  originalJournal: null,
 };
 
 export const mockCreatedJournal = {
@@ -57,6 +58,7 @@ export const mockJournalList: JournalEntity[] = [
     created_at: new Date('2025-01-20T00:00:00.000Z'),
     updated_at: null,
     deleted_at: null,
+    originalJournal: null,
   },
 ];
 
@@ -80,6 +82,7 @@ export const mockUpdatedJournal: JournalEntity = {
   created_at: new Date('2025-01-20T00:00:00.000Z'),
   updated_at: new Date('2025-01-23T02:42:37.574Z'),
   deleted_at: null,
+  originalJournal: null,
 };
 
 export const mockJournalCreation: JournalCreationEntity = {
