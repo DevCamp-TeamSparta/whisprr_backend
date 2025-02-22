@@ -69,21 +69,22 @@ export class JournalService {
       content: journal.content,
     };
 
-    const original = this.originalJournalRepository.create({
-      ...journalRecord,
-    });
-
-    await this.originalJournalRepository.save(original);
-
     const newJournal = this.journalRepository.create({
       user: user,
       ...journalRecord,
       created_at: new Date(),
       date: date,
-      originalJournal: original,
     });
 
     await this.journalRepository.save(newJournal);
+
+    const original = this.originalJournalRepository.create({
+      ...journalRecord,
+      journal: newJournal,
+    });
+
+    await this.originalJournalRepository.save(original);
+
     await this.updatejournalCreation(user, date);
 
     const jwtToken = await this.userService.updateWritingCount(user); //UserService 5번
