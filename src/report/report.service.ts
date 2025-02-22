@@ -99,7 +99,7 @@ export class ReportService {
       title: journal.title,
       keyword: journal.keyword,
       content: journal.content,
-      original: journal.originalJournal,
+      original: journal.original,
     };
     const response = {
       id: report.id,
