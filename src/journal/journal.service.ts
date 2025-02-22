@@ -256,12 +256,16 @@ export class JournalService {
         user,
         deleted_at: null,
       },
-      relations: ['originalJournal'],
     });
+
     if (!journal) {
       throw new NotFoundException('The journal does not exist.');
     }
 
-    return journal;
+    const original = await this.originalJournalRepository.findOne({
+      where: { journal: { id: journal.id } },
+    });
+
+    return { ...journal, original };
   }
 }
