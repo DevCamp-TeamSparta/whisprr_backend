@@ -51,5 +51,6 @@ export class JournalEntity {
 
   // 1:1 original_journal
   @OneToOne(() => OriginalJournalEntity, { cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'original_journal_id' })
   originalJournal: OriginalJournalEntity;
 }
